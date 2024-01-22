@@ -1,0 +1,107 @@
+<!-- Main Sidebar Container -->
+<aside
+  class="main-sidebar sidebar-dark-primary elevation-4 position-fixed"
+  th:fragment="sidebarFragment"
+>
+  <!-- Brand Logo -->
+  <a href="" class="brand-link">
+    <img
+      src="resources/navbar_template/img/logo.png"
+      alt="Logo"
+      class="brand-image img-circle elevation-3"
+      style="opacity: 0.8; width: 35px; height: 35px"
+    />
+    <span class="brand-text font-weight-light"
+      ><small>Janaka Hardware</small></span
+    >
+  </a>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <!-- Sidebar Menu -->
+    <nav class="mt-2">
+      <ul
+        class="nav nav-pills nav-sidebar flex-column"
+        data-widget="treeview"
+        role="menu"
+        data-accordion="false"
+      >
+        <!-- Add icons to the links using the .nav-icon class
+              with font-awesome or any other icon font library -->
+        <li class="nav-item user-panel">
+          <a href="/dashboard" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li class="nav-item user-panel">
+          <a href="#" class="nav-link"
+            ><i class="nav-icon fas fa-circle"></i>
+            <p>Sales<i class="right fas fa-angle-left"></i></p
+          ></a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>New Invoice</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>View Invoices</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Daily Expense</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Extra Income</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Finance Report</p></a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item user-panel">
+          <a href="#" class="nav-link"
+            ><i class="nav-icon fas fa-circle"></i>
+            <p>Product<i class="right fas fa-angle-left"></i></p
+          ></a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>New Product</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>View Products</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Manage Filters</p></a
+              >
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item user-panel">
+          <a href="/user" class="nav-link">
+            <i class="nav-icon fas fa-user"></i>
+            <p>User</p>
+          </a>
+        </li>
+        <li class="nav-item user-panel">
+          <a href="/privilege" class="nav-link">
+            <i class="nav-icon fas fa-lock"></i>
+            <p>Privilege</p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.sidebar-menu -->
+  </div>
+  <!-- /.sidebar -->
+</aside>
+<!-- /.Main Sidebar Container -->

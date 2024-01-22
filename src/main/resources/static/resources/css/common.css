@@ -1,0 +1,68 @@
+.btn-clear {
+  background-color: rgb(251, 182, 181);
+  border: 1px solid rgb(255, 44, 40);
+}
+
+.btn-clear:hover {
+  background-color: rgb(255, 4, 0);
+}
+
+.btn-update {
+  background-color: rgb(255, 255, 157);
+  border: 2px solid yellow;
+}
+
+.btn-update:hover {
+  background-color: yellow;
+}
+
+.btn-add {
+  background-color: rgb(151, 255, 179);
+  border: 2px solid rgb(54, 255, 81);
+}
+
+.btn-add:hover {
+  background-color: rgb(54, 255, 81);
+}
+
+.btn-disable {
+  border-color: gray;
+  color: silver;
+}
+
+.heading-area {
+  text-align: center;
+  color: #235ebd;
+}
+.heading-area h2 {
+  font-weight: bold;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #5796fc;
+  color: #d4e4ff;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.card {
+  box-shadow: 0 0 1px #5796fc20, 0 7px 5px rgba(5, 114, 255, 0.2);
+}
+
+.table-dark {
+  --bs-table-bg: #235ebd;
+}
+
+.card {
+  padding-left: 10rem;
+  padding-right: 10rem;
+}
+
+@media (max-width: 992px) {
+  .card {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}

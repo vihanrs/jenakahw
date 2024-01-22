@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/user.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2><i class="fa-solid fa-user pe-3"></i>User Management</h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="accordion" id="accordionSection">
+          <!-- add new form area start -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#addNewSection"
+                aria-expanded="false"
+                aria-controls="addNewSection"
+                id="addNewButton"
+              >
+                Add New User
+              </button>
+            </h2>
+            <div
+              id="addNewSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body">
+                  <form onsubmit="return false">
+                    <!-- * required mark -->
+                    <div class="row">
+                      <div class="col-12 text-end">
+                        <span class="fw-bold"
+                          ><span class="text-danger">* </span>Required</span
+                        >
+                      </div>
+                    </div>
+                    <!-- Content area start -->
+                    <!-- first name -->
+                    <div class="row mt-2">
+                      <label
+                        for="textFirstName"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        First Name :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter First Name"
+                          class="form-control"
+                          id="textFirstName"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- last name -->
+                    <div class="row mt-2">
+                      <label
+                        for="textLastName"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Last Name :
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Last Name"
+                          class="form-control"
+                          id="textLastName"
+                        />
+                      </div>
+                    </div>
+                    <!-- contact -->
+                    <div class="row mt-2">
+                      <label
+                        for="textContact"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Contact No. :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Contact No"
+                          class="form-control"
+                          id="textContact"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- nic -->
+                    <div class="row mt-2">
+                      <label for="textNIC" class="col-md-4 form-label fw-bold">
+                        NIC :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter NIC"
+                          class="form-control"
+                          id="textNIC"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- gender -->
+                    <div class="row mt-2">
+                      <label
+                        for="radioGender"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Gender : <span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-auto form-check">
+                        <input
+                          type="radio"
+                          name="gender"
+                          class="from-check-input"
+                          value="Male"
+                          id="radioGenderMale"
+                        />
+                        <label
+                          for="radioGenderMale"
+                          class="form-check-label fw-bold"
+                        >
+                          Male</label
+                        >
+                      </div>
+                      <div class="col-auto form-check">
+                        <input
+                          type="radio"
+                          name="gender"
+                          class="from-check-input"
+                          value="Female"
+                          id="radioGenderFemale"
+                        />
+                        <label
+                          for="radioGenderFemale"
+                          class="form-check-label fw-bold"
+                        >
+                          Female</label
+                        >
+                      </div>
+                    </div>
+                    <!-- email -->
+                    <div class="row mt-2">
+                      <label
+                        for="textEmail"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Email :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Email"
+                          class="form-control"
+                          id="textEmail"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- username -->
+                    <div class="row mt-2">
+                      <label
+                        for="textUsername"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Username :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Username"
+                          class="form-control"
+                          id="textUsername"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- password -->
+                    <div class="row mt-2">
+                      <label
+                        for="textPassword"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Password :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="password"
+                          placeholder="Enter Password"
+                          class="form-control"
+                          id="textPassword"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- re-password -->
+                    <div class="row mt-2">
+                      <label
+                        for="textRPassword"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Password Re-type :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="password"
+                          placeholder="Re-type Password"
+                          class="form-control"
+                          id="textRPassword"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- user status -->
+                    <div class="row mt-2">
+                      <label
+                        for="selectStatus"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Status : <span class="text-danger"> * </span>
+                      </label>
+                      <select
+                        id="selectStatus"
+                        class="col-md-4 form-select ms-2 me-2"
+                        required
+                      >
+                        <option value="" selected disabled>
+                          Select Status
+                        </option>
+                        <option value="Option1">Option 1</option>
+                        <option value="Option2">Option 2</option>
+                      </select>
+                    </div>
+                    <!-- user roles -->
+                    <div class="row mt-2">
+                      <label for="divRoles" class="col-md-4 form-label fw-bold"
+                        >User Roles</label
+                      >
+                      <div class="col-md-8" id="divRoles"></div>
+                    </div>
+                    <!-- buttons -->
+                    <div class="row mt-4 justify-content-end">
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-clear"
+                          id="btnReset"
+                        >
+                          <i class="fa-solid fa-recycle me-2"></i>Clear
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-update"
+                          id="btnUpdate"
+                        >
+                          <i class="fa-solid fa-gears me-2"></i>Update
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-add"
+                          id="btnAdd"
+                        >
+                          <i class="fa-solid fa-square-plus me-2"></i>Add
+                        </button>
+                      </div>
+                    </div>
+                    <!-- Content area end -->
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- add new form area end -->
+
+          <!-- view all table area start -->
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View All Users
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <div class="table-responsive">
+                    <table class="table table-hover pt-3 mb-3" id="tblUser">
+                      <thead class="table-dark">
+                        <tr>
+                          <th>#</th>
+                          <th>User ID</th>
+                          <th>First Name</th>
+                          <th>Last Name</th>
+                          <th>Username</th>
+                          <th>Roles</th>
+                          <th>Status</th>
+                          <th style="width: 50px; text-align: right">Modify</th>
+                        </tr>
+                      </thead>
+                      <tbody class="table-group-divider"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
+        </div>
+        <!-- content area end -->
+
+        <!-- view record model start -->
+        <div class="modal" id="modelDetailedView">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h2>View User Details</h2>
+                <button class="btn btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <table id="printTable" class="table">
+                  <tr>
+                    <th>First Name</th>
+                    <td id="tdFirstName"></td>
+                  </tr>
+                  <tr>
+                    <th>Last Name</th>
+                    <td id="tdLastName"></td>
+                  </tr>
+                  <tr>
+                    <th>Contact</th>
+                    <td id="tdContact"></td>
+                  </tr>
+                  <tr>
+                    <th>NIC</th>
+                    <td id="tdNIC"></td>
+                  </tr>
+                  <tr>
+                    <th>Gender</th>
+                    <td id="tdGender"></td>
+                  </tr>
+                  <tr>
+                    <th>Email</th>
+                    <td id="tdEmail"></td>
+                  </tr>
+                  <tr>
+                    <th>Username</th>
+                    <td id="tdUsername"></td>
+                  </tr>
+                  <tr>
+                    <th>Role</th>
+                    <td id="tdRole"></td>
+                  </tr>
+                  <tr>
+                    <th>Status</th>
+                    <td id="tdStatus"></td>
+                  </tr>
+                </table>
+              </div>
+              <dv class="modal-footer">
+                <button id="btnViewPrint" class="btn btn-info">
+                  <i class="fa-solid fa-print"></i> Print
+                </button>
+              </dv>
+            </div>
+          </div>
+        </div>
+        <!-- view record model end -->
+      </div>
+    </div>
+  </body>
+</html>
