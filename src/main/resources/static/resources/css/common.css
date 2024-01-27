@@ -1,14 +1,14 @@
 .btn-clear {
-  background-color: rgb(251, 182, 181);
-  border: 1px solid rgb(255, 44, 40);
+  background-color: #fbb6b5;
+  border: 1px solid #ff2c28;
 }
 
 .btn-clear:hover {
-  background-color: rgb(255, 4, 0);
+  background-color: #ff0400;
 }
 
 .btn-update {
-  background-color: rgb(255, 255, 157);
+  background-color: #ffff9d;
   border: 2px solid yellow;
 }
 
@@ -17,12 +17,12 @@
 }
 
 .btn-add {
-  background-color: rgb(151, 255, 179);
-  border: 2px solid rgb(54, 255, 81);
+  background-color: #97ffb3;
+  border: 2px solid #36ff51;
 }
 
 .btn-add:hover {
-  background-color: rgb(54, 255, 81);
+  background-color: #36ff51;
 }
 
 .btn-disable {

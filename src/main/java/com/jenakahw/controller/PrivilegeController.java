@@ -90,7 +90,7 @@ public class PrivilegeController {
 			privilegeRepository.save(privilege);
 			return "OK";
 		} catch (Exception e) {
-			return "Delete not complete :" + e.getMessage();
+			return "Update not complete :" + e.getMessage();
 		}
 	}
 
@@ -151,6 +151,7 @@ public class PrivilegeController {
 		return userPrivilege;
 	}
 
+	// method for check privileges for selected operation in selected module
 	public Boolean hasPrivilege(String module, String operation) {
 		HashMap<String, Boolean> logedUserPrivileges = getPrivilegeByUserAndModule(module);
 		return logedUserPrivileges.get(operation);

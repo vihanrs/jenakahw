@@ -31,7 +31,7 @@
         <!-- content area start -->
         <div class="accordion" id="accordionSection">
           <!-- add new form area start -->
-          <div class="accordion-item">
+          <div class="accordion-item" id="addAccordion">
             <h2 class="accordion-header">
               <button
                 class="accordion-button collapsed fw-bold"
@@ -205,8 +205,8 @@
                       </div>
                     </div>
                     <!-- buttons -->
-                    <div class="row mt-4">
-                      <div class="col-lg-4 text-center">
+                    <div class="row mt-4 justify-content-end">
+                      <div class="col-auto text-center">
                         <button
                           type="button"
                           class="btn fw-bold btn-clear"
@@ -215,18 +215,18 @@
                           <i class="fa-solid fa-recycle me-2"></i>Clear
                         </button>
                       </div>
-                      <div class="col-lg-4 text-center">
+                      <div class="col-auto text-center">
                         <button
-                          type="submit"
+                          type="button"
                           class="btn fw-bold btn-update"
                           id="btnUpdate"
                         >
                           <i class="fa-solid fa-gears me-2"></i>Update
                         </button>
                       </div>
-                      <div class="col-lg-4 text-center">
+                      <div class="col-auto text-center">
                         <button
-                          type="submit"
+                          type="button"
                           class="btn fw-bold btn-add"
                           id="btnAdd"
                         >
@@ -242,7 +242,7 @@
           <!-- add new form area end -->
 
           <!-- view all table area start -->
-          <div class="accordion-item">
+          <div class="accordion-item" id="viewAccordion">
             <h2 class="accordion-header">
               <button
                 class="accordion-button collapsed fw-bold"

@@ -6,7 +6,8 @@ const fillDataIntoTable = (
   viewButtonFunction,
   editButtonFunction,
   deleteButtonFunction,
-  buttonVisibility = true
+  buttonVisibility = true,
+  privilegeObj = null
 ) => {
   //generate table body
   const tableBody = tableID.children[1];
@@ -36,19 +37,21 @@ const fillDataIntoTable = (
     tdButton.className = "table-buttons";
     tdButton.style.textAlign = "right";
 
-    const buttonPrint = document.createElement("button");
-    buttonPrint.type = "button";
-    buttonPrint.className = "btn btn-outline-success btn-disable";
-    buttonPrint.innerHTML = '<i class="fa-solid fa-eye"></i>';
+    const buttonView = document.createElement("button");
+    buttonView.type = "button";
+    buttonView.id = "btnPrint";
+    buttonView.className = "btn btn-outline-success btn-disable me-2";
+    buttonView.innerHTML = '<i class="fa-solid fa-eye"></i>';
 
-    buttonPrint.onclick = () => {
+    buttonView.onclick = () => {
       console.log("Print Event" + item.id);
       viewButtonFunction(item, ind);
     };
 
     const buttonEdit = document.createElement("button");
+    buttonEdit.id = "btnEdit";
     buttonEdit.type = "button";
-    buttonEdit.className = "btn btn-outline-warning btn-disable ms-2 me-2";
+    buttonEdit.className = "btn btn-outline-warning btn-disable me-2";
     buttonEdit.innerHTML = '<i class="fa-solid fa-edit"></i>';
 
     buttonEdit.onclick = () => {
@@ -58,6 +61,7 @@ const fillDataIntoTable = (
 
     const buttonDelete = document.createElement("button");
     buttonDelete.type = "button";
+    buttonDelete.id = "btnDelete";
     buttonDelete.className = "btn btn-outline-danger btn-disable";
     buttonDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
 
@@ -67,9 +71,18 @@ const fillDataIntoTable = (
     };
 
     if (buttonVisibility) {
-      tdButton.appendChild(buttonPrint);
-      tdButton.appendChild(buttonEdit);
-      tdButton.appendChild(buttonDelete);
+      if (privilegeObj != null && privilegeObj.select) {
+        tdButton.appendChild(buttonView);
+      }
+
+      if (privilegeObj != null && privilegeObj.update && privilegeObj.insert) {
+        tdButton.appendChild(buttonEdit);
+      }
+
+      if (privilegeObj != null && privilegeObj.delete) {
+        tdButton.appendChild(buttonDelete);
+      }
+
       tr.appendChild(tdButton);
     }
 

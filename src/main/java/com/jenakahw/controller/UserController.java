@@ -57,9 +57,9 @@ public class UserController {
 	// get mapping for get all user data -- [/user/find all]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<User> findAll() {
-		if(privilegeController.hasPrivilege("User", "select")) {
-			return userRepository.findAll(Sort.by(Direction.DESC, "id"));
-		}else {
+		if (privilegeController.hasPrivilege("User", "select")) {
+			return userRepository.findAll();
+		} else {
 			return null;
 		}
 	}
@@ -94,12 +94,17 @@ public class UserController {
 			return "User Save Not Completed : Username " + user.getUsername() + " is already exist!";
 		}
 
+		// set isactive false when user status updated to Inactive
+		if (user.getUserStatusId().getName().equals("Inative") || user.getUserStatusId().getName().equals("Resigned")) {
+			user.setIsActive(false);
+		} else {
+			user.setIsActive(true);
+		}
+
 		try {
 			user.setUserId("000002");
 			// set added date time
 			user.setAddedDateTime(LocalDateTime.now());
-			// set is active - true
-			user.setIsActive(true);
 
 			// encrypt password
 			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -137,10 +142,12 @@ public class UserController {
 		}
 
 		// set isactive false when user status updated to Inactive
-		if (user.getUserStatusId().getName().equals("Inative")) {
+		if (user.getUserStatusId().getName().equals("Inative") || user.getUserStatusId().getName().equals("Resigned")) {
 			user.setIsActive(false);
+		} else {
+			user.setIsActive(true);
 		}
-		
+
 		try {
 			user.setPassword(extUser.getPassword());
 			userRepository.save(user);

@@ -1,11 +1,21 @@
 //Access Browser onload event
 window.addEventListener("load", () => {
-  //set default selected section
-  showDefaultSection("addNewButton", "addNewSection");
+  //get logged user privileges
+  userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/User");
+  // userPrivilages.insert = false;
+  // userPrivilages.update = false;
+  // userPrivilages.delete = true;
 
   //refresh all
   refreshAll();
 
+  //set default selected section
+  if (userPrivilages.insert) {
+    showDefaultSection("addNewButton", "addNewSection");
+  } else {
+    showDefaultSection("viewAllButton", "viewAllSection");
+    addAccordion.style.display = "none";
+  }
   //call all event listners
   addEventListeners();
 });
@@ -153,6 +163,14 @@ const refreshForm = () => {
   textPassword.style.border = "1px solid #ced4da";
   textRPassword.style.border = "1px solid #ced4da";
   selectStatus.style.border = "1px solid #ced4da";
+
+  //manage buttons
+  btnUpdate.style.display = "none";
+  if (!userPrivilages.insert) {
+    btnAdd.style.display = "none";
+  } else {
+    btnAdd.style.display = "";
+  }
 };
 
 //function for refresh table records
@@ -180,54 +198,70 @@ const refreshTable = () => {
     viewRecord,
     refillRecord,
     deleteRecord,
-    true
+    true,
+    userPrivilages
   );
+
+  //disable delete button when status is 'resigned'
+  users.forEach((user, index) => {
+    if (userPrivilages.delete && user.userStatusId.name == "Resigned") {
+      //catch the button
+      let targetElement =
+        tblUser.children[1].children[index].children[7].children[
+          userPrivilages.update && userPrivilages.insert ? 2 : 1
+        ];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.visibility = "hidden";
+    }
+  });
 
   $("#tblUser").dataTable();
 };
 
 // ********* TABLE OPERATIONS *********
 
-//function for set stats column
-const getStatus = (rowOb) => {
+//function for set status column
+const getStatus = (rowObject) => {
   let styles =
     "padding:1px;text-align: center;font-weight: bold;border-radius: 10px;";
-  if (rowOb.userStatusId.name == "Working") {
+  if (rowObject.userStatusId.name == "Working") {
     return (
       '<p style="' +
       styles +
       'background-color: rgb(49, 255, 49);">' +
-      rowOb.userStatusId.name +
+      rowObject.userStatusId.name +
       "</p>"
     );
-  } else if (rowOb.userStatusId.name == "Resigned") {
+  } else if (rowObject.userStatusId.name == "Inative") {
     return (
-      '<p class = "' +
+      '<p style = "' +
       styles +
       'background-color:  rgb(255, 231, 49);">' +
-      rowOb.userStatusId.name +
+      rowObject.userStatusId.name +
       "</p>"
     );
   } else {
     return (
-      '<p class = "' +
+      '<p style = "' +
       styles +
-      'background-color: rgb(150, 50, 49);">' +
-      rowOb.userStatusId.name +
+      'background-color: rgb(255, 20, 00);">' +
+      rowObject.userStatusId.name +
       "</p>"
     );
   }
 };
 
-const getRoles = (rowOb) => {
-  let rolesList = rowOb.roles.map((role) => role.name).join(", ");
+//function for get roles as a text
+const getRoles = (rowObject) => {
+  let rolesList = rowObject.roles.map((role) => role.name).join(", ");
   return "<p>" + rolesList + "</p>";
 };
 
 //function for view record
-const viewRecord = (ob, rowId) => {
+const viewRecord = (rowObject, rowId) => {
   //need to get full object
-  const printObj = ob;
+  let printObj = rowObject;
 
   tdFirstName.innerText = printObj.firstName;
   tdLastName.innerText = printObj.lastName;
@@ -287,7 +321,18 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     user.userStatusId.name
   );
+
+  //define roles
   createViewRolesUI();
+  setSelectedRoles();
+
+  //manage buttons
+  btnAdd.style.display = "none";
+  if (!userPrivilages.update) {
+    btnUpdate.style.display = "none";
+  } else {
+    btnUpdate.style.display = "";
+  }
 };
 
 //function for delete record
@@ -441,17 +486,36 @@ const checkUpdates = () => {
       user.userStatusId.name +
       " \n";
   }
-  if (oldUserObj.roleId.id != user.roleId.id) {
-    updates =
-      updates +
-      "Role has changed " +
-      oldUserObj.roleId.name +
-      " into " +
-      user.roleId.name +
-      " \n";
+
+  if (isRolesChanged(oldUserObj, user)) {
+    updates = updates + "User Roles has changed " + " \n";
   }
 
   return updates;
+};
+
+//function for check role changed or not
+const isRolesChanged = (oldUserObj, user) => {
+  let rolesChanged = false;
+
+  //check the array length
+  if (oldUserObj.roles.length !== user.roles.length) {
+    rolesChanged = true;
+    console.log("T1 " + rolesChanged);
+    return rolesChanged;
+  } else {
+    //sort the role names and iterate for find changes
+    const oldRoleNames = oldUserObj.roles.map((role) => role.name).sort();
+    const newRoleNames = user.roles.map((role) => role.name).sort();
+
+    for (let i = 0; i < oldRoleNames.length; i++) {
+      if (oldRoleNames[i] !== newRoleNames[i]) {
+        rolesChanged = true;
+        console.log("T2 " + rolesChanged);
+        return rolesChanged;
+      }
+    }
+  }
 };
 
 //function for add record
@@ -496,11 +560,7 @@ const updateRecord = () => {
         "Are you sure you want to update following changes...?\n" + updates
       );
       if (userConfirm) {
-        let updateServiceResponse = ajaxRequestBody(
-          "/default",
-          "PUT",
-          defaultObj
-        );
+        let updateServiceResponse = ajaxRequestBody("/user", "PUT", user);
         if (updateServiceResponse == "OK") {
           alert("Update sucessfully..! ");
           //need to refresh table and form
@@ -533,21 +593,17 @@ const createViewRolesUI = () => {
 
     inputCHK.onchange = function () {
       if (this.checked) {
-        user.roles.push(role);
-      } else {
-        let extIndex = user.roles.map((item) => item.name.indexOf(role.name));
-        if (extIndex != -1) {
-          user.roles.splice(extIndex, 1);
+        //check this selected role already exist or not
+        let roleExists = user.roles.find((item) => item.name === roles);
+        if (!roleExists) {
+          //if not exist add new role
+          user.roles.push(role);
         }
+      } else {
+        //find the current role name in role list, if it exist then remove from role list
+        user.roles = user.roles.filter((item) => item.name !== role.name);
       }
     };
-
-    let extUserRoleIndex = user.roles
-      .map((item) => item.name)
-      .indexOf(role.name);
-    if (extUserRoleIndex != -1) {
-      inputCHK.checked = true;
-    }
 
     const label = document.createElement("label");
     label.className = "form-check-label fw-bold";
@@ -558,6 +614,14 @@ const createViewRolesUI = () => {
     div.appendChild(label);
 
     divRoles.appendChild(div);
+  });
+};
+
+//function for get selected roles
+const setSelectedRoles = () => {
+  user.roles.map((role) => {
+    const inputCHK = document.getElementById("chk" + role.name);
+    inputCHK.checked = true;
   });
 };
 

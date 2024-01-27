@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/privilege.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2>
+              <i class="nav-icon fas fa-lock pe-3"></i>Privilege Management
+            </h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="accordion" id="accordionSection">
+          <!-- add new form area start -->
+          <div class="accordion-item" id="addAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#addNewSection"
+                aria-expanded="false"
+                aria-controls="addNewSection"
+                id="addNewButton"
+              >
+                Add New Privilege
+              </button>
+            </h2>
+            <div
+              id="addNewSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div
+                  class="card card-body"
+                  style="
+                    max-width: 50rem;
+                    margin-left: auto;
+                    margin-right: auto;
+                  "
+                >
+                  <form onsubmit="return false">
+                    <!-- * required mark -->
+                    <div class="row">
+                      <div class="col-12 text-end">
+                        <span class="fw-bold"
+                          ><span class="text-danger">* </span>Required</span
+                        >
+                      </div>
+                    </div>
+                    <!-- dropdown select role-->
+                    <div class="row mt-2">
+                      <div class="col-12">
+                        <label for="cmbRole" class="form-label fw-bold">
+                          Role : <span class="text-danger"> * </span>
+                        </label>
+                        <select id="cmbRole" class="form-select" required>
+                          <option value="" selected disabled>
+                            Select Option
+                          </option>
+                          <option value="Option1">Option 1</option>
+                          <option value="Option2">Option 2</option>
+                        </select>
+                      </div>
+                    </div>
+                    <!-- dropdown select module-->
+                    <div class="row mt-2">
+                      <div class="col-12">
+                        <label for="cmbModule" class="form-label fw-bold">
+                          Module : <span class="text-danger"> * </span>
+                        </label>
+                        <select id="cmbModule" class="form-select" required>
+                          <option value="" selected disabled>
+                            Select Module
+                          </option>
+                          <option value="Option1">Option 1</option>
+                          <option value="Option2">Option 2</option>
+                        </select>
+                      </div>
+                    </div>
+                    <!-- select check box -->
+                    <div class="row mt-4">
+                      <label
+                        for="checkBoxSelect"
+                        class="col-3 form-label fw-bold"
+                      >
+                        Select : <span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-9">
+                        <div class="form-check form-check-inline">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkBoxSelect"
+                          />
+                          <label
+                            for="checkBoxActive"
+                            id="labelCBSelect"
+                            class="form-check-label fw-bold"
+                            >In-Active</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- insert check box -->
+                    <div class="row mt-2">
+                      <label
+                        for="checkBoxInsert"
+                        class="col-3 form-label fw-bold"
+                      >
+                        Insert : <span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-9">
+                        <div class="form-check form-check-inline">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkBoxInsert"
+                          />
+                          <label
+                            for="checkBoxActive"
+                            id="labelCBInsert"
+                            class="form-check-label fw-bold"
+                            >In-Active</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- update box -->
+                    <div class="row mt-2">
+                      <label
+                        for="checkBoxUpdate"
+                        class="col-3 form-label fw-bold"
+                      >
+                        Update : <span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-9">
+                        <div class="form-check form-check-inline">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkBoxUpdate"
+                          />
+                          <label
+                            for="checkBoxActive"
+                            id="labelCBUpdate"
+                            class="form-check-label fw-bold"
+                            >In-Active</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <!-- delete check box -->
+                    <div class="row mt-2">
+                      <label
+                        for="checkBoxDelete"
+                        class="col-3 form-label fw-bold"
+                      >
+                        Delete : <span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-9">
+                        <div class="form-check form-check-inline">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="checkBoxDelete"
+                          />
+                          <label
+                            for="checkBoxActive"
+                            id="labelCBDelete"
+                            class="form-check-label fw-bold"
+                            >In-Active</label
+                          >
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- buttons -->
+                    <div class="row mt-4 justify-content-end">
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-clear"
+                          id="btnReset"
+                        >
+                          <i class="fa-solid fa-recycle me-2"></i>Clear
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-update"
+                          id="btnUpdate"
+                        >
+                          <i class="fa-solid fa-gears me-2"></i>Update
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-add"
+                          id="btnAdd"
+                        >
+                          <i class="fa-solid fa-square-plus me-2"></i>Add
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- add new form area end -->
+
+          <!-- view all table area start -->
+          <div class="accordion-item" id="viewAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View All Privileges
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <table class="table table-hover pt-3 mb-3" id="tblPrivilege">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Role</th>
+                        <th>Module</th>
+                        <th>Select</th>
+                        <th>Insert</th>
+                        <th>Update</th>
+                        <th>Delete</th>
+                        <th style="width: 50px; text-align: right">Modify</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
+        </div>
+        <!-- content area end -->
+      </div>
+      <!-- view record model start -->
+      <div class="modal" id="modelView">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>View # Details</h2>
+              <button class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <table id="printTable" class="table">
+                <tr>
+                  <th>FullName</th>
+                  <td id="tdFullName"></td>
+                </tr>
+                <tr>
+                  <th>NIC</th>
+                  <td id="tdNIC"></td>
+                </tr>
+                <tr>
+                  <th>Mobile</th>
+                  <td id="tdMobile"></td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td id="tdStatus"></td>
+                </tr>
+              </table>
+            </div>
+            <dv class="modal-footer">
+              <button class="btn btn-info" id="btnViewPrint">Print</button>
+            </dv>
+          </div>
+        </div>
+      </div>
+      <!-- view record model end -->
+    </div>
+  </body>
+</html>
