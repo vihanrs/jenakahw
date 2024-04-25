@@ -3,28 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <!-- link bootstrap css -->
+    <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />
+    <!-- link bootstrap js -->
+    <script src="resources/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <link rel="stylesheet" href="resources/css/login.css" />
+    <!-- <link
+      rel="stylesheet"
+      href="../static/resources/bootstrap/css/bootstrap.min.css"
+    />
+
+    <script src="../static/resources/bootstrap/js/bootstrap.bundle.js"></script> -->
+
+    <!-- fontawsome -->
+    <!-- <link
+      rel="stylesheet"
+      href="../static/resources/fontawesome-6.4.2/css/all.css"
+    />
+
+    <link rel="stylesheet" href="../static/resources/css/login.css" /> -->
+
+    <title>Jenaka Hardware : Login</title>
   </head>
   <body>
-    <h2>Login Form</h2>
-
-    <form action="/login" method="post">
-      <input
-        type="text"
-        name="username"
-        id="textUserName"
-        required
-        placeholder="Enter username"
-      />
-      <br />
-      <input
-        type="password"
-        name="password"
-        id="textPassword"
-        required
-        placeholder="Enter password"
-      />
-      <button type="submit">Login</button>
-    </form>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6 title-area">
+          <h4 class="title">JENAKA Hardware</h4>
+        </div>
+        <div class="col-md-6">
+          <div
+            class="row justify-content-center align-items-center"
+            style="height: 100vh"
+          >
+            <div class="col-lg-8">
+              <div class="card">
+                <h5 class="card-title text-center">Welcome Back!</h5>
+                <form action="/login" method="post">
+                  <div class="form-group pt-3">
+                    <label for="textUserName" class="form-label">
+                      Username :
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Enter Username"
+                      class="form-control mb-2"
+                      name="username"
+                      id="textUserName"
+                      required
+                    />
+                  </div>
+                  <div class="form-group pt-3">
+                    <label for="textPassword" class="form-label">
+                      Password :
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Enter Password"
+                      class="form-control mb-2"
+                      name="password"
+                      id="textPassword"
+                      required
+                    />
+                  </div>
+                  <div class="row justify-content-center pt-5 ps-3 pe-3">
+                    <button
+                      type="submit"
+                      class="col-md-10 btn btn-info fw-bold"
+                    >
+                      Login
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

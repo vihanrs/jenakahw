@@ -182,7 +182,7 @@ const refreshTable = () => {
   //String - number/string/date
   //function - object/array/boolean
   const displayProperties = [
-    { property: "userId", datatype: "String" },
+    { property: "empId", datatype: "String" },
     { property: "firstName", datatype: "String" },
     { property: "lastName", datatype: "String" },
     { property: "username", datatype: "String" },

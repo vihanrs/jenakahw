@@ -29,6 +29,7 @@ public class LoginController {
     	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
     	
 		ModelAndView dashboardView = new ModelAndView();
+		
 		dashboardView.addObject("logusername",auth.getName());
 		dashboardView.addObject("title","Dashboard | Jenaka Hardware");
 		dashboardView.setViewName("dashboard.html");

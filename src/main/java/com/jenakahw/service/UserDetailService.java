@@ -31,18 +31,24 @@ public class UserDetailService implements UserDetailsService {
 		// get user by username
 		User user = userRepository.getUserByUsername(username);
 
+		if (user == null) {
+            throw new UsernameNotFoundException("User not found with username: " + username);
+        }
+		
 		Set<GrantedAuthority> userRoles = new HashSet<GrantedAuthority>();
 
-		// get role list from user
 		for (Role role : user.getRoles()) {
 			userRoles.add(new SimpleGrantedAuthority(role.getName()));
 		}
+		// get role list from user
 
 		ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>(userRoles);
-		
-		UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(),user.getIsActive(), true, true, true, grantedAuthorities);
+
+		UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),
+				user.getPassword(),true, true, true, true, grantedAuthorities);
 
 		return userDetails;
+
 	}
 
 }

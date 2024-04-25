@@ -32,10 +32,10 @@ public class User {
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
 
-	@Column(name = "user_id", unique = true)
+	@Column(name = "emp_id", unique = true)
 	@NotNull
 	@Length(max = 6)
-	private String userId;
+	private String empId;
 
 	@Column(name = "first_name")
 	@NotNull
@@ -71,10 +71,6 @@ public class User {
 	@Column(name = "email")
 	@NotNull
 	private String email;
-
-	@Column(name = "isActive")
-	@NotNull
-	private Boolean isActive;
 
 	@Column(name = "added_datetime")
 	@NotNull

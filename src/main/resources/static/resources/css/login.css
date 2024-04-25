@@ -1,0 +1,42 @@
+body {
+  margin: 0;
+  padding: 0;
+  background-image: url(../images/bgimage.png);
+  background-size: cover;
+  background-attachment: fixed;
+  font-family: sans-serif;
+}
+
+.title-area {
+  display: flex;
+  padding: 7%;
+  align-items: center;
+}
+.title {
+  font-size: 8rem;
+  margin: 5%;
+  color: white;
+  font-weight: 700;
+  text-shadow: 2px 2px #666666;
+}
+.card {
+  background: RGBA(0, 0, 0, 0.5);
+  padding: 70px 50px;
+  color: white;
+}
+
+.card-title {
+  font-size: 32px;
+}
+
+.btn {
+  border: none;
+  border-radius: 20px;
+  background: #1c8abd;
+  color: #fff;
+}
+
+.btn:hover {
+  cursor: pointer;
+  background: #1c8aee;
+}

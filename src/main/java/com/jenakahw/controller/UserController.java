@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -74,35 +72,30 @@ public class UserController {
 
 		// check duplicates...
 		// check email
-		User extUser = userRepository.getUserByEmail(user.getEmail());
-		if (extUser != null) {
+		User extUserByEmail = userRepository.getUserByEmail(user.getEmail());
+		if (extUserByEmail != null) {
 			return "User Save Not Completed : Email " + user.getEmail() + " is already exist!";
 		}
 		// check contact
-		extUser = userRepository.getUserByContact(user.getContact());
-		if (extUser != null) {
+		User extUserByContact = userRepository.getUserByContact(user.getContact());
+		if (extUserByContact != null) {
 			return "User Save Not Completed : Contact no " + user.getContact() + " is already exist!";
 		}
 		// check NIC
-		extUser = userRepository.getUserByNIC(user.getNic());
-		if (extUser != null) {
+		User extUserByNIC = userRepository.getUserByNIC(user.getNic());
+		if (extUserByNIC != null) {
 			return "User Save Not Completed : NIC " + user.getNic() + " is already exist!";
 		}
 		// check username
-		extUser = userRepository.getUserByUsername(user.getUsername());
-		if (extUser != null) {
+		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
+		if (extUserByUsername != null) {
 			return "User Save Not Completed : Username " + user.getUsername() + " is already exist!";
 		}
 
-		// set isactive false when user status updated to Inactive
-		if (user.getUserStatusId().getName().equals("Inative") || user.getUserStatusId().getName().equals("Resigned")) {
-			user.setIsActive(false);
-		} else {
-			user.setIsActive(true);
-		}
+		
 
 		try {
-			user.setUserId("000002");
+			user.setEmpId("000002");
 			// set added date time
 			user.setAddedDateTime(LocalDateTime.now());
 
@@ -131,22 +124,30 @@ public class UserController {
 		}
 
 		// check duplicates
-		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
-		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {
-			return "Update not completed :  Username " + extUserByUsername.getUsername() + " is already exist!";
-		}
-
+		// check email
 		User extUserByEmail = userRepository.getUserByEmail(user.getEmail());
 		if (extUserByEmail != null && user.getId() != extUserByEmail.getId()) {
 			return "Update not completed : Email " + extUserByEmail.getEmail() + " is already exist!";
 		}
 
-		// set isactive false when user status updated to Inactive
-		if (user.getUserStatusId().getName().equals("Inative") || user.getUserStatusId().getName().equals("Resigned")) {
-			user.setIsActive(false);
-		} else {
-			user.setIsActive(true);
+		// check contact
+		User extUserByContact = userRepository.getUserByContact(user.getContact());
+		if (extUserByContact != null && user.getId() != extUserByContact.getId()) {
+			return "Update not completed : Contact no " + user.getContact() + " is already exist!";
 		}
+		
+		// check NIC
+		User extUserByNIC = userRepository.getUserByNIC(user.getNic());
+		if (extUserByNIC != null && user.getId() != extUserByNIC.getId()) {
+			return "Update not completed : NIC " + user.getNic() + " is already exist!";
+		}
+		
+		// check username
+		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
+		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {
+			return "Update not completed :  Username " + extUserByUsername.getUsername() + " is already exist!";
+		}
+
 
 		try {
 			user.setPassword(extUser.getPassword());
@@ -172,7 +173,6 @@ public class UserController {
 		}
 
 		try {
-			user.setIsActive(false);
 			user.setUserStatusId(userStatusRepository.getReferenceById(2)); // set user status to 'Resigned'
 			userRepository.save(user);
 			return "OK";

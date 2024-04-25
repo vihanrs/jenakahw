@@ -42,13 +42,12 @@ public class JenakahwApplication {
 	@GetMapping(value = "/createadmin")
 	public String generateAdmin() {
 		User adminUser = new User();
-		adminUser.setUserId("000000");
+		adminUser.setEmpId("000000");
 		adminUser.setFirstName("Admin");
 		adminUser.setContact("0710100100");
 		adminUser.setNic("980980980V");
 		adminUser.setGender("Male");
 		adminUser.setEmail("admin@gmail.com");
-		adminUser.setIsActive(true);
 		adminUser.setUsername("admin");
 		adminUser.setAddedDateTime(LocalDateTime.now());
 		adminUser.setPassword(bCryptPasswordEncoder.encode("12345"));

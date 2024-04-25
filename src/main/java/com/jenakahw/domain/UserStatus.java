@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity //define as a entity class
 @Table(name = "user_status") //map table
 @Data //generate getters and setters
 @NoArgsConstructor //generate default constructor

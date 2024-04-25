@@ -11,11 +11,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "module")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity // applied as an entity class
+@Table(name = "module") 
+@Data 
+@NoArgsConstructor 
+@AllArgsConstructor 
 public class Module {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
