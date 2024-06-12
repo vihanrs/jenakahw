@@ -14,7 +14,11 @@ import com.jenakahw.repository.RoleRepository;
 @RequestMapping(value = "/role") // class level mapping
 public class RoleController {
 
-	@Autowired // dependency injection
+	/* Create Repository object ->
+	 Dependency injection:Repository is an interface so it cannot create instance 
+	 * then use dependency injection
+	 */
+	@Autowired 
 	private RoleRepository roleRepository;
 
 	// get mapping for get all user data -- [/user/findall]

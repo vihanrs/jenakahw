@@ -40,8 +40,8 @@ public class UserDetailService implements UserDetailsService {
 		for (Role role : user.getRoles()) {
 			userRoles.add(new SimpleGrantedAuthority(role.getName()));
 		}
+		
 		// get role list from user
-
 		ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>(userRoles);
 
 		UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),

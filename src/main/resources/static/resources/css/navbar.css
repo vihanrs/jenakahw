@@ -1,0 +1,8 @@
+.brand-text {
+  color: #ffe121;
+}
+
+.user-panel:hover {
+  background-color: rgba(255, 225, 33, 0.3);
+  border-radius: 5px;
+}

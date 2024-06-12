@@ -3,24 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <!-- link bootstrap css -->
     <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />
     <!-- link bootstrap js -->
     <script src="resources/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <link rel="stylesheet" href="resources/css/login.css" />
+
     <!-- <link
       rel="stylesheet"
       href="../static/resources/bootstrap/css/bootstrap.min.css"
     />
 
-    <script src="../static/resources/bootstrap/js/bootstrap.bundle.js"></script> -->
-
-    <!-- fontawsome -->
-    <!-- <link
-      rel="stylesheet"
-      href="../static/resources/fontawesome-6.4.2/css/all.css"
-    />
+    <script src="../static/resources/bootstrap/js/bootstrap.bundle.js"></script>
 
     <link rel="stylesheet" href="../static/resources/css/login.css" /> -->
 
@@ -29,17 +25,18 @@
   <body>
     <div class="container-fluid">
       <div class="row">
-        <div class="col-md-6 title-area">
-          <h4 class="title">JENAKA Hardware</h4>
-        </div>
+        <div class="col-md-3"></div>
         <div class="col-md-6">
-          <div
-            class="row justify-content-center align-items-center"
-            style="height: 100vh"
-          >
-            <div class="col-lg-8">
+          <div class="row title-area">
+            <h4 class="col title">
+              <span class="shop_name">JENAKA</span> Hardware
+            </h4>
+          </div>
+          <div class="row justify-content-center login_area">
+            <div class="col-2"></div>
+            <div class="col">
               <div class="card">
-                <h5 class="card-title text-center">Welcome Back!</h5>
+                <h5 class="card-title text-center">Welcome!</h5>
                 <form action="/login" method="post">
                   <div class="form-group pt-3">
                     <label for="textUserName" class="form-label">
@@ -78,8 +75,10 @@
                 </form>
               </div>
             </div>
+            <div class="col-2"></div>
           </div>
         </div>
+        <div class="col-md-3"></div>
       </div>
     </div>
   </body>

@@ -14,8 +14,12 @@ import com.jenakahw.domain.Module;
 @RequestMapping(value = "/module") // class level mapping
 public class ModuleController {
 	
+	/* Create Repository object ->
+	 Dependency injection:Repository is an interface so it cannot create instance 
+	 * then use dependency injection
+	 */
 	@Autowired  //inject DesignationDao object into variable
-	private ModuleRepository moduleRepository;  //create designationDao object
+	private ModuleRepository moduleRepository;  
 	
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Module> getAllModules(){

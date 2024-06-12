@@ -22,9 +22,14 @@ import com.jenakahw.domain.Privilege;
 import com.jenakahw.repository.PrivilegeRepository;
 
 @RestController
+// add class level mapping /privilage
 @RequestMapping(value = "/privilege")
 public class PrivilegeController {
 
+	/* Create Repository object ->
+	 Dependency injection:Repository is an interface so it cannot create instance 
+	 * then use dependency injection
+	 */
 	@Autowired
 	private PrivilegeRepository privilegeRepository;
 
@@ -51,7 +56,7 @@ public class PrivilegeController {
 	@PostMapping
 	public String savePrivilege(@RequestBody Privilege privilege) {
 
-		// check authentication authorization
+		// check privileges
 		if (!hasPrivilege("Privilege", "insert")) {
 			return "Access Denied !!!";
 		}
@@ -75,7 +80,7 @@ public class PrivilegeController {
 	@PutMapping
 	public String updatePrivilege(@RequestBody Privilege privilege) {
 
-		// check authentication authorization
+		// check privileges
 		if (!hasPrivilege("Privilege", "update")) {
 			return "Access Denied !!!";
 		}
@@ -98,7 +103,7 @@ public class PrivilegeController {
 	@DeleteMapping
 	public String deletePrivilege(@RequestBody Privilege privilege) {
 		
-		// check authentication authorization
+		// check privileges
 		if (!hasPrivilege("Privilege", "delete")) {
 			return "Access Denied !!!";
 		}
@@ -141,7 +146,7 @@ public class PrivilegeController {
 			userPrivilege.put("update", true);
 			userPrivilege.put("delete", true);
 		} else {
-			String userPrivileges = privilegeRepository.getPrivilegeByUserAndModule(auth.getName(), module);
+			String userPrivileges = privilegeRepository.getPrivilegesByUserAndModule(auth.getName(), module);
 			String[] privileges = userPrivileges.split(",");
 			userPrivilege.put("select", privileges[0].equals("1"));
 			userPrivilege.put("insert", privileges[1].equals("1"));

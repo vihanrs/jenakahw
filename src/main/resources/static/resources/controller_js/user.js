@@ -414,9 +414,9 @@ const checkErrors = () => {
 const checkUpdates = () => {
   let updates = "";
 
+  // use nullish coalescing operator for handle null and undefined values
   if (oldUserObj.firstName != user.firstName) {
-    updates =
-      updates +
+    updates +=
       "First Name has changed " +
       oldUserObj.firstName +
       " into " +
@@ -424,17 +424,15 @@ const checkUpdates = () => {
       " \n";
   }
   if (oldUserObj.lastName != user.lastName) {
-    updates =
-      updates +
+    updates +=
       "Last Name has changed " +
-      oldUserObj.lastName +
+      (oldUserObj.lastName ?? "-") +
       " into " +
-      user.lastName +
+      (user.lastName ?? "-") +
       " \n";
   }
   if (oldUserObj.contact != user.contact) {
-    updates =
-      updates +
+    updates +=
       "Contact has changed " +
       oldUserObj.contact +
       " into " +
@@ -442,17 +440,11 @@ const checkUpdates = () => {
       " \n";
   }
   if (oldUserObj.nic != user.nic) {
-    updates =
-      updates +
-      "NIC has changed " +
-      oldUserObj.nic +
-      " into " +
-      user.nic +
-      " \n";
+    updates +=
+      "NIC has changed " + oldUserObj.nic + " into " + user.nic + " \n";
   }
   if (oldUserObj.gender != user.gender) {
-    updates =
-      updates +
+    updates +=
       "Gender has changed " +
       oldUserObj.gender +
       " into " +
@@ -460,17 +452,11 @@ const checkUpdates = () => {
       " \n";
   }
   if (oldUserObj.email != user.email) {
-    updates =
-      updates +
-      "Email has changed " +
-      oldUserObj.email +
-      " into " +
-      user.email +
-      " \n";
+    updates +=
+      "Email has changed " + oldUserObj.email + " into " + user.email + " \n";
   }
   if (oldUserObj.username != user.username) {
-    updates =
-      updates +
+    updates +=
       "Username has changed " +
       oldUserObj.username +
       " into " +
@@ -478,8 +464,7 @@ const checkUpdates = () => {
       " \n";
   }
   if (oldUserObj.userStatusId.id != user.userStatusId.id) {
-    updates =
-      updates +
+    updates +=
       "Status has changed " +
       oldUserObj.userStatusId.name +
       " into " +
@@ -488,7 +473,7 @@ const checkUpdates = () => {
   }
 
   if (isRolesChanged(oldUserObj, user)) {
-    updates = updates + "User Roles has changed " + " \n";
+    updates += "User Roles has changed " + " \n";
   }
 
   return updates;

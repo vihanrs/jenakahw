@@ -21,9 +21,10 @@ public class WebConfiguration {
 			.requestMatchers("/createadmin").permitAll()
 			.requestMatchers("/login").permitAll()
 			.requestMatchers("/error").permitAll()
-			.requestMatchers("/dashboard/**").hasAnyAuthority("Owner","Admin","Manager","Store-Keeper","Cashier")
-			
-			.requestMatchers("/user/**").hasAnyAuthority("Owner","Admin","Manager")
+			.requestMatchers("/dashboard/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
+			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager")
+			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager")
+			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
 			.anyRequest().authenticated();
 		})
 		//login form detail

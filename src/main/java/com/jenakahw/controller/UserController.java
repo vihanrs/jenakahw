@@ -24,9 +24,10 @@ import com.jenakahw.repository.UserStatusRepository;
 @RequestMapping(value = "/user") // class level mapping
 public class UserController {
 
-	// Create UserRepository object ->
-	// Dependency injection:UserRepository is an interface so it cannot create
-	// instance then use dependency injection
+	/*
+	 * Create UserRepository object -> Dependency injection:UserRepository is an
+	 * interface so it cannot create instance then use dependency injection
+	 */
 	@Autowired
 	private UserRepository userRepository;
 
@@ -52,7 +53,7 @@ public class UserController {
 		return modelAndView;
 	}
 
-	// get mapping for get all user data -- [/user/find all]
+	// get mapping for get all user data -- [/user/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<User> findAll() {
 		if (privilegeController.hasPrivilege("User", "select")) {
@@ -65,7 +66,7 @@ public class UserController {
 	// post mapping for save new user
 	@PostMapping
 	public String saveUser(@RequestBody User user) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("User", "insert")) {
 			return "Access Denied !!!";
 		}
@@ -92,10 +93,9 @@ public class UserController {
 			return "User Save Not Completed : Username " + user.getUsername() + " is already exist!";
 		}
 
-		
-
 		try {
-			user.setEmpId("000002");
+			// set auto generated employee id
+			user.setEmpId(userRepository.generateNextEmpId());
 			// set added date time
 			user.setAddedDateTime(LocalDateTime.now());
 
@@ -105,14 +105,14 @@ public class UserController {
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "User Save Not Completed : " + e.getMessage();
+			return "Save Not Completed : " + e.getMessage();
 		}
 	}
 
 	// put mapping for update user
 	@PutMapping
 	public String updateUser(@RequestBody User user) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("User", "update")) {
 			return "Access Denied !!!";
 		}
@@ -135,33 +135,33 @@ public class UserController {
 		if (extUserByContact != null && user.getId() != extUserByContact.getId()) {
 			return "Update not completed : Contact no " + user.getContact() + " is already exist!";
 		}
-		
+
 		// check NIC
 		User extUserByNIC = userRepository.getUserByNIC(user.getNic());
 		if (extUserByNIC != null && user.getId() != extUserByNIC.getId()) {
 			return "Update not completed : NIC " + user.getNic() + " is already exist!";
 		}
-		
+
 		// check username
 		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
 		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {
 			return "Update not completed :  Username " + extUserByUsername.getUsername() + " is already exist!";
 		}
 
-
 		try {
+			// set password to new user object
 			user.setPassword(extUser.getPassword());
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "User Update Not Completed : " + e.getMessage();
+			return "Update Not Completed : " + e.getMessage();
 		}
 	}
 
 	// delete mapping for delete user account [/user]
 	@DeleteMapping
 	public String deleteUser(@RequestBody User user) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("User", "delete")) {
 			return "Access Denied !!!";
 		}
@@ -177,7 +177,15 @@ public class UserController {
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "User Delete Not Completed : " + e.getMessage();
+			return "Delete Not Completed : " + e.getMessage();
 		}
+	}
+
+	// method for get logged user object
+	public User getLoggedUser() {
+		// get logged user authentication object
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		return userRepository.getUserByUsername(auth.getName());
 	}
 }

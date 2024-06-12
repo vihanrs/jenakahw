@@ -107,3 +107,11 @@ function showDefaultSection(buttonId, sectionId) {
   document.getElementById(buttonId).classList.remove("collapsed");
   document.getElementById(sectionId).classList.add("show");
 }
+
+// function for logout user with user confirmation
+const logoutUser = () => {
+  let userConfirmation = confirm("Are you sure to logout...?");
+  if (userConfirmation) {
+    window.location.assign("/logout");
+  }
+};

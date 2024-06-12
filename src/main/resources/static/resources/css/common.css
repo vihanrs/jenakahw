@@ -1,3 +1,4 @@
+/* css classes for common buttons */
 .btn-clear {
   background-color: #fbb6b5;
   border: 1px solid #ff2c28;
@@ -30,6 +31,7 @@
   color: silver;
 }
 
+/* css for heading  */
 .heading-area {
   text-align: center;
   color: #235ebd;
@@ -66,3 +68,73 @@
     padding-right: 1.25rem;
   }
 }
+
+/* zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz */
+/* .btn-clear {
+  background-color: #fbb6b5;
+  border: 1px solid #ff2c28;
+}
+
+.btn-clear:hover {
+  background-color: #ff0400;
+}
+
+.btn-update {
+  background-color: #ffff9d;
+  border: 2px solid yellow;
+}
+
+.btn-update:hover {
+  background-color: yellow;
+}
+
+.btn-add {
+  background-color: #97ffb3;
+  border: 2px solid #36ff51;
+}
+
+.btn-add:hover {
+  background-color: #36ff51;
+}
+
+.btn-disable {
+  border-color: gray;
+  color: silver;
+}
+
+.heading-area {
+  text-align: center;
+}
+.heading-area h2 {
+  font-weight: bold;
+  color: #535353;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #f2c426;
+  color: #fffcf4;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+}
+
+.card {
+  box-shadow: 0 0 1px #888888, 0 7px 5px rgba(255, 225, 33, 0.2);
+}
+
+.table-dark {
+  --bs-table-bg: #f2c426;
+}
+
+.card {
+  padding-left: 10rem;
+  padding-right: 10rem;
+}
+
+@media (max-width: 992px) {
+  .card {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+} */
