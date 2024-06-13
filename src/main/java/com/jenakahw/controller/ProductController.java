@@ -62,6 +62,17 @@ public class ProductController {
 		}
 
 	}
+	
+	// get mapping for get available product list
+	@GetMapping(value = "/availablelist", produces = "application/json")
+	public List<Product> getAvilableProducts(){
+		//check privileges
+		if (privilegeController.hasPrivilege("Product", "select")) {
+			return productRepository.getAvailableProducts();
+		} else {
+			return null;
+		}
+	}
 
 	// post mapping for save new product
 	@PostMapping

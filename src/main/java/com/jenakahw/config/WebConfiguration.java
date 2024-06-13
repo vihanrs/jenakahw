@@ -25,6 +25,7 @@ public class WebConfiguration {
 			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager")
 			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager")
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
+			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager")
 			.anyRequest().authenticated();
 		})
 		//login form detail
@@ -32,7 +33,7 @@ public class WebConfiguration {
 			login
 			.loginPage("/login")
 			.defaultSuccessUrl("/dashboard",true)
-			.failureUrl("/error?error=usernamepassworderror")
+			.failureUrl("/login?error=usernamepassworderror")
 			.usernameParameter("username")
 			.passwordParameter("password");
 		})

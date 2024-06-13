@@ -1,15 +1,14 @@
-/** 
-  change table id
-
-
- 
-*/
-
 //Access Browser onload event
 window.addEventListener("load", () => {
+  //get logged user privileges
+  userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Supplier");
   //set default selected section
-  showDefaultSection("addNewButton", "addNewSection");
-
+  if (userPrivilages.insert) {
+    showDefaultSection("addNewButton", "addNewSection");
+  } else {
+    showDefaultSection("viewAllButton", "viewAllSection");
+    addAccordion.style.display = "none";
+  }
   //refresh all
   refreshAll();
 
@@ -19,18 +18,70 @@ window.addEventListener("load", () => {
 
 // ********* LISTENERS *********
 const addEventListeners = () => {
-  // let namePattern = "^[A-Z][a-z]{2,20}$";
-  // let contactPattern = "^[0][7][01245678][0-9]{7}$";
-  // textFirstName.addEventListener("keyup", () => {
-  //   textFieldValidator(textFirstName, namePattern, "user", "firstName");
-  // });
-  // radioGenderMale.addEventListener("change", () => {
-  //   radioFieldValidator(radioGenderMale, "user", "gender");
-  // });
-  // //form reset button function call
-  // btnReset.addEventListener("click", () => {
-  //   refreshForm();
-  // });
+  let namePattern = "^[a-zA-Z][a-z]{1,29}$"; //first letter can be capital or simple and other letters need to be simple
+  let contactPattern = "^[0][7][01245678][0-9]{7}$";
+  let emailPattern = "^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$";
+  let companyNamePattern = "^[a-zA-Z](?:[a-zA-Z() ]{1,28}[a-zA-Z)])?$"; //first/last letters can be capital or simple and middle can be accept spaces
+
+  textFirstName.addEventListener("keyup", () => {
+    textFieldValidator(textFirstName, namePattern, "supplier", "firstName");
+  });
+
+  textLastName.addEventListener("keyup", () => {
+    textFieldValidator(textLastName, namePattern, "supplier", "lastName");
+  });
+
+  textContact.addEventListener("keyup", () => {
+    textFieldValidator(textContact, contactPattern, "supplier", "contact");
+  });
+
+  textEmail.addEventListener("keyup", () => {
+    textFieldValidator(textEmail, emailPattern, "supplier", "email");
+  });
+
+  textCompany.addEventListener("keyup", () => {
+    textFieldValidator(textCompany, companyNamePattern, "supplier", "email");
+  });
+
+  textAddress.addEventListener("keyup", () => {
+    textFieldValidator(textAddress, "^.*$", "supplier", "address");
+  });
+
+  selectStatus.addEventListener("change", () => {
+    selectDFieldValidator(selectStatus, "supplier", "supplierStatusId");
+  });
+
+  //form reset button function call
+  btnReset.addEventListener("click", () => {
+    refreshForm();
+  });
+
+  //record update function call
+  btnUpdate.addEventListener("click", () => {
+    updateRecord();
+  });
+
+  //record save function call
+  btnAdd.addEventListener("click", () => {
+    addRecord();
+  });
+
+  // list trasform buttons
+  btnSingleAdd.addEventListener("click", () => {
+    addOneProduct();
+  });
+
+  btnAddAll.addEventListener("click", () => {
+    addAllProducts();
+  });
+
+  btnSingleRemove.addEventListener("click", () => {
+    removeOneProduct();
+  });
+
+  btnRemoveAll.addEventListener("click", () => {
+    removeAllProducts();
+  });
 };
 
 // ********* RESET *********
@@ -44,38 +95,56 @@ const refreshAll = () => {
 
 //function for refresh form area
 const refreshForm = () => {
-  /* EXAMPLES
-    //create empty object
-    test = {};
-  
-    //get data list from select element
-    designations = ajaxGetRequest("/designation/findall");
-    fillDataIntoSelect(
-      cmbDesignation,
-      "Select Designation",
-      designations,
-      "name"
-    );
-  
-    employeestatuses = ajaxGetRequest("/employeestatus/findall");
-    fillDataIntoSelect(
-      cmbEmployeeStatus,
-      "Select status",
-      employeestatuses,
-      "name"
-    );
-  
-    //empty all elements
-    txtFullName.value = "";
-    radioGenderFemale.checked = false;
-    txtMobileNo.value = "";
-    checkBoxActive.checked = true;
-    labelCBActive.innerText = "Active";
-  
-    //set default colors
-    txtNIC.style.border = "1px solid #ced4da";
-    txtMobileNo.style.border = "1px solid #ced4da";
-    */
+  //create empty object
+  supplier = {};
+  supplier.products = new Array();
+
+  //get data list for select element
+  supplierStatus = ajaxGetRequest("/supplierstatus/findall");
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    supplierStatus,
+    "name",
+    "Active"
+  );
+
+  //bind default selected status in to supplier object and set valid color
+  supplier.supplierStatus = JSON.parse(selectStatus.value);
+  selectStatus.style.border = "2px solid #00FF7F";
+
+  //get data list for select element (left side list)
+  availableProductList = ajaxGetRequest("/product/availablelist");
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+
+  //set selected product list empty (right side list)
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+
+  //empty all elements
+  textFirstName.value = "";
+  textLastName.value = "";
+  textContact.value = "";
+  textEmail.value = "";
+  textCompany.value = "";
+
+  //set default colors
+  textFirstName.style.border = "1px solid #ced4da";
+  textLastName.style.border = "1px solid #ced4da";
+  textContact.style.border = "1px solid #ced4da";
+  textEmail.style.border = "1px solid #ced4da";
+  textCompany.style.border = "1px solid #ced4da";
 };
 
 //function for refresh table records
@@ -346,4 +415,130 @@ const printFullTable = () => {
   setTimeout(function () {
     newTab.print();
   }, 1000);
+};
+
+// ********* OTHER OPERATIONS *********
+
+//function for add selected product
+const addOneProduct = () => {
+  // get selected product from list
+  let selectedProduct = JSON.parse(selectAllProducts.value);
+
+  //push selected product into new array - supplier.products
+  supplier.products.push(selectedProduct);
+
+  //set that array to selected selectedProducts dropdown
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+
+  // get index of selected product
+  let extProductIndex = availableProductList
+    .map((product) => product.name)
+    .indexOf(selectedProduct.name);
+
+  // remove selected product from all available product list
+  if (extProductIndex != -1) {
+    availableProductList.splice(extProductIndex, 1);
+  }
+
+  // refill available product list
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+};
+
+const removeOneProduct = () => {
+  // get selected product from list
+  let selectedProduct = JSON.parse(selectedProducts.value);
+
+  //push selected product back into available product list
+  availableProductList.push(selectedProduct);
+
+  // refill available product list
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+
+  // get index of selected product
+  let extProductIndex = supplier.products
+    .map((product) => product.name)
+    .indexOf(selectedProduct.name);
+
+  // remove selected product from all available product list
+  if (extProductIndex != -1) {
+    supplier.products.splice(extProductIndex, 1);
+  }
+  //set that array to selected selectedProducts dropdown
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+};
+
+const addAllProducts = () => {
+  // get all product to selectd product list
+  availableProductList.forEach((product) => {
+    supplier.products.push(product);
+  });
+
+  //set that array to selected selectedProducts dropdown
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+
+  // remove all products from avalilable product list
+  availableProductList = [];
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+};
+
+const removeAllProducts = () => {
+  // get all product to available product list
+  supplier.products.forEach((product) => {
+    availableProductList.push(product);
+  });
+
+  // set all products to available product list
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+  // remove all products from selected product list
+  supplier.products = [];
+  //set that array to selected selectedProducts dropdown
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
 };

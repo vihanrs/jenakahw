@@ -23,7 +23,9 @@
         <!-- title area start  -->
         <div class="row p-3">
           <div class="col-12 heading-area">
-            <h2><i class="fa-solid fa-hashtag pe-3"></i>Title Area</h2>
+            <h2>
+              <i class="fa-solid fa-hashtag pe-3"></i>Supplier Managemenet
+            </h2>
           </div>
         </div>
         <!-- title area end  -->
@@ -42,7 +44,7 @@
                 aria-controls="addNewSection"
                 id="addNewButton"
               >
-                Add New #
+                Add New Supplier
               </button>
             </h2>
             <div
@@ -61,149 +63,196 @@
                         >
                       </div>
                     </div>
-                    <!-- text field -->
+                    <!-- first name -->
                     <div class="row mt-2">
-                      <label for="textSample" class="form-label fw-bold"
-                        >Text Field :<span class="text-danger"> * </span></label
+                      <label
+                        for="textFirstName"
+                        class="col-md-4 form-label fw-bold"
                       >
-                      <div class="col-md-12">
+                        First Name :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
                         <input
                           type="text"
-                          placeholder="Enter Full Name"
+                          placeholder="Enter First Name"
                           class="form-control"
-                          id="textSample"
+                          id="textFirstName"
                           required
                         />
                       </div>
                     </div>
-                    <!-- dropdown -->
+                    <!-- last name -->
                     <div class="row mt-2">
-                      <div class="col-12">
-                        <label for="dropdownSample" class="form-label fw-bold">
-                          Dropdown : <span class="text-danger"> * </span>
-                        </label>
+                      <label
+                        for="textLastName"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Last Name :
+                      </label>
+                      <div class="col-md-8">
                         <input
                           type="text"
-                          placeholder="Enter Calling Name"
-                          list="datalist"
-                          class="form-select"
-                          id="dropdownSample"
-                          required
-                        />
-                        <datalist id="datalist">
-                          <option value="Part 1"></option>
-                          <option value="Part 2"></option>
-                          <option value="Part 3"></option>
-                          <option value="Part 4"></option>
-                        </datalist>
-                      </div>
-                    </div>
-                    <!-- radio field -->
-                    <div class="row mt-2">
-                      <div class="col-12">
-                        <label for="radioGender" class="form-label fw-bold">
-                          Radio Box : <span class="text-danger"> * </span>
-                        </label>
-                        <div class="form-check form-check-inline">
-                          <input
-                            type="radio"
-                            name="gender"
-                            class="from-check-input"
-                            value="Male"
-                            id="radioGenderMale"
-                          />
-                          <label
-                            for="radioGenderMale"
-                            class="form-check-label fw-bold"
-                          >
-                            Sample 1</label
-                          >
-                        </div>
-                        <div class="form-check form-check-inline">
-                          <input
-                            type="radio"
-                            name="gender"
-                            class="from-check-input"
-                            value="Female"
-                            id="radioGenderFemale"
-                          />
-                          <label
-                            for="radioGenderFemale"
-                            class="form-check-label fw-bold"
-                          >
-                            Sample 2</label
-                          >
-                        </div>
-                      </div>
-                    </div>
-                    <!-- date -->
-                    <div class="row mt-2">
-                      <div class="col-12">
-                        <label for="dateDOB" class="form-label fw-bold">
-                          Date : <span class="text-danger"> * </span>
-                        </label>
-                        <input
-                          type="date"
-                          id="dateDOB"
+                          placeholder="Enter Last Name"
                           class="form-control"
+                          id="textLastName"
                           required
                         />
                       </div>
                     </div>
-                    <!-- check box -->
+                    <!-- contact -->
                     <div class="row mt-2">
-                      <div class="col-12">
-                        <div class="form-check form-check-inline">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="checkBoxActive"
-                          />
-                          <label
-                            for="checkBoxActive"
-                            id="labelCBActive"
-                            class="form-check-label fw-bold"
-                            >In-Active</label
-                          >
-                        </div>
+                      <label
+                        for="textContact"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Contact No. :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Contact No"
+                          class="form-control"
+                          id="textContact"
+                          required
+                        />
                       </div>
+                    </div>
+                    <!-- email -->
+                    <div class="row mt-2">
+                      <label
+                        for="textEmail"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Email :
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Email"
+                          class="form-control"
+                          id="textEmail"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- company -->
+                    <div class="row mt-2">
+                      <label
+                        for="textCompany"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Company :
+                      </label>
+                      <div class="col-md-8">
+                        <input
+                          type="text"
+                          placeholder="Enter Company Name"
+                          class="form-control"
+                          id="textCompany"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <!-- address -->
+                    <div class="row mt-2">
+                      <label
+                        for="textAddress"
+                        class="col-md-4 form-label fw-bold"
+                        >Address :
+                      </label>
+                      <div class="col-md-8">
+                        <textarea
+                          id="textAddress"
+                          class="form-control"
+                          placeholder="Enter Address Here"
+                          required
+                        ></textarea>
+                      </div>
+                    </div>
+                    <!-- Supplier status -->
+                    <div class="row mt-2">
+                      <label
+                        for="selectStatus"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Supplier Status : <span class="text-danger"> * </span>
+                      </label>
+                      <select
+                        id="selectStatus"
+                        class="col-md-2 form-select ms-2 me-2"
+                        required
+                      >
+                        <option value="" selected disabled>
+                          Select Status
+                        </option>
+                        <option value="Option1">Option 1</option>
+                      </select>
                     </div>
 
-                    <!-- textarea -->
-                    <div class="row mt-2">
-                      <div class="col-12">
-                        <div class="form-floating">
-                          <textarea
-                            id="txtAddress"
-                            class="form-control"
-                            placeholder="Enter Address Here"
-                            required
-                          ></textarea>
-                          <label for="txtAddress" class="form-label fw-bold">
-                            Text Area : <span class="text-danger"> * </span>
-                          </label>
-                        </div>
+                    <!-- product list transfer area start -->
+                    <div class="row mt-3">
+                      <div class="col-md-12 form-label fw-bold">
+                        <p>
+                          Select Product List
+                          <span class="text-danger"> * </span>
+                        </p>
                       </div>
-                    </div>
-                    <!-- dropdown -->
-                    <div class="row mt-2">
-                      <div class="col-4">
-                        <label for="cmbDesignation" class="form-label fw-bold">
-                          Dropdown : <span class="text-danger"> * </span>
-                        </label>
+                      <div class="col-md-4">
+                        <p><i>All Products</i></p>
                         <select
-                          id="cmbDesignation"
                           class="form-select"
-                          required
+                          multiple
+                          id="selectAllProducts"
                         >
-                          <option value="" selected disabled>
-                            Select Option
-                          </option>
-                          <option value="Option1">Option 1</option>
-                          <option value="Option2">Option 2</option>
+                          <option value="1">One</option>
+                        </select>
+                      </div>
+                      <div class="col-md-4 text-center">
+                        <button
+                          type="button"
+                          class="btn btn-light"
+                          id="btnSingleAdd"
+                        >
+                          >
+                        </button>
+                        <br />
+                        <button
+                          type="button"
+                          class="btn btn-light"
+                          id="btnAddAll"
+                        >
+                          >>
+                        </button>
+                        <br />
+                        <button
+                          type="button"
+                          class="btn btn-light"
+                          id="btnSingleRemove"
+                        >
+                          <
+                        </button>
+                        <br />
+                        <button
+                          type="button"
+                          class="btn btn-light"
+                          id="btnRemoveAll"
+                        >
+                          <<
+                        </button>
+                      </div>
+                      <div class="col-md-4">
+                        <p><i>Selected Products</i></p>
+                        <select
+                          class="form-select"
+                          multiple
+                          id="selectedProducts"
+                        >
+                          <option value="1">One</option>
                         </select>
                       </div>
                     </div>
+                    <!-- product list transfer area end -->
+
                     <!-- buttons -->
                     <div class="row mt-4 justify-content-end">
                       <div class="col-auto text-center">

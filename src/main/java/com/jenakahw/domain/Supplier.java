@@ -49,7 +49,7 @@ public class Supplier {
 	@Column(name = "email")
 	private String email;
 	
-	@ManyToOne
+	@ManyToOne(optional = false) //cannot pass null values
 	@JoinColumn(name = "supplier_status_id", referencedColumnName = "id")
 	private SupplierStatus supplierStatusId;
 	

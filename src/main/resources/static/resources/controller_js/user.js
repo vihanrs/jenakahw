@@ -412,7 +412,7 @@ const checkErrors = () => {
 
 //function for check updates
 const checkUpdates = () => {
-  let updates = "";
+  let updates = ""; //when using 'let' this object only usable is this functional area
 
   // use nullish coalescing operator for handle null and undefined values
   if (oldUserObj.firstName != user.firstName) {

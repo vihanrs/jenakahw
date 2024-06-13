@@ -73,6 +73,10 @@
                     </button>
                   </div>
                 </form>
+                <!-- check error param with thymeleaf -->
+                <div th:if="${param.error}" style="color: red">
+                  Invalid Username or Password
+                </div>
               </div>
             </div>
             <div class="col-2"></div>

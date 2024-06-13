@@ -57,49 +57,62 @@ const fillDataIntoSelect = (
   selectedValue
 ) => {
   fieldId.innerHTML = "";
-  let optionMessage = document.createElement("option");
-  optionMessage.value = "";
-  optionMessage.selected = "selected";
-  optionMessage.disabled = "disable";
-  optionMessage.innerText = message;
-  fieldId.appendChild(optionMessage);
+
+  if (message != "") {
+    let optionMessage = document.createElement("option");
+    optionMessage.value = "";
+    optionMessage.selected = "selected";
+    optionMessage.disabled = "disable";
+    optionMessage.innerText = message;
+    fieldId.appendChild(optionMessage);
+  }
 
   for (const data of dataList) {
     let option = document.createElement("option");
     option.value = JSON.stringify(data); //convert into JSON string
 
-    let value = "";
-    if (property.includes(".")) {
-      if (property.includes(",")) {
-        value = getPropertiesConcatenated(data, property);
-      } else {
-        value = getPropertyNested(data, property);
-      }
-    } else {
-      value = data[property];
-    }
+    option.innerText = data[property];
 
-    option.innerText = value;
-    if (selectedValue == value) {
+    if (selectedValue == data[property]) {
       option.selected = "selected";
     }
+
     fieldId.appendChild(option);
   }
 };
 
-// Function to access nested properties
-const getPropertyNested = (object, property) => {
-  const properties = property.split(".");
-  return properties.reduce((obj, prop) => obj && obj[prop], object);
-};
+// define fuction for fill data into select dropdown with more than one value, ex- [barcode] product name
+const fillMoreDataIntoSelect = (
+  fieldId,
+  message,
+  dataList,
+  property,
+  property2,
+  selectedValue
+) => {
+  fieldId.innerHTML = "";
 
-// Function to access and concatenate multiple nested properties
-const getPropertiesConcatenated = (object, properties) => {
-  const propertyArray = properties.split(",");
-  const propertyValues = propertyArray.map((property) =>
-    getPropertyNested(object, property)
-  );
-  return propertyValues.join(" - "); // Adjust the separator as needed
+  if (message != "") {
+    let optionMessage = document.createElement("option");
+    optionMessage.value = "";
+    optionMessage.selected = "selected";
+    optionMessage.disabled = "disable";
+    optionMessage.innerText = message;
+    fieldId.appendChild(optionMessage);
+  }
+
+  for (const data of dataList) {
+    let option = document.createElement("option");
+    option.value = JSON.stringify(data); //convert into JSON string
+
+    option.innerText = data[property] + " - " + data[property2];
+
+    if (selectedValue == data[property]) {
+      option.selected = "selected";
+    }
+
+    fieldId.appendChild(option);
+  }
 };
 
 //set default section - add show class to selected div by using id

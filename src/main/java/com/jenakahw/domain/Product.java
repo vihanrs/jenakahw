@@ -70,4 +70,11 @@ public class Product {
 	
 	@Column(name = "deleted_user_id")
 	private Integer deletedUserId;
+	
+	// parameterised constructor
+	public Product(Integer id,String name,String barcode) {
+		this.id = id;
+		this.name = name;
+		this.barcode = barcode;
+	}
 }
