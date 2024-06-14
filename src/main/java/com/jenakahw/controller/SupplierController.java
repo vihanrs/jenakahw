@@ -35,6 +35,9 @@ public class SupplierController {
 	
 	@Autowired
 	private SupplierStatusRepository supplierStatusRepository;
+	
+	@Autowired
+	private UserController userController;
 
 	// supplier UI service [/supplier -- return supplier UI]
 	@GetMapping
@@ -62,7 +65,7 @@ public class SupplierController {
 	// post mapping for save new supplier
 	@PostMapping
 	public String saveSupplier(@RequestBody Supplier supplier) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("Supplier", "insert")) {
 			return "Access Denied !!!";
 		}
@@ -81,6 +84,8 @@ public class SupplierController {
 		}
 
 		try {
+			// set added user
+			supplier.setUserId(userController.getLoggedUser());
 			// set added date time
 			supplier.setAddedDateTime(LocalDateTime.now());
 
@@ -95,7 +100,7 @@ public class SupplierController {
 	// put mapping for update supplier
 	@PutMapping
 	public String updateSupplier(@RequestBody Supplier supplier) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("Supplier", "update")) {
 			return "Access Denied !!!";
 		}
@@ -122,6 +127,9 @@ public class SupplierController {
 		try {
 			// set last updated date time
 			supplier.setLastUpdatedDateTime(LocalDateTime.now());
+			
+			// set last updated user id
+			supplier.setUpdatedUserId(userController.getLoggedUser().getId());
 
 			supplierRepository.save(supplier);
 
@@ -146,9 +154,14 @@ public class SupplierController {
 		}
 		
 		try {
+			//set deleted data and time
+			supplier.setDeletedDateTime(LocalDateTime.now());
+
+			//set deleted user id
+			supplier.setDeletedUserId(userController.getLoggedUser().getId());
 			
 			// set supplier statuts to 'Deleted'
-			supplier.setSupplierStatusId(supplierStatusRepository.getReferenceById(2)); // set supplier status to 'Deleted'
+			supplier.setSupplierStatusId(supplierStatusRepository.getReferenceById(3)); // set supplier status to 'Deleted'
 			
 			supplierRepository.save(supplier);
 			

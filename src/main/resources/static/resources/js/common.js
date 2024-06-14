@@ -128,3 +128,29 @@ const logoutUser = () => {
     window.location.assign("/logout");
   }
 };
+
+// function for set elements border color
+const setBorderStyle = (elements, borderStyle = "1px solid #ced4da") => {
+  elements.forEach((element) => {
+    element.style.border = borderStyle;
+  });
+};
+
+// function for manage form buttons
+const manageFormButtons = (opetation, privilegeObj) => {
+  if (opetation == "insert") {
+    btnUpdate.style.display = "none";
+    if (!privilegeObj.insert) {
+      btnAdd.style.display = "none";
+    } else {
+      btnAdd.style.display = "";
+    }
+  } else if (opetation == "refill") {
+    btnAdd.style.display = "none";
+    if (!privilegeObj.update) {
+      btnUpdate.style.display = "none";
+    } else {
+      btnUpdate.style.display = "";
+    }
+  }
+};

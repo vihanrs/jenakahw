@@ -2,6 +2,7 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Supplier");
+
   //set default selected section
   if (userPrivilages.insert) {
     showDefaultSection("addNewButton", "addNewSection");
@@ -40,7 +41,7 @@ const addEventListeners = () => {
   });
 
   textCompany.addEventListener("keyup", () => {
-    textFieldValidator(textCompany, companyNamePattern, "supplier", "email");
+    textFieldValidator(textCompany, companyNamePattern, "supplier", "company");
   });
 
   textAddress.addEventListener("keyup", () => {
@@ -101,6 +102,7 @@ const refreshForm = () => {
 
   //get data list for select element
   supplierStatus = ajaxGetRequest("/supplierstatus/findall");
+
   fillDataIntoSelect(
     selectStatus,
     "Select Status",
@@ -108,10 +110,6 @@ const refreshForm = () => {
     "name",
     "Active"
   );
-
-  //bind default selected status in to supplier object and set valid color
-  supplier.supplierStatus = JSON.parse(selectStatus.value);
-  selectStatus.style.border = "2px solid #00FF7F";
 
   //get data list for select element (left side list)
   availableProductList = ajaxGetRequest("/product/availablelist");
@@ -132,63 +130,105 @@ const refreshForm = () => {
     "name"
   );
 
+  //bind default selected status in to supplier object and set valid color
+  supplier.supplierStatusId = JSON.parse(selectStatus.value);
+  selectStatus.style.border = "2px solid #00FF7F";
+
   //empty all elements
   textFirstName.value = "";
   textLastName.value = "";
   textContact.value = "";
   textEmail.value = "";
   textCompany.value = "";
+  textAddress.value = "";
 
-  //set default colors
-  textFirstName.style.border = "1px solid #ced4da";
-  textLastName.style.border = "1px solid #ced4da";
-  textContact.style.border = "1px solid #ced4da";
-  textEmail.style.border = "1px solid #ced4da";
-  textCompany.style.border = "1px solid #ced4da";
+  //set default border color
+  let elements = [
+    textFirstName,
+    textLastName,
+    textContact,
+    textEmail,
+    textCompany,
+    textAddress,
+  ];
+
+  setBorderStyle(elements);
+
+  //manage buttons
+  manageFormButtons("insert", userPrivilages);
 };
 
 //function for refresh table records
 const refreshTable = () => {
-  /* EXAMPLES
-    //array for store data list
-    defaults = ajaxGetRequest("/default/findall");
-  
-    //object count = table column count
-    //String - number/string/date
-    //function - object/array/boolean
-    const displayProperties = [
-      { property: "fullName", datatype: "String" },
-      { property: "email", datatype: "String" },
-      { property: getStatus, datatype: "function" },
-    ];
-  
-     //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys)
-    fillDataIntoTable(
-      tableId,
-      defaults,
-      displayProperties,
-      viewRecord,
-      refillRecord,
-      deleteRecord,
-      true
-    );
-  
-    $("#tableId").dataTable();
-    */
+  //array for store data list
+  suppliers = ajaxGetRequest("/supplier/findall");
+
+  //object count = table column count
+  //String - number/string/date
+  //function - object/array/boolean
+  const displayProperties = [
+    { property: getSupplierFullName, datatype: "function" },
+    { property: "company", datatype: "String" },
+    { property: "contact", datatype: "String" },
+    { property: "email", datatype: "String" },
+    { property: getSupplierStatus, datatype: "function" },
+  ];
+
+  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys,user privileges)
+  fillDataIntoTable(
+    supplierTable,
+    suppliers,
+    displayProperties,
+    viewRecord,
+    refillRecord,
+    deleteRecord,
+    true,
+    userPrivilages
+  );
+
+  //hide delete button when status is 'resigned'
+  suppliers.forEach((supplier, index) => {
+    if (userPrivilages.delete && supplier.supplierStatusId.name == "Deleted") {
+      //catch the button
+      let targetElement =
+        supplierTable.children[1].children[index].children[6].children[
+          userPrivilages.update && userPrivilages.insert ? 2 : 1
+        ];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.visibility = "hidden";
+    }
+  });
+
+  $("#supplierTable").dataTable();
 };
 
 // ********* TABLE OPERATIONS *********
 
 //function for set stats column
-const getStatus = (rowOb) => {
-  /* EXAMPLES
-    if (rowOb.statusId.name == "Working") {
-      return '<p class = "working-status">' + rowOb.statusId.name + "</p>";
-    } else if (rowOb.employeeStatusId.name == "Resign") {
-      return '<p class = "resign-status">' + rowOb.statusId.name + "</p>";
-    } else {
-      return '<p class = "delete-status">' + rowOb.statusId.name + "</p>";
-    }*/
+const getSupplierStatus = (rowOb) => {
+  if (rowOb.supplierStatusId.name == "Active") {
+    return (
+      '<p class = "status status-active">' +
+      rowOb.supplierStatusId.name +
+      "</p>"
+    );
+  } else if (rowOb.supplierStatusId.name == "Inactive") {
+    return (
+      '<p class = "status status-warning">' +
+      rowOb.supplierStatusId.name +
+      "</p>"
+    );
+  } else {
+    return (
+      '<p class = "status status-error">' + rowOb.supplierStatusId.name + "</p>"
+    );
+  }
+};
+
+// function for get supplier fullname
+const getSupplierFullName = (rowOb) => {
+  return rowOb.firstName + " " + (rowOb.lastName != null ? rowOb.lastName : "");
 };
 
 //function for view record
@@ -206,87 +246,116 @@ const viewRecord = (ob, rowId) => {
 
 //function for refill record
 const refillRecord = (rowObject, rowId) => {
-  /* EXAMPLES
-    $("#modalAddFormId").modal("show");
-  
-    // default = rowObject;
-    defaultObj = JSON.parse(JSON.stringify(rowObject));
-    olddefaultObj = JSON.parse(JSON.stringify(rowObject));
-  
-    //set normal fields
-    txtFullName.value = employee.fullName;
-    cmbCivilstatus.value = employee.civilStatus;
-  
-    //set conditional value fields
-    if (defaultObj.gender == "male") {
-      radioGenderMale.checked = true;
-    } else {
-      radioGenderFemale.checked = true;
-    }
-  
-    //set optional fields
-    if (defaultObj.landNo != null) txtLandNo.value = defaultObj.landNo;
-    else txtLandNo.value = "";
-    if (defaultObj.note != null) txtNote.value = defaultObj.note;
-    else txtNote.value = "";
-  
-    //if we have optional join column then need to check null
-    // cmbDesignation
-    fillDataIntoSelect(
-      cmbDesignation,
-      "Select Designation",
-      designations,
-      "name",
-      employee.designationId.name
-    );
-  
-    // cmbEmployeeStatus
-    fillDataIntoSelect(
-      cmbEmployeeStatus,
-      "Select status",
-      employeestatuses,
-      "name",
-      employee.employeeStatusId.name
-    );
-    */
+  $("#addNewButton").click();
+
+  supplier = JSON.parse(JSON.stringify(rowObject));
+  oldSupplier = JSON.parse(JSON.stringify(rowObject));
+
+  //set data to fields
+  textFirstName.value = supplier.firstName;
+  textContact.value = supplier.contact;
+  textEmail.value = supplier.email;
+  textCompany.value = supplier.company;
+  textAddress.value = supplier.address;
+
+  //set optional fields
+  if (supplier.lastName != null) textLastName.value = supplier.lastName;
+  else textLastName.value = "";
+
+  if (supplier.email != null) textEmail.value = supplier.email;
+  else textEmail.value = "";
+
+  if (supplier.company != null) textCompany.value = supplier.company;
+  else textCompany.value = "";
+
+  if (supplier.address != null) textAddress.value = supplier.address;
+  else textAddress.value = "";
+
+  // set status
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    supplierStatus,
+    "name",
+    supplier.supplierStatusId.name
+  );
+
+  // set supplier product list
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+
+  availableProductList = ajaxGetRequest(
+    "/product/availablelistWithoutSupplier/" + supplier.id
+  );
+  fillMoreDataIntoSelect(
+    selectAllProducts,
+    "",
+    availableProductList,
+    "barcode",
+    "name"
+  );
+
+  //change status border color to default
+  setBorderStyle([selectStatus]);
+
+  //manage buttons
+  manageFormButtons("refill", userPrivilages);
 };
 
 //function for delete record
 const deleteRecord = (rowObject, rowId) => {
-  /* EXAMPLES
-    //get user confirmation
-    const userConfirm = confirm(
-      "Are you sure to delete following record \n" + rowObject.fullName
-    );
-  
-    if (userConfirm) {
-      //response from backend ...
-      let serverResponse = ajaxRequestBody("/default", "DELETE", rowObject); // url,method,object
-      //check back end response
-      if (serverResponse == "OK") {
-        alert("Delete sucessfully..! \n" + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        alert("Delete not sucessfully..! have some errors \n" + serverResponse);
-      }
+  //get user confirmation
+  const userConfirm = confirm(
+    "Are you sure to delete following record? \n" +
+      rowObject.firstName +
+      " " +
+      rowObject.lastName
+  );
+
+  if (userConfirm) {
+    //response from backend ...
+    let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
+    //check back end response
+    if (serverResponse == "OK") {
+      alert("Delete sucessfully..! \n" + serverResponse);
+      //need to refresh table and form
+      refreshAll();
+    } else {
+      alert("Delete not sucessfully..! have some errors \n" + serverResponse);
     }
-    */
+  }
 };
 
 // ********* FORM OPERATIONS *********
 
 //function for check errors
 const checkError = () => {
-  //need to check all required prperty filds
+  //need to check all required property fields
   let error = "";
 
-  /* EXAMPLES
-    if (employee.fullName == null) {
-      error = error + "Please Enter Valid Full Name...!\n";
-      txtFullName.style.border = "2px solid red";
-    }
-    */
+  if (supplier.firstName == null) {
+    error += "Please Enter Valid First Name...!\n";
+    textFirstName.style.border = "2px solid red";
+  }
+
+  if (supplier.contact == null) {
+    error += "Please Enter Valid Contact...!\n";
+    textContact.style.border = "2px solid red";
+  }
+
+  if (supplier.supplierStatusId == null) {
+    error += "Please Select Supplier Status...!\n";
+    selectStatus.style.border = "1px solid red";
+  }
+
+  if (supplier.products == "") {
+    error += "Please Select Supplier Products...!\n";
+  }
 
   return error;
 };
@@ -295,89 +364,137 @@ const checkError = () => {
 const checkUpdate = () => {
   let updates = "";
 
-  /* EXAMPLES
-    if (oldemployee.mobile != employee.mobile) {
-      updates =
-        updates +
-        "NIC has changed " +
-        oldemployee.mobile +
-        " into " +
-        employee.mobile +
-        " \n";
-    }
-    */
+  if (oldSupplier.firstName != supplier.firstName) {
+    updates +=
+      "First Name has changed " +
+      oldSupplier.firstName +
+      " into " +
+      supplier.firstName +
+      " \n";
+  }
 
+  if (oldSupplier.lastName != supplier.lastName) {
+    updates +=
+      "Last Name has changed " +
+      (oldSupplier.lastName ?? "-") +
+      " into " +
+      (supplier.lastName ?? "-") +
+      " \n";
+  }
+
+  if (oldSupplier.contact != supplier.contact) {
+    updates +=
+      "Contact has changed " +
+      oldSupplier.contact +
+      " into " +
+      supplier.contact +
+      " \n";
+  }
+
+  if (oldSupplier.email != supplier.email) {
+    updates +=
+      "Email has changed " +
+      (oldSupplier.email ?? "-") +
+      " into " +
+      (supplier.email ?? "-") +
+      " \n";
+  }
+
+  if (oldSupplier.company != supplier.company) {
+    updates +=
+      "Company has changed " +
+      (oldSupplier.company ?? "-") +
+      " into " +
+      (supplier.company ?? "-") +
+      " \n";
+  }
+
+  if (oldSupplier.address != supplier.address) {
+    updates +=
+      "Address has changed " +
+      (oldSupplier.address ?? "-") +
+      " into " +
+      (supplier.address ?? "-") +
+      " \n";
+  }
+
+  if (oldSupplier.supplierStatusId.id != supplier.supplierStatusId.id) {
+    updates +=
+      "Company has changed " +
+      (oldSupplier.supplierStatusId.name ?? "-") +
+      " into " +
+      (supplier.supplierStatusId.name ?? "-") +
+      " \n";
+  }
   return updates;
 };
 
 //function for add record
 const addRecord = () => {
-  /* EXAMPLES
-    //check form errors -
-    let formErrors = checkError();
-    if (formErrors == "") {
-      //get user confirmation
-      let userConfirm = window.confirm(
-        "Are you sure to add following record..?\n" +
-          "\nFull Name : " +
-          employee.fullName +
-          "\nDesgnation : " +
-          employee.designationId.name
-      );
-  
-      if (userConfirm) {
-        //pass data into back end
-        let serverResponse = ajaxRequestBody("/default", "POST", defaultObj); // url,method,object
-  
-        //check back end response
-        if (new RegExp("^[0-9]{8}$").test(serverResponse)) {
-          alert("Save sucessfully..! " + serverResponse);
-          //need to refresh table and form
-          refreshAll();
-        } else {
-          alert("Save not sucessfully..! have some errors \n" + serverResponse);
-        }
+  //check form errors -
+  let formErrors = checkError();
+  if (formErrors == "") {
+    //get user confirmation
+    let userConfirm = window.confirm(
+      "Are you sure to add following record..?\n" +
+        "\nSupplier Name : " +
+        supplier.firstName +
+        " " +
+        (supplier.lastName != null ? supplier.lastName : " ") +
+        "\nContact : " +
+        supplier.contact
+    );
+
+    if (userConfirm) {
+      //pass data into back end
+      let serverResponse = ajaxRequestBody("/supplier", "POST", supplier); // url,method,object
+
+      //check back end response
+      if (serverResponse == "OK") {
+        alert("Save sucessfully..! " + serverResponse);
+        //need to refresh table and form
+        refreshAll();
+      } else {
+        alert("Save not sucessfully..! have some errors \n" + serverResponse);
       }
-    } else {
-      alert("Error\n" + formErrors);
     }
-    */
+  } else {
+    alert("Error\n" + formErrors);
+  }
 };
 
 //function for update record
 const updateRecord = () => {
-  /* EXAMPLES
-    let errors = checkError();
-    if (errors == "") {
-      let updates = checkUpdate();
-      if (updates != "") {
-        let userConfirm = confirm(
-          "Are you sure you want to update following changes...?\n" + updates
+  let errors = checkError();
+  if (errors == "") {
+    let updates = checkUpdate();
+    if (updates != "") {
+      let userConfirm = confirm(
+        "Are you sure you want to update following changes...?\n" + updates
+      );
+      if (userConfirm) {
+        let updateServiceResponse = ajaxRequestBody(
+          "/supplier",
+          "PUT",
+          supplier
         );
-        if (userConfirm) {
-          let updateServiceResponse = ajaxRequestBody(
-            "/default",
-            "PUT",
-            defaultObj
+        if (updateServiceResponse == "OK") {
+          alert("Update sucessfully..! ");
+          //need to refresh table and form
+          refreshAll();
+        } else {
+          alert(
+            "Update not sucessfully..! have some errors \n" +
+              updateServiceResponse
           );
-          if (updateServiceResponse == "OK") {
-            alert("Update sucessfully..! ");
-            //need to refresh table and form
-            refreshAll();
-          } else {
-            alert(
-              "Update not sucessfully..! have some errors \n" +
-                updateSeriveResponse
-            );
-          }
         }
-      } else {
-        alert("Nothing to Update...!");
       }
     } else {
-      alert("Cannot update!!!\n form has following errors \n" + errors);
+      alert("Nothing to Update...!");
     }
-    */
+  } else {
+    alert("Cannot update!!!\n form has following errors \n" + errors);
+  }
 };
 
 // ********* PRINT OPERATIONS *********
@@ -419,78 +536,90 @@ const printFullTable = () => {
 
 // ********* OTHER OPERATIONS *********
 
-//function for add selected product
+// function for add selected product
 const addOneProduct = () => {
   // get selected product from list
-  let selectedProduct = JSON.parse(selectAllProducts.value);
+  if (selectAllProducts.value != "") {
+    let selectedProduct = JSON.parse(selectAllProducts.value);
 
-  //push selected product into new array - supplier.products
-  supplier.products.push(selectedProduct);
+    //push selected product into new array - supplier.products
+    supplier.products.push(selectedProduct);
 
-  //set that array to selected selectedProducts dropdown
-  fillMoreDataIntoSelect(
-    selectedProducts,
-    "",
-    supplier.products,
-    "barcode",
-    "name"
-  );
+    //set that array to selected selectedProducts dropdown
+    fillMoreDataIntoSelect(
+      selectedProducts,
+      "",
+      supplier.products,
+      "barcode",
+      "name"
+    );
 
-  // get index of selected product
-  let extProductIndex = availableProductList
-    .map((product) => product.name)
-    .indexOf(selectedProduct.name);
+    // get index of selected product
+    let extProductIndex = getProductIndexByName(
+      availableProductList,
+      selectedProduct.name
+    );
 
-  // remove selected product from all available product list
-  if (extProductIndex != -1) {
-    availableProductList.splice(extProductIndex, 1);
+    // remove selected product from all available product list
+    if (extProductIndex != -1) {
+      availableProductList.splice(extProductIndex, 1);
+    }
+
+    // refill available product list
+    fillMoreDataIntoSelect(
+      selectAllProducts,
+      "",
+      availableProductList,
+      "barcode",
+      "name"
+    );
+  } else {
+    alert("Please select value before add...!");
   }
-
-  // refill available product list
-  fillMoreDataIntoSelect(
-    selectAllProducts,
-    "",
-    availableProductList,
-    "barcode",
-    "name"
-  );
 };
 
+// function for remove selected product
 const removeOneProduct = () => {
   // get selected product from list
-  let selectedProduct = JSON.parse(selectedProducts.value);
+  if (selectedProducts.value != "") {
+    let selectedProduct = JSON.parse(selectedProducts.value);
 
-  //push selected product back into available product list
-  availableProductList.push(selectedProduct);
+    //push selected product back into available product list
+    availableProductList.push(selectedProduct);
 
-  // refill available product list
-  fillMoreDataIntoSelect(
-    selectAllProducts,
-    "",
-    availableProductList,
-    "barcode",
-    "name"
-  );
+    // refill available product list
+    fillMoreDataIntoSelect(
+      selectAllProducts,
+      "",
+      availableProductList,
+      "barcode",
+      "name"
+    );
 
-  // get index of selected product
-  let extProductIndex = supplier.products
-    .map((product) => product.name)
-    .indexOf(selectedProduct.name);
+    // get index of selected product
+    let extProductIndex = getProductIndexByName(
+      supplier.products,
+      selectedProduct.name
+    );
 
-  // remove selected product from all available product list
-  if (extProductIndex != -1) {
-    supplier.products.splice(extProductIndex, 1);
+    // remove selected product from all available product list
+    if (extProductIndex != -1) {
+      supplier.products.splice(extProductIndex, 1);
+    }
+    //set that array to selected selectedProducts dropdown
+    fillMoreDataIntoSelect(
+      selectedProducts,
+      "",
+      supplier.products,
+      "barcode",
+      "name"
+    );
+  } else {
+    alert("Please select value before remove...!");
   }
-  //set that array to selected selectedProducts dropdown
-  fillMoreDataIntoSelect(
-    selectedProducts,
-    "",
-    supplier.products,
-    "barcode",
-    "name"
-  );
 };
 
+// function for add all products
 const addAllProducts = () => {
   // get all product to selectd product list
   availableProductList.forEach((product) => {
@@ -517,6 +646,7 @@ const addAllProducts = () => {
   );
 };
 
+// fucntion for remove all products
 const removeAllProducts = () => {
   // get all product to available product list
   supplier.products.forEach((product) => {
@@ -541,4 +671,9 @@ const removeAllProducts = () => {
     "barcode",
     "name"
   );
+};
+
+// function for get index of product by name
+const getProductIndexByName = (products, productName) => {
+  return products.map((product) => product.name).indexOf(productName);
 };

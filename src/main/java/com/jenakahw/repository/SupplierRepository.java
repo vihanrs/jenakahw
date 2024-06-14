@@ -13,7 +13,7 @@ public interface SupplierRepository extends JpaRepository<Supplier, Integer>{
 	
 	// query for get all active suppliers
 	@Query(value = "Select s from Supplier s where s.supplierStatusId = (Select supstatus from SupplierStatus supstatus where name='Active')")
-	public List<Supplier> findAll();
+	public List<Supplier> findActiveSuppliers();
 
 	// query for get supplier by contact
 	@Query(value = "Select s from Supplier s where s.contact = ?1")

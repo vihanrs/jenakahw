@@ -138,7 +138,7 @@ const viewRecord = (ob, rowId) => {
 //function for refill record
 const refillRecord = (rowObject, rowId) => {
   /* EXAMPLES
-  $("#modalAddFormId").modal("show");
+  $("#addNewButton").click();
 
   // default = rowObject;
   defaultObj = JSON.parse(JSON.stringify(rowObject));

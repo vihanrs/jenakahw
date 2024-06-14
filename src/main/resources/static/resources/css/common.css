@@ -27,8 +27,8 @@
 }
 
 .btn-disable {
-  border-color: gray;
-  color: silver;
+  border-color: rgba(128, 128, 128, 0.247);
+  color: rgba(192, 192, 192, 0.212);
 }
 
 /* css for heading  */
@@ -69,72 +69,35 @@
   }
 }
 
-/* zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz */
-/* .btn-clear {
-  background-color: #fbb6b5;
-  border: 1px solid #ff2c28;
-}
-
-.btn-clear:hover {
-  background-color: #ff0400;
-}
-
-.btn-update {
-  background-color: #ffff9d;
-  border: 2px solid yellow;
-}
-
-.btn-update:hover {
-  background-color: yellow;
-}
-
-.btn-add {
-  background-color: #97ffb3;
-  border: 2px solid #36ff51;
-}
-
-.btn-add:hover {
-  background-color: #36ff51;
-}
-
-.btn-disable {
-  border-color: gray;
-  color: silver;
-}
-
-.heading-area {
+/* css classes for common status */
+/* Common styles for all status */
+.status {
   text-align: center;
-}
-.heading-area h2 {
   font-weight: bold;
-  color: #535353;
+  border-radius: 10px;
 }
 
-.accordion-button:not(.collapsed) {
-  background-color: #f2c426;
-  color: #fffcf4;
+/* Specific styles for different statuses */
+.status-active {
+  background-color: rgb(49, 255, 49);
 }
 
-.accordion-button:focus {
-  box-shadow: none;
+.status-warning {
+  background-color: rgb(255, 231, 49);
 }
 
-.card {
-  box-shadow: 0 0 1px #888888, 0 7px 5px rgba(255, 225, 33, 0.2);
+.status-error {
+  background-color: rgb(255, 20, 0);
 }
 
-.table-dark {
-  --bs-table-bg: #f2c426;
+/* css for seperator line */
+.seperator {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    rgba(22, 111, 255, 0),
+    rgba(87, 150, 252, 1),
+    rgba(87, 150, 252, 0)
+  );
+  margin: 20px 0;
 }
-
-.card {
-  padding-left: 10rem;
-  padding-right: 10rem;
-}
-
-@media (max-width: 992px) {
-  .card {
-    padding-left: 1.25rem;
-    padding-right: 1.25rem;
-  }
-} */

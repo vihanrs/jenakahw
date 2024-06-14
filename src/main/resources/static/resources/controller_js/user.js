@@ -2,9 +2,6 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/User");
-  // userPrivilages.insert = false;
-  // userPrivilages.update = false;
-  // userPrivilages.delete = true;
 
   //refresh all
   refreshAll();
@@ -132,7 +129,13 @@ const refreshForm = () => {
 
   //get data list from select element
   userstatus = ajaxGetRequest("/userstatus/findall");
-  fillDataIntoSelect(selectStatus, "Select Status", userstatus, "name");
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    userstatus,
+    "name",
+    "Working"
+  );
 
   roles = ajaxGetRequest("/role/findall");
   createViewRolesUI();
@@ -153,24 +156,26 @@ const refreshForm = () => {
   textPassword.disabled = false;
   textRPassword.disabled = false;
 
-  //set default colors
-  textFirstName.style.border = "1px solid #ced4da";
-  textLastName.style.border = "1px solid #ced4da";
-  textContact.style.border = "1px solid #ced4da";
-  textNIC.style.border = "1px solid #ced4da";
-  textEmail.style.border = "1px solid #ced4da";
-  textUsername.style.border = "1px solid #ced4da";
-  textPassword.style.border = "1px solid #ced4da";
-  textRPassword.style.border = "1px solid #ced4da";
-  selectStatus.style.border = "1px solid #ced4da";
+  //bind default selected status in to supplier object and set valid color
+  user.userStatusId = JSON.parse(selectStatus.value);
+  selectStatus.style.border = "2px solid #00FF7F";
 
-  //manage buttons
-  btnUpdate.style.display = "none";
-  if (!userPrivilages.insert) {
-    btnAdd.style.display = "none";
-  } else {
-    btnAdd.style.display = "";
-  }
+  //set default border color
+  let elements = [
+    textFirstName,
+    textLastName,
+    textContact,
+    textNIC,
+    textEmail,
+    textUsername,
+    textPassword,
+    textRPassword,
+  ];
+
+  setBorderStyle(elements);
+
+  //manage form buttons
+  manageFormButtons("insert", userPrivilages);
 };
 
 //function for refresh table records
@@ -190,7 +195,7 @@ const refreshTable = () => {
     { property: getStatus, datatype: "function" },
   ];
 
-  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys)
+  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
     tblUser,
     users,
@@ -202,7 +207,7 @@ const refreshTable = () => {
     userPrivilages
   );
 
-  //disable delete button when status is 'resigned'
+  //hide delete button when status is 'resigned'
   users.forEach((user, index) => {
     if (userPrivilages.delete && user.userStatusId.name == "Resigned") {
       //catch the button
@@ -223,31 +228,21 @@ const refreshTable = () => {
 
 //function for set status column
 const getStatus = (rowObject) => {
-  let styles =
-    "padding:1px;text-align: center;font-weight: bold;border-radius: 10px;";
   if (rowObject.userStatusId.name == "Working") {
     return (
-      '<p style="' +
-      styles +
-      'background-color: rgb(49, 255, 49);">' +
+      '<p class = "status status-active">' +
       rowObject.userStatusId.name +
       "</p>"
     );
   } else if (rowObject.userStatusId.name == "Inative") {
     return (
-      '<p style = "' +
-      styles +
-      'background-color:  rgb(255, 231, 49);">' +
+      '<p class = "status status-warning">' +
       rowObject.userStatusId.name +
       "</p>"
     );
   } else {
     return (
-      '<p style = "' +
-      styles +
-      'background-color: rgb(255, 20, 00);">' +
-      rowObject.userStatusId.name +
-      "</p>"
+      '<p class = "status status-error">' + rowObject.userStatusId.name + "</p>"
     );
   }
 };
@@ -322,17 +317,14 @@ const refillRecord = (rowObject, rowId) => {
     user.userStatusId.name
   );
 
+  setBorderStyle([selectStatus]);
+
   //define roles
   createViewRolesUI();
   setSelectedRoles();
 
   //manage buttons
-  btnAdd.style.display = "none";
-  if (!userPrivilages.update) {
-    btnUpdate.style.display = "none";
-  } else {
-    btnUpdate.style.display = "";
-  }
+  manageFormButtons("refill", userPrivilages);
 };
 
 //function for delete record

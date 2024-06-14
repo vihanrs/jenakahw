@@ -193,7 +193,7 @@ const refreshTable = () => {
     userPrivilages
   );
 
-  //disable delete button when all privileges not-granted
+  //hide delete button when all privileges not-granted
   privileges.forEach((privilege, index) => {
     if (
       userPrivilages.delete &&
