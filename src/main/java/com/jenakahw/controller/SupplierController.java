@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,7 +58,7 @@ public class SupplierController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Supplier> findAll() {
 		if (privilegeController.hasPrivilege("Supplier", "select")) {
-			return supplierRepository.findAll();
+			return supplierRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
 		}

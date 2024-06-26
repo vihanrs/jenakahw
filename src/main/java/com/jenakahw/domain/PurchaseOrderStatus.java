@@ -12,17 +12,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity // applied as an entity class
-@Table(name = "subcategory") 
-@Data 
-@NoArgsConstructor 
-@AllArgsConstructor 
-public class SubCategory {
+@Table(name = "purchase_order_status")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class PurchaseOrderStatus {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", unique = true)
-    private Integer id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", unique = true)
+	private Integer id;
 
-    @Column(name = "name")
-    @NotNull
-    private String name;
+	@Column(name = "name")
+	@NotNull
+	private String name;
 }

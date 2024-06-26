@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,7 +59,7 @@ public class UserController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<User> findAll() {
 		if (privilegeController.hasPrivilege("User", "select")) {
-			return userRepository.findAll();
+			return userRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
 		}

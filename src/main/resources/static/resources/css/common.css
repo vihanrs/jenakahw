@@ -31,6 +31,16 @@
   color: rgba(192, 192, 192, 0.212);
 }
 
+.btn-plus {
+  background-color: #2ed5ff;
+  border: 2px solid #0393cc;
+}
+
+.btn-plus:hover {
+  background-color: #0393cc;
+  color: #fff;
+}
+
 /* css for heading  */
 .heading-area {
   text-align: center;

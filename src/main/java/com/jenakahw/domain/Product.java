@@ -36,6 +36,9 @@ public class Product {
 	@Column(name = "description")
 	private String description;
 	
+	@Column(name="location")
+	private String location;
+	
 	@Column(name = "rol")
 	private Integer rol;
 
@@ -43,13 +46,17 @@ public class Product {
 	@JoinColumn(name = "brand_id", referencedColumnName = "id") // join column condition
 	private Brand brandId;
 	
-	@ManyToOne // relationship format
-	@JoinColumn(name = "product_status_id", referencedColumnName = "id") // join column condition
-	private ProductStatus productStatusId;
+	@ManyToOne
+	@JoinColumn(name = "category_id", referencedColumnName = "id")
+	private Category categoryId;
 	
 	@ManyToOne // relationship format
 	@JoinColumn(name = "subcategory_id", referencedColumnName = "id") // join column condition
 	private SubCategory subCategoryId;
+	
+	@ManyToOne // relationship format
+	@JoinColumn(name = "product_status_id", referencedColumnName = "id") // join column condition
+	private ProductStatus productStatusId;
 	
 	@Column(name = "added_datetime")
 	@NotNull

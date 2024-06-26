@@ -105,7 +105,8 @@ const fillMoreDataIntoSelect = (
     let option = document.createElement("option");
     option.value = JSON.stringify(data); //convert into JSON string
 
-    option.innerText = data[property] + " - " + data[property2];
+    option.innerText =
+      data[property] + (data[property2] != null ? " - " + data[property2] : "");
 
     if (selectedValue == data[property]) {
       option.selected = "selected";
