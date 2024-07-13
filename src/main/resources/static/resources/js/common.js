@@ -116,6 +116,19 @@ const fillMoreDataIntoSelect = (
   }
 };
 
+// define fuction for fill data into type and select dropdown with more than one value, ex- [barcode] product name
+const fillMoreDataIntoDataList = (fieldId, dataList, property, property2) => {
+  fieldId.innerHTML = "";
+
+  for (const data of dataList) {
+    let option = document.createElement("option");
+    option.value =
+      data[property] + (data[property2] != null ? " - " + data[property2] : "");
+
+    fieldId.appendChild(option);
+  }
+};
+
 //set default section - add show class to selected div by using id
 function showDefaultSection(buttonId, sectionId) {
   document.getElementById(buttonId).classList.remove("collapsed");

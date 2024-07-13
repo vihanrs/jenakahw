@@ -111,6 +111,10 @@ const refreshForm = () => {
     "Active"
   );
 
+  //bind default selected status in to supplier object and set valid color
+  supplier.supplierStatusId = JSON.parse(selectStatus.value);
+  selectStatus.style.border = "2px solid #00FF7F";
+
   //get data list for select element (left side list)
   availableProductList = ajaxGetRequest("/product/availablelist");
   fillMoreDataIntoSelect(
@@ -129,10 +133,6 @@ const refreshForm = () => {
     "barcode",
     "name"
   );
-
-  //bind default selected status in to supplier object and set valid color
-  supplier.supplierStatusId = JSON.parse(selectStatus.value);
-  selectStatus.style.border = "2px solid #00FF7F";
 
   //empty all elements
   textFirstName.value = "";

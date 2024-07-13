@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -46,7 +47,6 @@ public class PurchaseOrder {
 	private BigDecimal totalAmount;
 	
 	@Column(name = "note")
-	@NotNull
 	private String note;
 	
 	@ManyToOne // relationship format
@@ -76,6 +76,6 @@ public class PurchaseOrder {
 	@Column(name = "deleted_user_id")
 	private Integer deletedUserId;
 	
-	@OneToMany(mappedBy = "purchaseOrderId") //map with purchaseOrderId foreign key property in OPHasProduct object
-	private List<POHasProduct> poHasProductList;
+	@OneToMany(mappedBy = "purchaseOrderId", cascade = CascadeType.ALL, orphanRemoval = true) //map with purchaseOrderId foreign key property in OPHasProduct object
+	private List<POHasProduct> poHasProducts;
 }

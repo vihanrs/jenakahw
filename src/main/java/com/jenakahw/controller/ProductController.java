@@ -22,7 +22,6 @@ import com.jenakahw.domain.User;
 import com.jenakahw.domain.Product;
 import com.jenakahw.repository.ProductRepository;
 
-
 @RestController
 // add class level mapping /product
 @RequestMapping(value = "/product")
@@ -64,28 +63,39 @@ public class ProductController {
 		}
 
 	}
-	
+
 	// get mapping for get available product list
 	@GetMapping(value = "/availablelist", produces = "application/json")
-	public List<Product> getAvilableProducts(){
-		//check privileges
+	public List<Product> getAvilableProducts() {
+		// check privileges
 		if (privilegeController.hasPrivilege("Product", "select")) {
 			return productRepository.getAvailableProducts();
 		} else {
 			return null;
 		}
 	}
-	
+
 	// get mapping for get available product list without selected supplier
-		@GetMapping(value = "/availablelistWithoutSupplier/{supplierId}", produces = "application/json")
-		public List<Product> getAvilableProductsWithoutSupplier(@PathVariable("supplierId") Integer supplierId){
-			//check privileges
-			if (privilegeController.hasPrivilege("Product", "select")) {
-				return productRepository.getAvailableProductsWithoutSupplier(supplierId);
-			} else {
-				return null;
-			}
+	@GetMapping(value = "/availablelistWithoutSupplier/{supplierId}", produces = "application/json")
+	public List<Product> getAvilableProductsWithoutSupplier(@PathVariable("supplierId") Integer supplierId) {
+		// check privileges
+		if (privilegeController.hasPrivilege("Product", "select")) {
+			return productRepository.getAvailableProductsWithoutSupplier(supplierId);
+		} else {
+			return null;
 		}
+	}
+
+	// get mapping for get available product list with selected supplier
+	@GetMapping(value = "/availablelistWithSupplier/{supplierId}", produces = "application/json")
+	public List<Product> getAvilableProductsWithSupplier(@PathVariable("supplierId") Integer supplierId) {
+		// check privileges
+		if (privilegeController.hasPrivilege("Product", "select")) {
+			return productRepository.getAvailableProductsWithSupplier(supplierId);
+		} else {
+			return null;
+		}
+	}
 
 	// post mapping for save new product
 	@PostMapping
@@ -151,7 +161,7 @@ public class ProductController {
 		}
 
 		// check given product exist or not
-		
+
 		try {
 			return "OK";
 		} catch (Exception e) {

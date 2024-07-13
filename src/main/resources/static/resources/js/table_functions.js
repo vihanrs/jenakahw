@@ -27,6 +27,14 @@ const fillDataIntoTable = (
         } else {
           td.innerText = "-";
         }
+      } else if (itemOb.datatype == "currency") {
+        if (dataArray[ind][itemOb.property] == null) {
+          td.innerText = "-";
+        } else {
+          td.innerHTML =
+            "<b>Rs. </b>" +
+            parseFloat(dataArray[ind][itemOb.property]).toFixed(2);
+        }
       } else if (itemOb.datatype == "function") {
         td.innerHTML = itemOb.property(dataArray[ind]);
       }
@@ -119,4 +127,86 @@ const addTableButtonsHover = () => {
       });
     });
   }
+};
+
+// funtion for fill data into inner-table
+const fillDataIntoInnerTable = (
+  tableID,
+  dataArray,
+  displayProperty,
+  editButtonFunction,
+  deleteButtonFunction,
+  buttonVisibility = true
+) => {
+  //generate table body
+  const tableBody = tableID.children[1];
+  tableBody.innerHTML = "";
+  dataArray.forEach((item, ind) => {
+    const tr = document.createElement("tr");
+
+    const tdIndex = document.createElement("td");
+    tdIndex.innerText = parseInt(ind) + 1;
+    tr.appendChild(tdIndex);
+
+    for (const itemOb of displayProperty) {
+      const td = document.createElement("td");
+      if (itemOb.datatype == "String") {
+        if (dataArray[ind][itemOb.property] != null) {
+          td.innerText = dataArray[ind][itemOb.property];
+        } else {
+          td.innerText = "-";
+        }
+      } else if (itemOb.datatype == "currency") {
+        if (dataArray[ind][itemOb.property] == null) {
+          td.innerText = "-";
+        } else {
+          td.innerHTML =
+            "<b>Rs. </b>" +
+            parseFloat(dataArray[ind][itemOb.property]).toFixed(2);
+        }
+      } else if (itemOb.datatype == "function") {
+        td.innerHTML = itemOb.property(dataArray[ind]);
+      }
+      tr.appendChild(td);
+    }
+
+    const tdButton = document.createElement("td");
+    tdButton.className = "table-buttons";
+    tdButton.style.textAlign = "right";
+
+    const buttonEdit = document.createElement("button");
+    buttonEdit.id = "btnEdit";
+    buttonEdit.type = "button";
+    buttonEdit.className = "btn btn-outline-warning btn-disable btn-sm me-2";
+    buttonEdit.innerHTML = '<i class="fa-solid fa-edit"></i>';
+
+    buttonEdit.onclick = () => {
+      console.log("Edit Event" + item.id);
+      editButtonFunction(item, ind);
+    };
+
+    const buttonDelete = document.createElement("button");
+    buttonDelete.type = "button";
+    buttonDelete.id = "btnDelete";
+    buttonDelete.className = "btn btn-outline-danger btn-disable btn-sm";
+    buttonDelete.innerHTML = '<i class="fa-solid fa-trash"></i>';
+
+    buttonDelete.onclick = () => {
+      console.log("Delete Event" + item.id);
+      deleteButtonFunction(item, ind);
+    };
+
+    if (buttonVisibility) {
+      tdButton.appendChild(buttonEdit);
+
+      tdButton.appendChild(buttonDelete);
+
+      tr.appendChild(tdButton);
+    }
+
+    tableBody.appendChild(tr);
+  });
+
+  //set table button hover effect
+  addTableButtonsHover();
 };

@@ -43,6 +43,23 @@ const selectDFieldValidator = (fieldId, object, property) => {
   }
 };
 
+//dynamic data list validation function
+const dataListValidator = (fieldId, object, property) => {
+  const fieldValue = fieldId.value;
+
+  if (fieldValue !== "") {
+    fieldId.style.border = "2px solid #00FF7F";
+    window[object][property] = JSON.parse(fieldValue); //convert to JS object
+  } else {
+    window[object][property] = null;
+    if (fieldId.required) {
+      fieldId.style.border = "1px solid red";
+    } else {
+      fieldId.style.border = "1px solid #ced4da";
+    }
+  }
+};
+
 //select field validation function
 const selectFieldValidator = (fieldId, object, property) => {
   const fieldValue = fieldId.value;

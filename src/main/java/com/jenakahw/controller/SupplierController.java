@@ -63,6 +63,16 @@ public class SupplierController {
 			return null;
 		}
 	}
+	
+	// get mapping for get all active supplier selected data -- [/supplier/getactivesuppliers]
+	@GetMapping(value = "/findactivesuppliers", produces = "application/json")
+	public List<Supplier> findActiveSuppliers() {
+		if (privilegeController.hasPrivilege("Supplier", "select")) {
+			return supplierRepository.findActiveSuppliers();
+		} else {
+			return null;
+		}
+	}
 
 	// post mapping for save new supplier
 	@PostMapping
@@ -144,7 +154,7 @@ public class SupplierController {
 	// delete mapping for delete supplier
 	@DeleteMapping
 	public String deleteSupplier(@RequestBody Supplier supplier) {
-		// check authentication authorization
+		// check privileges
 		if (!privilegeController.hasPrivilege("Supplier", "delete")) {
 			return "Access Denied !!!";
 		}

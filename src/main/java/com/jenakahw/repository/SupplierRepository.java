@@ -12,7 +12,7 @@ import com.jenakahw.domain.Supplier;
 public interface SupplierRepository extends JpaRepository<Supplier, Integer>{
 	
 	// query for get all active suppliers
-	@Query(value = "Select s from Supplier s where s.supplierStatusId = (Select supstatus from SupplierStatus supstatus where name='Active')")
+	@Query(value = "Select new Supplier(s.id,s.firstName,s.lastName,s.company,s.contact) from Supplier s where s.supplierStatusId = (Select supstatus from SupplierStatus supstatus where name='Active') order by s.id desc")
 	public List<Supplier> findActiveSuppliers();
 
 	// query for get supplier by contact

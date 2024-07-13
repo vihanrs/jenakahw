@@ -120,11 +120,11 @@
                     <!-- note -->
                     <div class="row mt-2">
                       <div class="col-md-8">
-                        <label for="txtNote" class="form-label fw-bold">
+                        <label for="textNote" class="form-label fw-bold">
                           Note :
                         </label>
                         <textarea
-                          id="txtNote"
+                          id="textNote"
                           class="form-control"
                           placeholder="Enter Note Here"
                           required
@@ -145,17 +145,11 @@
                         <label for="selectProduct" class="form-label fw-bold">
                           Product : <span class="text-danger"> * </span>
                         </label>
-                        <input
-                          type="text"
-                          placeholder="Select Product"
-                          list="datalist"
-                          class="form-select"
-                          id="selectProduct"
-                          required
-                        />
-                        <datalist id="datalist">
-                          <option value="Part 1"></option>
-                        </datalist>
+                        <select id="selectProduct" class="form-select" required>
+                          <option value="" selected disabled>
+                            Select Product
+                          </option>
+                        </select>
                       </div>
 
                       <!-- purchase price -->
@@ -165,6 +159,7 @@
                           class="form-label fw-bold"
                         >
                           Purchase Price (Rs.):
+                          <span class="text-danger"> * </span>
                         </label>
                         <input
                           type="text"
@@ -178,7 +173,7 @@
                       <!-- qty -->
                       <div class="col-md-2">
                         <label for="textQty" class="form-label fw-bold">
-                          Qty :
+                          Qty : <span class="text-danger"> * </span>
                         </label>
                         <input
                           type="text"
@@ -200,6 +195,8 @@
                           class="form-control"
                           id="textLineAmount"
                           required
+                          disabled
+                          style="border: none"
                         />
                       </div>
 
@@ -227,7 +224,10 @@
 
                     <!-- inner table -->
                     <div class="row mt-4">
-                      <table class="table table-hover pt-3 mb-3" id="tableId">
+                      <table
+                        class="table table-hover pt-3 mb-3"
+                        id="productsTable"
+                      >
                         <thead class="table-dark">
                           <tr>
                             <th>#</th>
@@ -235,7 +235,7 @@
                             <th>Purchase Price (Rs.)</th>
                             <th>Quantity</th>
                             <th>Total (Rs.)</th>
-                            <th style="width: 50px; text-align: right">
+                            <th style="width: 100px; text-align: right">
                               Modify
                             </th>
                           </tr>
@@ -257,6 +257,7 @@
                           class="form-control"
                           id="textTotalAmount"
                           required
+                          disabled
                         />
                       </div>
                     </div>
@@ -320,16 +321,18 @@
             >
               <div class="accordion-body">
                 <div class="card card-body p-2">
-                  <table class="table table-hover pt-3 mb-3" id="tableId">
+                  <table
+                    class="table table-hover pt-3 mb-3"
+                    id="purchaseOrdersTable"
+                  >
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
-                        <th>Title 1</th>
-                        <th>Title 2</th>
-                        <th>Title 3</th>
-                        <th>Title 4</th>
-                        <th>Title 5</th>
-                        <th>Title 6</th>
+                        <th>PO Code</th>
+                        <th>Supplier</th>
+                        <th>Required Date</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
                         <th style="width: 50px; text-align: right">Modify</th>
                       </tr>
                     </thead>
