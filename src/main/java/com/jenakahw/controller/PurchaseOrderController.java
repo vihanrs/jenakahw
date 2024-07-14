@@ -1,6 +1,9 @@
 package com.jenakahw.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,8 +82,18 @@ public class PurchaseOrderController {
 			// set added date time
 			purchaseOrder.setAddedDateTime(LocalDateTime.now());
 
-			// set code
-			purchaseOrder.setPoCode("240712002");
+			// set next pocode
+			String nextPOCode = purchaseOrderRepository.getNextPOCode();
+			if(nextPOCode == null) {
+				//formate current date 
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+		        String formattedDate = LocalDate.now().format(formatter);
+		        
+		        //create new pocode for start new date
+				nextPOCode = "PO"+formattedDate+"001";
+			}
+			
+			purchaseOrder.setPoCode(nextPOCode);
 
 			for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
 				poHasProduct.setPurchaseOrderId(purchaseOrder);

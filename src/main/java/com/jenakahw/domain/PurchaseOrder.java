@@ -35,7 +35,7 @@ public class PurchaseOrder {
 	
 	@Column(name = "po_code",unique = true)
 	@NotNull
-	@Length(max = 9)
+	@Length(max = 11)
 	private String poCode;
 	
 	@Column(name = "required_date")

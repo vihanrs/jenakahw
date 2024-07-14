@@ -139,22 +139,35 @@ const refreshForm = () => {
   let elements = [selectSupplier, dateRequiredDate, textNote];
   setBorderStyle(elements);
 
-  //set min max values for date
-  let currentDate = new Date();
+  //set min max values for required date
+  let minDate = new Date();
   let maxDate = new Date();
 
-  let currentMonth = currentDate.getMonth() + 1;
-  if (currentMonth < 10) {
-    currentMonth = "0" + currentMonth;
+  let minMonth = minDate.getMonth() + 1; //getMonth() returns 0-11, then add 1 to get cuurent month
+  if (minMonth < 10) {
+    minMonth = "0" + minMonth;
   }
 
-  let currentDay = currentDate.getDate();
-  if (currentDay < 10) {
-    currentDay = "0" + currentDay;
+  let minDay = minDate.getDate();
+  if (minDay < 10) {
+    minDay = "0" + minDay;
   }
 
-  dateRequiredDate.min =
-    currentDate.getFullYear() + "-" + currentMonth + "-" + currentDate;
+  // set current date as min date
+  dateRequiredDate.min = minDate.getFullYear() + "-" + minMonth + "-" + minDay;
+
+  let maxMonth = maxDate.getMonth() + 2; // add 2 to get next month from current month
+  if (maxMonth < 10) {
+    maxMonth = "0" + maxMonth;
+  }
+
+  let maxDay = maxDate.getDate();
+  if (maxDay < 10) {
+    maxDay = "0" + maxDay;
+  }
+
+  // set max date for next 30 days
+  dateRequiredDate.max = maxDate.getFullYear() + "-" + maxMonth + "-" + maxDay;
 
   // dateRequiredDate.max =currentDate.getFullYear+"-"+currentDay
   //manage form buttons
