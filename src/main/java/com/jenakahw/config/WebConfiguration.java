@@ -22,10 +22,10 @@ public class WebConfiguration {
 			.requestMatchers("/login").permitAll()
 			.requestMatchers("/error").permitAll()
 			.requestMatchers("/dashboard/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
-			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager")
-			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager")
+			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
+			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
-			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager")
+			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/purchaseorder/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.anyRequest().authenticated();
 		})

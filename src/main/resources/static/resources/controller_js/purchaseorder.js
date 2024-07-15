@@ -116,6 +116,7 @@ const refreshForm = () => {
     "firstName",
     "company"
   );
+  selectSupplier.disabled = false;
 
   // get purchase order status
   poStatuses = ajaxGetRequest("/purchaseorderstatus/findall");
@@ -192,7 +193,7 @@ const getProductListBySupplier = (supplierId) => {
   );
 };
 
-//clear previously added products and refresh
+//clear previously added products and refresh when selecting another supplier
 const clearPreviousProducts = () => {
   purchaseOrder.poHasProducts = [];
   refreshInnerFormAndTable();
@@ -286,7 +287,7 @@ const refillProduct = (rowObject, rowId) => {
   setBorderStyle(elements, "2px solid #00FF7F");
 
   //update product list to add refiled product again
-  removeAddedProducts(poProduct.productId.barcode);
+  refreshRemainProductList(poProduct.productId.barcode);
 };
 
 //function for delete selected product
@@ -309,7 +310,7 @@ const deleteProduct = (rowObject, rowId) => {
     refreshInnerFormAndTable();
 
     //update product list to add deleted product again
-    removeAddedProducts();
+    refreshRemainProductList();
   }
 };
 
@@ -355,15 +356,15 @@ const addProduct = () => {
       //add object into array
       purchaseOrder.poHasProducts.push(poProduct);
       refreshInnerFormAndTable();
-      removeAddedProducts();
+      refreshRemainProductList();
     }
   } else {
     alert("Error\n" + formErrors);
   }
 };
 
-//remove already added products from dropdown
-const removeAddedProducts = (selectedProduct) => {
+//refresh products to remove already added products from dropdown
+const refreshRemainProductList = (selectedProduct) => {
   // filter products already in purchaseOrder.poHasProducts
   const newProductList = products.filter(
     (product) =>
@@ -413,73 +414,47 @@ const checkErrors = () => {
 };
 
 //function for check updates
-// const checkUpdates = () => {
-//   let updates = ""; //when using 'let' this object only usable is this functional area
+const checkUpdates = () => {
+  let updates = ""; //when using 'let' this object only usable is this functional area
 
-//   // use nullish coalescing operator for handle null and undefined values
-//   if (oldUserObj.firstName != user.firstName) {
-//     updates +=
-//       "First Name has changed " +
-//       oldUserObj.firstName +
-//       " into " +
-//       user.firstName +
-//       " \n";
-//   }
-//   if (oldUserObj.lastName != user.lastName) {
-//     updates +=
-//       "Last Name has changed " +
-//       (oldUserObj.lastName ?? "-") +
-//       " into " +
-//       (user.lastName ?? "-") +
-//       " \n";
-//   }
-//   if (oldUserObj.contact != user.contact) {
-//     updates +=
-//       "Contact has changed " +
-//       oldUserObj.contact +
-//       " into " +
-//       user.contact +
-//       " \n";
-//   }
-//   if (oldUserObj.nic != user.nic) {
-//     updates +=
-//       "NIC has changed " + oldUserObj.nic + " into " + user.nic + " \n";
-//   }
-//   if (oldUserObj.gender != user.gender) {
-//     updates +=
-//       "Gender has changed " +
-//       oldUserObj.gender +
-//       " into " +
-//       user.gender +
-//       " \n";
-//   }
-//   if (oldUserObj.email != user.email) {
-//     updates +=
-//       "Email has changed " + oldUserObj.email + " into " + user.email + " \n";
-//   }
-//   if (oldUserObj.username != user.username) {
-//     updates +=
-//       "Username has changed " +
-//       oldUserObj.username +
-//       " into " +
-//       user.username +
-//       " \n";
-//   }
-//   if (oldUserObj.userStatusId.id != user.userStatusId.id) {
-//     updates +=
-//       "Status has changed " +
-//       oldUserObj.userStatusId.name +
-//       " into " +
-//       user.userStatusId.name +
-//       " \n";
-//   }
+  if (oldPurchaseOrder.requiredDate != purchaseOrder.requiredDate) {
+    updates +=
+      "Required Date has changed " +
+      oldPurchaseOrder.requiredDate +
+      " into " +
+      purchaseOrder.requiredDate +
+      " \n";
+  }
+  if (
+    oldPurchaseOrder.purchaseOrderStatusId.id !=
+    purchaseOrder.purchaseOrderStatusId.id
+  ) {
+    updates +=
+      "Purchase Order Status has changed " +
+      oldPurchaseOrder.purchaseOrderStatusId.name +
+      " into " +
+      purchaseOrder.purchaseOrderStatusId.name +
+      " \n";
+  }
+  if (oldPurchaseOrder.note != purchaseOrder.note) {
+    updates +=
+      "Note has changed " +
+      (oldPurchaseOrder.note ?? "-") +
+      " into " +
+      (purchaseOrder.note ?? "-") +
+      " \n";
+  }
+  if (oldPurchaseOrder.totalAmount != purchaseOrder.totalAmount) {
+    updates +=
+      "Total Amount has changed Rs." +
+      oldPurchaseOrder.totalAmount +
+      " into Rs." +
+      purchaseOrder.totalAmount +
+      " \n";
+  }
 
-//   if (isRolesChanged(oldUserObj, user)) {
-//     updates += "User Roles has changed " + " \n";
-//   }
-
-//   return updates;
-// };
+  return updates;
+};
 
 //function for add record
 const addRecord = () => {
@@ -522,35 +497,39 @@ const addRecord = () => {
   }
 };
 
-// //function for update record
-// const updateRecord = () => {
-//   let errors = checkErrors();
-//   if (errors == "") {
-//     let updates = checkUpdates();
-//     if (updates != "") {
-//       let userConfirm = confirm(
-//         "Are you sure you want to update following changes...?\n" + updates
-//       );
-//       if (userConfirm) {
-//         let updateServiceResponse = ajaxRequestBody("/user", "PUT", user);
-//         if (updateServiceResponse == "OK") {
-//           alert("Update sucessfully..! ");
-//           //need to refresh table and form
-//           refreshAll();
-//         } else {
-//           alert(
-//             "Update not sucessfully..! have some errors \n" +
-//               updateSeriveResponse
-//           );
-//         }
-//       }
-//     } else {
-//       alert("Nothing to Update...!");
-//     }
-//   } else {
-//     alert("Cannot update!!!\nForm has following errors \n" + errors);
-//   }
-// };
+//function for update record
+const updateRecord = () => {
+  let errors = checkErrors();
+  if (errors == "") {
+    let updates = checkUpdates();
+    if (updates != "") {
+      let userConfirm = confirm(
+        "Are you sure you want to update following changes...?\n" + updates
+      );
+      if (userConfirm) {
+        let updateServiceResponse = ajaxRequestBody(
+          "/purchaseorder",
+          "PUT",
+          purchaseOrder
+        );
+        if (updateServiceResponse == "OK") {
+          alert("Update sucessfully..! ");
+          //need to refresh table and form
+          refreshAll();
+        } else {
+          alert(
+            "Update not sucessfully..! have some errors \n" +
+              updateSeriveResponse
+          );
+        }
+      }
+    } else {
+      alert("Nothing to Update...!");
+    }
+  } else {
+    alert("Cannot update!!!\nForm has following errors \n" + errors);
+  }
+};
 
 //function for refresh table records
 const refreshTable = () => {
@@ -611,7 +590,31 @@ const getSupplier = (rowObject) => {
 };
 
 const getStatus = (rowObject) => {
-  return rowObject.purchaseOrderStatusId.name;
+  if (rowObject.purchaseOrderStatusId.name == "Requested") {
+    return (
+      '<p class = "status btn-info">' +
+      rowObject.purchaseOrderStatusId.name +
+      "</p>"
+    );
+  } else if (rowObject.purchaseOrderStatusId.name == "Received") {
+    return (
+      '<p class = "status status-active">' +
+      rowObject.purchaseOrderStatusId.name +
+      "</p>"
+    );
+  } else if (rowObject.purchaseOrderStatusId.name == "Canceled") {
+    return (
+      '<p class = "status status-warning">' +
+      rowObject.purchaseOrderStatusId.name +
+      "</p>"
+    );
+  } else if (rowObject.purchaseOrderStatusId.name == "Deleted") {
+    return (
+      '<p class = "status status-error">' +
+      rowObject.purchaseOrderStatusId.name +
+      "</p>"
+    );
+  }
 };
 
 const viewRecord = () => {};
@@ -657,6 +660,7 @@ const refillRecord = (rowObject, rowId) => {
     purchaseOrder.purchaseOrderStatusId.name
   );
 
+  // set supplier
   fillMoreDataIntoSelect(
     selectSupplier,
     "Select Supplier",
@@ -666,12 +670,15 @@ const refillRecord = (rowObject, rowId) => {
     purchaseOrder.supplierId.firstName
   );
 
+  // disable changing supplier
+  selectSupplier.disabled = true;
+
   //refresh inner form and table to get saved products from purchaseOrder.poHasProducts
   refreshInnerFormAndTable();
 
   //get suppliers product list and then remove alrady added products
   getProductListBySupplier(purchaseOrder.supplierId.id);
-  removeAddedProducts();
+  refreshRemainProductList();
 
   setBorderStyle([selectPOStatus, selectSupplier]);
 

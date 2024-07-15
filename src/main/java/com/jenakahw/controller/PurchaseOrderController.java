@@ -3,7 +3,6 @@ package com.jenakahw.controller;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +33,7 @@ public class PurchaseOrderController {
 	 */
 	@Autowired
 	private PurchaseOrderRepository purchaseOrderRepository;
-	
+
 	@Autowired
 	private PurchaseOrderStatusRepository purchaseOrderStatusRepository;
 
@@ -75,8 +75,6 @@ public class PurchaseOrderController {
 		}
 
 		try {
-			// generate PO code
-
 			// set added user
 			purchaseOrder.setUserId(userController.getLoggedUser().getId());
 			// set added date time
@@ -84,15 +82,15 @@ public class PurchaseOrderController {
 
 			// set next pocode
 			String nextPOCode = purchaseOrderRepository.getNextPOCode();
-			if(nextPOCode == null) {
-				//formate current date 
+			if (nextPOCode == null) {
+				// formate current date
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
-		        String formattedDate = LocalDate.now().format(formatter);
-		        
-		        //create new pocode for start new date
-				nextPOCode = "PO"+formattedDate+"001";
+				String formattedDate = LocalDate.now().format(formatter);
+
+				// create new pocode for start new date
+				nextPOCode = "PO" + formattedDate + "001";
 			}
-			
+
 			purchaseOrder.setPoCode(nextPOCode);
 
 			for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
@@ -107,35 +105,68 @@ public class PurchaseOrderController {
 		}
 	}
 
+	// put mapping for update existing purchase order
+	@PutMapping
+	public String updatePerchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
+		// check privileges
+		if (!privilegeController.hasPrivilege("Purchase Order", "update")) {
+			return "Access Denied !!!";
+		}
+
+		// check for existens
+		PurchaseOrder extPurchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrder.getId());
+		if (extPurchaseOrder == null) {
+			return "Purchase Order UpdateNot Completed : Purchase Order Not Exist...!";
+		}
+		
+		try {
+			// set added user
+			purchaseOrder.setUpdatedUserId(userController.getLoggedUser().getId());
+			// set added date time
+			purchaseOrder.setLastUpdatedDateTime(LocalDateTime.now());
+
+			for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
+				poHasProduct.setPurchaseOrderId(purchaseOrder);
+			}
+
+			purchaseOrderRepository.save(purchaseOrder);
+
+			return "OK";
+		} catch (Exception e) {
+			return "Purchase Order Update Not Completed : " + e.getMessage();
+		}
+	}
+
+	// delete mapping for delete a purchase order
 	@DeleteMapping
 	public String deletePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
 		if (!privilegeController.hasPrivilege("Purchase Order", "delete")) {
 			return "Access Denied !!!";
 		}
-		
+
 		// check existing
 		PurchaseOrder extPurchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrder.getId());
-		if(extPurchaseOrder == null) {
+		if (extPurchaseOrder == null) {
 			return "Delete not completed : Purchase Order Not Exist..!";
 		}
-		
+
 		try {
-			//set deleted data and time
+			// set deleted data and time
 			purchaseOrder.setDeletedDateTime(LocalDateTime.now());
-			
-			//set deleted user id
+
+			// set deleted user id
 			purchaseOrder.setDeletedUserId(userController.getLoggedUser().getId());
-			
+
 			// set Purchase Order statuts to 'Deleted'
 			purchaseOrder.setPurchaseOrderStatusId(purchaseOrderStatusRepository.getReferenceById(4));
-			
+
 			for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
 				poHasProduct.setPurchaseOrderId(purchaseOrder);
 			}
-			
+
 			purchaseOrderRepository.save(purchaseOrder);
-			
+
 			return "OK";
 		} catch (Exception e) {
 			return "Purchase Order Delete Not Completed : " + e.getMessage();
