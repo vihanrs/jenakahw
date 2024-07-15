@@ -1,8 +1,10 @@
 package com.jenakahw.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,6 +14,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -76,6 +79,9 @@ public class Supplier {
 	@ManyToMany
 	@JoinTable(name = "product_has_supplier", joinColumns = @JoinColumn(name = "supplier_id"), inverseJoinColumns = @JoinColumn(name = "product_id"))
 	private Set<Product> products;
+	
+	@OneToMany(mappedBy = "supplierId", cascade = CascadeType.ALL, orphanRemoval = true) //map with supplierId foreign key property in SupplierBankDetails object, use cascade all to access all operations in supplier_bank_details table
+	private List<SupplierBankDetails> bankDetails;
 
 	public Supplier(int id, String firstName, String lastName, String company,String contact) {
 		this.id = id;

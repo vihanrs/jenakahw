@@ -52,6 +52,38 @@ const addEventListeners = () => {
     selectDFieldValidator(selectStatus, "supplier", "supplierStatusId");
   });
 
+  //bank details event listners
+  textBankName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textBankName,
+      "^[a-zA-Z' ]{2,}[a-zA-Z]$",
+      "bankDetail",
+      "bankName"
+    );
+  });
+
+  textBranchName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textBranchName,
+      "^[a-zA-Z ]{2,}[a-zA-Z]$",
+      "bankDetail",
+      "branchName"
+    );
+  });
+
+  textAccNo.addEventListener("keyup", () => {
+    textFieldValidator(textAccNo, "^[0-9]{5,}$", "bankDetail", "accNo");
+  });
+
+  textAccHolderName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textAccHolderName,
+      "^[a-zA-Z ]{2,}[a-zA-Z]$",
+      "bankDetail",
+      "accHolderName"
+    );
+  });
+
   //form reset button function call
   btnReset.addEventListener("click", () => {
     refreshForm();
@@ -83,6 +115,10 @@ const addEventListeners = () => {
   btnRemoveAll.addEventListener("click", () => {
     removeAllProducts();
   });
+
+  btnAddBankDetail.addEventListener("click", () => {
+    addBankDetail();
+  });
 };
 
 // ********* RESET *********
@@ -99,6 +135,7 @@ const refreshForm = () => {
   //create empty object
   supplier = {};
   supplier.products = new Array();
+  supplier.bankDetails = new Array();
 
   //get data list for select element
   supplierStatus = ajaxGetRequest("/supplierstatus/findall");
@@ -154,10 +191,86 @@ const refreshForm = () => {
 
   setBorderStyle(elements);
 
+  refreshInnerFormAndTable();
+
   //manage buttons
   manageFormButtons("insert", userPrivilages);
 };
 
+//function for refresh inner product form/table area
+const refreshInnerFormAndTable = () => {
+  bankDetail = {};
+
+  //empty all elements
+  textBankName.value = "";
+  textBranchName.value = "";
+  textAccNo.value = "";
+  textAccHolderName.value = "";
+
+  //set default border color
+  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
+  setBorderStyle(elements);
+
+  const displayProperties = [
+    { property: "bankName", datatype: "String" },
+    { property: "branchName", datatype: "String" },
+    { property: "accNo", datatype: "String" },
+    { property: "accHolderName", datatype: "String" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    bankDetailsTable,
+    supplier.bankDetails,
+    displayProperties,
+    refillBankDetail,
+    deleteBankDetail
+  );
+};
+
+// ********* INNER FORM/TABLE OPERATIONS *********
+
+//function for refill selected bank detail
+const refillBankDetail = (rowObject) => {
+  //remove refilled bank detail from supplier.bankDetails
+  supplier.bankDetails = supplier.bankDetails.filter(
+    (bankdetail) => bankdetail.id !== rowObject.id
+  );
+
+  // refresh inner table
+  refreshInnerFormAndTable();
+
+  //fill product data into relavent fields
+  bankDetail = JSON.parse(JSON.stringify(rowObject));
+  textBankName.value = bankDetail.bankName;
+  textBranchName.value = bankDetail.branchName;
+  textAccNo.value = bankDetail.accNo;
+  textAccHolderName.value = bankDetail.accHolderName;
+
+  //set valid border color
+  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
+  setBorderStyle(elements, "2px solid #00FF7F");
+};
+
+//function for delete selected bank detail
+const deleteBankDetail = (rowObject) => {
+  // get user confirmation
+  let userConfirm = window.confirm(
+    "Are you sure you want to delete this bank detail...?\n" +
+      rowObject.bankName +
+      " - " +
+      rowObject.accNo
+  );
+
+  if (userConfirm) {
+    //remove deleted bank detail from supplier.bankDetails
+    supplier.bankDetails = supplier.bankDetails.filter(
+      (bankdetail) => bankdetail.id !== rowObject.id
+    );
+  }
+  // refresh inner table
+  refreshInnerFormAndTable();
+};
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
@@ -201,6 +314,61 @@ const refreshTable = () => {
   });
 
   $("#supplierTable").dataTable();
+};
+
+//function for check inner form errors
+const checkInnerFormErrors = () => {
+  let error = "";
+
+  if (bankDetail.bankName == null) {
+    error = error + "Please Enter Valid Bank Name...!\n";
+    textBankName.style.border = "1px solid red";
+  }
+
+  if (bankDetail.branchName == null) {
+    error = error + "Please Enter Valid Branch Name...!\n";
+    textBranchName.style.border = "1px solid red";
+  }
+
+  if (bankDetail.accNo == null) {
+    error = error + "Please Enter Valid Acc No...!\n";
+    textAccNo.style.border = "1px solid red";
+  }
+
+  if (bankDetail.accHolderName == null) {
+    error = error + "Please Enter Valid Acc Holder Name...!\n";
+    textAccHolderName.style.border = "1px solid red";
+  }
+
+  return error;
+};
+
+// fucntion for add product to inner table
+const addBankDetail = () => {
+  // check errors
+  let formErrors = checkInnerFormErrors();
+  if (formErrors == "") {
+    // get user confirmation
+    let userConfirm = window.confirm(
+      "Are you sure to add following bank detail..?\n" +
+        "\nBank : " +
+        bankDetail.bankName +
+        " - " +
+        bankDetail.branchName +
+        "\nAcc No. : " +
+        bankDetail.accNo +
+        "\nAcc Holder Name : " +
+        bankDetail.accHolderName
+    );
+
+    if (userConfirm) {
+      //add object into array
+      supplier.bankDetails.push(bankDetail);
+      refreshInnerFormAndTable();
+    }
+  } else {
+    alert("Error\n" + formErrors);
+  }
 };
 
 // ********* TABLE OPERATIONS *********
@@ -303,6 +471,7 @@ const refillRecord = (rowObject, rowId) => {
   //change status border color to default
   setBorderStyle([selectStatus]);
 
+  refreshInnerFormAndTable();
   //manage buttons
   manageFormButtons("refill", userPrivilages);
 };

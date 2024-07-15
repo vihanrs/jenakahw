@@ -257,6 +257,118 @@
                     </div>
                     <!-- product list transfer area end -->
 
+                    <hr class="seperator" />
+                    <!-- start product details area -->
+                    <p>
+                      <b><i>Bank Details</i></b>
+                    </p>
+                    <!-- inner form -->
+                    <div class="row mt-2">
+                      <!-- bank name -->
+                      <div class="col-md-3">
+                        <label for="textBankName" class="form-label fw-bold">
+                          Bank:
+                          <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Bank Name"
+                          class="form-control"
+                          id="textBankName"
+                          required
+                        />
+                      </div>
+
+                      <!-- branch name -->
+                      <div class="col-md-3">
+                        <label for="textBranchName" class="form-label fw-bold">
+                          Branch : <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Branch Name"
+                          class="form-control"
+                          id="textBranchName"
+                          required
+                        />
+                      </div>
+
+                      <!-- Acc no -->
+                      <div class="col-md-2">
+                        <label for="textAccNo" class="form-label fw-bold">
+                          Acc No: <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Acc No."
+                          class="form-control"
+                          id="textAccNo"
+                          required
+                        />
+                      </div>
+
+                      <!-- acc holder name -->
+                      <div class="col-md-3">
+                        <label
+                          for="textAccHolderName"
+                          class="form-label fw-bold"
+                        >
+                          Acc Holder Name: <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Name"
+                          class="form-control"
+                          id="textAccHolderName"
+                          required
+                        />
+                      </div>
+
+                      <!-- add bank details button -->
+                      <div class="col-md-1">
+                        <label
+                          for="btnAddBankDetail"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddBankDetail"
+                          style="display: block"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- inner table -->
+                    <div class="row mt-4">
+                      <table
+                        class="table table-hover pt-3 mb-3"
+                        id="bankDetailsTable"
+                      >
+                        <thead class="table-dark">
+                          <tr>
+                            <th>#</th>
+                            <th>Bank</th>
+                            <th>Branch</th>
+                            <th>Acc No</th>
+                            <th>Acc Holder Name</th>
+                            <th style="width: 100px; text-align: right">
+                              Modify
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-group-divider"></tbody>
+                      </table>
+                    </div>
+                    <!-- end product details area -->
+
                     <!-- buttons -->
                     <div class="row mt-4 justify-content-end">
                       <div class="col-auto text-center">

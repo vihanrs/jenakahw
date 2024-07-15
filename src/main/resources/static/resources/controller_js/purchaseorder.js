@@ -87,7 +87,6 @@ const addEventListeners = () => {
 
   btnAddProduct.addEventListener("click", () => {
     addProduct();
-    // calPurchaseOrderTotal();
   });
 };
 
@@ -301,7 +300,7 @@ const deleteProduct = (rowObject, rowId) => {
   );
 
   if (userConfirm) {
-    //remove refilled product from purchaseOrder.poHasProducts
+    //remove deleted product from purchaseOrder.poHasProducts
     purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
       (product) => product.productId.id !== rowObject.productId.id
     );

@@ -76,6 +76,6 @@ public class PurchaseOrder {
 	@Column(name = "deleted_user_id")
 	private Integer deletedUserId;
 	
-	@OneToMany(mappedBy = "purchaseOrderId", cascade = CascadeType.ALL, orphanRemoval = true) //map with purchaseOrderId foreign key property in OPHasProduct object
+	@OneToMany(mappedBy = "purchaseOrderId", cascade = CascadeType.ALL, orphanRemoval = true) //map with purchaseOrderId foreign key property in OPHasProduct object, use cascade all to access all operations in purchase_order table
 	private List<POHasProduct> poHasProducts;
 }
