@@ -234,7 +234,7 @@ const refreshInnerFormAndTable = () => {
 const refillBankDetail = (rowObject) => {
   //remove refilled bank detail from supplier.bankDetails
   supplier.bankDetails = supplier.bankDetails.filter(
-    (bankdetail) => bankdetail.id !== rowObject.id
+    (bankdetail) => bankdetail.id != rowObject.id
   );
 
   // refresh inner table
@@ -265,7 +265,7 @@ const deleteBankDetail = (rowObject) => {
   if (userConfirm) {
     //remove deleted bank detail from supplier.bankDetails
     supplier.bankDetails = supplier.bankDetails.filter(
-      (bankdetail) => bankdetail.id !== rowObject.id
+      (bankdetail) => bankdetail.id != rowObject.id
     );
   }
   // refresh inner table
@@ -396,7 +396,7 @@ const getSupplierStatus = (rowOb) => {
 
 // function for get supplier fullname
 const getSupplierFullName = (rowOb) => {
-  return rowOb.firstName + " " + (rowOb.lastName != null ? rowOb.lastName : "");
+  return rowOb.firstName + (rowOb.lastName != null ? " " + rowOb.lastName : "");
 };
 
 //function for view record

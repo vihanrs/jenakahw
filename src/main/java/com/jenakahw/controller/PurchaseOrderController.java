@@ -24,6 +24,8 @@ import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.repository.PurchaseOrderRepository;
 import com.jenakahw.repository.PurchaseOrderStatusRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping(value = "/purchaseorder") // class level mapping
 public class PurchaseOrderController {
@@ -42,6 +44,8 @@ public class PurchaseOrderController {
 
 	@Autowired
 	private UserController userController;
+	
+	private static final String MODULE = "Purchase Order";
 
 	// supplier UI service [/purchaseorder -- return Purchase Order UI]
 	@GetMapping
@@ -59,7 +63,7 @@ public class PurchaseOrderController {
 	// get mapping for get all purchaseorder data -- [/purchaseorder/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<PurchaseOrder> findAll() {
-		if (privilegeController.hasPrivilege("Supplier", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return purchaseOrderRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
@@ -67,10 +71,11 @@ public class PurchaseOrderController {
 	}
 
 	// post mapping for save new purchase order
+	@Transactional
 	@PostMapping
 	public String savePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Purchase Order", "insert")) {
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
@@ -84,7 +89,7 @@ public class PurchaseOrderController {
 			String nextPOCode = purchaseOrderRepository.getNextPOCode();
 			if (nextPOCode == null) {
 				// formate current date
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMM");
 				String formattedDate = LocalDate.now().format(formatter);
 
 				// create new pocode for start new date
@@ -109,7 +114,7 @@ public class PurchaseOrderController {
 	@PutMapping
 	public String updatePerchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Purchase Order", "update")) {
+		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
 
@@ -141,7 +146,7 @@ public class PurchaseOrderController {
 	@DeleteMapping
 	public String deletePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Purchase Order", "delete")) {
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 

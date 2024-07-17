@@ -1,0 +1,20 @@
+<!-- alertbox.html -->
+<div th:fragment="alertFragment">
+  <div id="customAlertBox" class="alert-box hidden">
+    <div class="alert-content">
+      <h2 id="alertTitle" class="fw-bold"></h2>
+      <img id="alertImage" src="" alt="Alert Icon" class="alert-icon" />
+      <p id="alertMessage"></p>
+      <button id="alertButton" class="btn" onclick="hideAlert()">OK</button>
+    </div>
+  </div>
+
+  <div id="customConfirmBox" class="alert-box hidden">
+    <div class="alert-content">
+      <p id="confirmTitle"></p>
+      <p id="confirmMessage"></p>
+      <button class="btn btn-outline-primary confirm-yes">Yes</button>
+      <button class="btn btn-outline-secondary confirm-no">No</button>
+    </div>
+  </div>
+</div>

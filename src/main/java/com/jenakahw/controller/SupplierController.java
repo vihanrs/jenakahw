@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Supplier;
+import com.jenakahw.domain.SupplierBankDetails;
 import com.jenakahw.repository.SupplierRepository;
 import com.jenakahw.repository.SupplierStatusRepository;
 
@@ -100,6 +101,10 @@ public class SupplierController {
 			supplier.setUserId(userController.getLoggedUser());
 			// set added date time
 			supplier.setAddedDateTime(LocalDateTime.now());
+			
+			for(SupplierBankDetails bankDetails : supplier.getBankDetails()) {
+				bankDetails.setSupplierId(supplier);
+			}
 
 			supplierRepository.save(supplier);
 
@@ -142,6 +147,10 @@ public class SupplierController {
 			
 			// set last updated user id
 			supplier.setUpdatedUserId(userController.getLoggedUser().getId());
+			
+			for(SupplierBankDetails bankDetails : supplier.getBankDetails()) {
+				bankDetails.setSupplierId(supplier);
+			}
 
 			supplierRepository.save(supplier);
 
@@ -174,6 +183,10 @@ public class SupplierController {
 			
 			// set supplier statuts to 'Deleted'
 			supplier.setSupplierStatusId(supplierStatusRepository.getReferenceById(3)); // set supplier status to 'Deleted'
+			
+			for(SupplierBankDetails bankDetails : supplier.getBankDetails()) {
+				bankDetails.setSupplierId(supplier);
+			}
 			
 			supplierRepository.save(supplier);
 			

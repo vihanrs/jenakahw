@@ -54,6 +54,21 @@ const addEventListeners = () => {
     textFieldValidator(textEmail, emailPattern, "user", "email");
   });
 
+  fileUserPhoto.addEventListener("change", () => {
+    fileFieldValidator(
+      fileUserPhoto,
+      "user",
+      "photoName",
+      "photoURL",
+      fileUserPhoto,
+      textUserPhoto
+    );
+  });
+
+  btnSelectImage.addEventListener("click", () => {
+    fileUserPhoto.click();
+  });
+
   textUsername.addEventListener("keyup", () => {
     textFieldValidator(textUsername, unameandpwPattern, "user", "username");
   });

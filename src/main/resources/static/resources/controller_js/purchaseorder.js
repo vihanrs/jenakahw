@@ -34,6 +34,10 @@ const addEventListeners = () => {
     dateFieldValidator(dateRequiredDate, "purchaseOrder", "requiredDate");
   });
 
+  dateRequiredDate.addEventListener("keydown", (event) => {
+    event.preventDefault();
+  });
+
   selectPOStatus.addEventListener("change", () => {
     selectDFieldValidator(
       selectPOStatus,
@@ -61,7 +65,12 @@ const addEventListeners = () => {
   });
 
   textQty.addEventListener("keyup", () => {
-    textFieldValidator(textQty, numberWithdecimals, "poProduct", "qty"),
+    textFieldValidator(
+      textQty,
+      "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{1,2}))$",
+      "poProduct",
+      "qty"
+    ),
       calLineAmount();
   });
 
@@ -269,7 +278,7 @@ const calculatePOTotal = () => {
 const refillProduct = (rowObject, rowId) => {
   //remove refilled product from purchaseOrder.poHasProducts
   purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
-    (product) => product.productId.id !== rowObject.productId.id
+    (product) => product.productId.id != rowObject.productId.id
   );
 
   // refresh inner table
@@ -292,25 +301,23 @@ const refillProduct = (rowObject, rowId) => {
 //function for delete selected product
 const deleteProduct = (rowObject, rowId) => {
   // get user confirmation
-  let userConfirm = window.confirm(
-    "Are you sure you want to delete this product...?\n" +
-      rowObject.productId.barcode +
-      " - " +
-      rowObject.productId.name
-  );
+  let title = "Are you sure you want to delete this product...?\n";
+  let message = rowObject.productId.barcode + " - " + rowObject.productId.name;
 
-  if (userConfirm) {
-    //remove deleted product from purchaseOrder.poHasProducts
-    purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
-      (product) => product.productId.id !== rowObject.productId.id
-    );
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //remove deleted product from purchaseOrder.poHasProducts
+      purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
+        (product) => product.productId.id != rowObject.productId.id
+      );
 
-    // refresh inner table
-    refreshInnerFormAndTable();
+      // refresh inner table
+      refreshInnerFormAndTable();
 
-    //update product list to add deleted product again
-    refreshRemainProductList();
-  }
+      //update product list to add deleted product again
+      refreshRemainProductList();
+    }
+  });
 };
 
 //function for check inner form errors
@@ -341,24 +348,25 @@ const addProduct = () => {
   let formErrors = checkInnerFormErrors();
   if (formErrors == "") {
     // get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following product..?\n" +
-        "\nProduct Name : " +
-        poProduct.productId.name +
-        "\nPurchase Price : " +
-        poProduct.purchasePrice +
-        "\nQty : " +
-        poProduct.qty
-    );
+    let title = "Are you sure to add following product..?";
+    let message =
+      "Product Name : " +
+      poProduct.productId.name +
+      "\nPurchase Price : " +
+      poProduct.purchasePrice +
+      "\nQty : " +
+      poProduct.qty;
 
-    if (userConfirm) {
-      //add object into array
-      purchaseOrder.poHasProducts.push(poProduct);
-      refreshInnerFormAndTable();
-      refreshRemainProductList();
-    }
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //add object into array
+        purchaseOrder.poHasProducts.push(poProduct);
+        refreshInnerFormAndTable();
+        refreshRemainProductList();
+      }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    showAlert("error", formErrors).then(() => {});
   }
 };
 
@@ -368,7 +376,7 @@ const refreshRemainProductList = (selectedProduct) => {
   const newProductList = products.filter(
     (product) =>
       !purchaseOrder.poHasProducts.some(
-        (extProduct) => extProduct.productId.id === product.id
+        (extProduct) => extProduct.productId.id == product.id
       )
   );
   //some Method: Checks if at least one element in purchaseOrder.poHasProducts has a productId.id that matches product.id.
@@ -445,7 +453,7 @@ const checkUpdates = () => {
   }
   if (oldPurchaseOrder.totalAmount != purchaseOrder.totalAmount) {
     updates +=
-      "Total Amount has changed Rs." +
+      "Products Updated...!\nTotal Amount has changed Rs." +
       oldPurchaseOrder.totalAmount +
       " into Rs." +
       purchaseOrder.totalAmount +
@@ -461,38 +469,41 @@ const addRecord = () => {
   let formErrors = checkErrors();
   if (formErrors == "") {
     //get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following record..?\n" +
-        "\nSupplier : " +
-        purchaseOrder.supplierId.firstName +
-        (purchaseOrder.supplierId.company != null
-          ? " - " + purchaseOrder.supplierId.company
-          : "") +
-        "\nRequired Date : " +
-        purchaseOrder.requiredDate +
-        "\nTotal Amount (Rs.) : " +
-        purchaseOrder.totalAmount
-    );
+    let title = "Are you sure to add following record..?\n";
+    let message =
+      "Supplier : " +
+      purchaseOrder.supplierId.firstName +
+      (purchaseOrder.supplierId.company != null
+        ? " - " + purchaseOrder.supplierId.company
+        : "") +
+      "\nRequired Date : " +
+      purchaseOrder.requiredDate +
+      "\nTotal Amount (Rs.) : " +
+      purchaseOrder.totalAmount;
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //pass data into back end
+        let serverResponse = ajaxRequestBody(
+          "/purchaseorder",
+          "POST",
+          purchaseOrder
+        ); // url,method,object
 
-    if (userConfirm) {
-      //pass data into back end
-      let serverResponse = ajaxRequestBody(
-        "/purchaseorder",
-        "POST",
-        purchaseOrder
-      ); // url,method,object
-
-      //check back end response
-      if (serverResponse == "OK") {
-        alert("Save sucessfully..! " + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        alert("Save not sucessfully..! have some errors \n" + serverResponse);
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Save sucessfully..! " + serverResponse);
+          //need to refresh table and form
+          refreshAll();
+        } else {
+          showAlert(
+            "error",
+            "Save not sucessfully..! have some errors \n" + serverResponse
+          );
+        }
       }
-    }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    showAlert("error", formErrors);
   }
 };
 
@@ -502,31 +513,34 @@ const updateRecord = () => {
   if (errors == "") {
     let updates = checkUpdates();
     if (updates != "") {
-      let userConfirm = confirm(
-        "Are you sure you want to update following changes...?\n" + updates
-      );
-      if (userConfirm) {
-        let updateServiceResponse = ajaxRequestBody(
-          "/purchaseorder",
-          "PUT",
-          purchaseOrder
-        );
-        if (updateServiceResponse == "OK") {
-          alert("Update sucessfully..! ");
-          //need to refresh table and form
-          refreshAll();
-        } else {
-          alert(
-            "Update not sucessfully..! have some errors \n" +
-              updateSeriveResponse
+      let title = "Are you sure you want to update following changes...?";
+      let message = updates;
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          let updateServiceResponse = ajaxRequestBody(
+            "/purchaseorder",
+            "PUT",
+            purchaseOrder
           );
+          if (updateServiceResponse == "OK") {
+            showAlert("success", "Update sucessfully..!").then(() => {
+              //need to refresh table and form
+              refreshAll();
+            });
+          } else {
+            showAlert(
+              "error",
+              "Update not sucessfully..! have some errors \n" +
+                updateSeriveResponse
+            ).then(() => {});
+          }
         }
-      }
+      });
     } else {
-      alert("Nothing to Update...!");
+      showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    alert("Cannot update!!!\nForm has following errors \n" + errors);
+    showAlert("error", "Cannot update!!!\n\n" + formErrors);
   }
 };
 
@@ -679,7 +693,7 @@ const refillRecord = (rowObject, rowId) => {
   getProductListBySupplier(purchaseOrder.supplierId.id);
   refreshRemainProductList();
 
-  setBorderStyle([selectPOStatus, selectSupplier]);
+  setBorderStyle([selectPOStatus, selectSupplier, dateRequiredDate]);
 
   //manage buttons
   manageFormButtons("refill", userPrivilages);
@@ -688,30 +702,42 @@ const refillRecord = (rowObject, rowId) => {
 // //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  const userConfirm = confirm(
-    "Are you sure!\nYou wants to delete following record? \n" +
-      "Supplier : " +
-      rowObject.supplierId.firstName +
-      "\n" +
-      "Required Date : " +
-      rowObject.requiredDate +
-      "\n" +
-      "Total Amount (Rs.) : " +
-      rowObject.totalAmount
-  );
+  let title = "Are you sure!\nYou wants to delete following record? \n";
+  let message =
+    "Supplier : " +
+    rowObject.supplierId.firstName +
+    "\n" +
+    "Required Date : " +
+    rowObject.requiredDate +
+    "\n" +
+    "Total Amount (Rs.) : " +
+    rowObject.totalAmount;
 
-  if (userConfirm) {
-    //response from backend ...
-    let serverResponse = ajaxRequestBody("/purchaseorder", "DELETE", rowObject); // url,method,object
-    //check back end response
-    if (serverResponse == "OK") {
-      alert("Delete sucessfully..! \n" + serverResponse);
-      //need to refresh table and form
-      refreshAll();
-    } else {
-      alert("Delete not sucessfully..! have some errors \n" + serverResponse);
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //response from backend ...
+      let serverResponse = ajaxRequestBody(
+        "/purchaseorder",
+        "DELETE",
+        rowObject
+      ); // url,method,object
+      //check back end response
+      if (serverResponse == "OK") {
+        showAlert("success", "Delete successfully..! \n" + serverResponse).then(
+          () => {
+            // Need to refresh table and form
+            refreshAll();
+          }
+        );
+      } else {
+        showAlert(
+          "error",
+          "Delete not successfully..! There were some errors \n" +
+            serverResponse
+        );
+      }
     }
-  }
+  });
 };
 
 // // ********* PRINT OPERATIONS *********

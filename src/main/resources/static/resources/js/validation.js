@@ -149,3 +149,21 @@ const checkBoxValidator = (
     lableId.innerText = labelFalseValue;
   }
 };
+
+// image field validation function
+const fileFieldValidator = (
+  fieldId,
+  object,
+  propertyOne,
+  propertyTwo,
+  previewId,
+  nameFieldId
+) => {
+  if (fieldId.value != "") {
+    let file = fieldId.file[0];
+    nameFieldId.value = file["name"];
+
+    // let fileReader = new FileReader();
+    // fileReader.onload;
+  }
+};

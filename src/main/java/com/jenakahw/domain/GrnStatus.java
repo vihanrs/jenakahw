@@ -12,17 +12,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity // applied as an entity class
-@Table(name = "product_status") 
+@Table(name = "grn_status") // for map with given table
 @Data // generate getters and setters
 @NoArgsConstructor // generate default constructor
 @AllArgsConstructor // generate all args constructor
-public class ProductStatus {
+public class GrnStatus {
 	@Id // primary key -PK
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto generated id - AI
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
-
-    @Column(name = "name")
+	
+	@Column(name = "name")
     @NotNull
     private String name;
 }

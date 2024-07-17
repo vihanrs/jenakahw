@@ -187,6 +187,49 @@
                         />
                       </div>
                     </div>
+                    <!-- photo -->
+                    <div class="row mt-2">
+                      <label
+                        for="fileUserPhoto"
+                        class="col-md-4 form-label fw-bold"
+                      >
+                        Photo :<span class="text-danger"> * </span>
+                      </label>
+                      <div class="col-md-8">
+                        <img
+                          src="resources/images/default-user-img.jpg"
+                          alt="user-img"
+                          style="height: 100px; width: 100px"
+                        />
+                        <br />
+                        <button
+                          type="button"
+                          id="btnSelectImage"
+                          class="btn btn-primary"
+                        >
+                          Select Image
+                        </button>
+                        <button
+                          type="button"
+                          id="btnClearImage"
+                          class="btn btn-info"
+                        >
+                          Clear Image
+                        </button>
+
+                        <input
+                          type="text"
+                          class="form-control mt-2 col-md-3"
+                          id="textUserPhoto"
+                          disabled
+                        />
+                        <input
+                          type="file"
+                          class="form-control d-none"
+                          id="fileUserPhoto"
+                        />
+                      </div>
+                    </div>
                     <!-- username -->
                     <div class="row mt-2">
                       <label
