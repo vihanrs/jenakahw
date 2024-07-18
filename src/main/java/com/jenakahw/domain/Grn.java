@@ -31,42 +31,42 @@ public class Grn {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto generated id - AI
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
-	
+
 	@Column(name = "grn_code")
 	@NotNull
 	@Length(max = 12)
 	private String grnCode;
-	
+
 	@ManyToOne // relationship format
 	@JoinColumn(name = "supplier_id", referencedColumnName = "id") // join column condition
 	private Supplier supplierId;
-	
+
 	@ManyToOne // relationship format
 	@JoinColumn(name = "purchase_order_id", referencedColumnName = "id") // join column condition
 	private PurchaseOrder purchaseOrderId;
-	
+
 	@Column(name = "supplier_inv_no")
 	private String supplierInvId;
-	
+
 	@Column(name = "total")
 	@NotNull
 	private BigDecimal total;
-	
+
 	@Column(name = "discount")
 	private BigDecimal discount;
-	
+
 	@Column(name = "grand_total")
 	@NotNull
 	private BigDecimal grandTotal;
-	
+
 	@Column(name = "paid")
 	@NotNull
 	private BigDecimal paid;
-	
+
 	@Column(name = "item_count")
 	@NotNull
 	private Integer itemCount;
-	
+
 	@Column(name = "note")
 	private String note;
 
@@ -83,7 +83,7 @@ public class Grn {
 
 	@Column(name = "deleted_datetime")
 	private LocalDateTime deletedDateTime;
-	
+
 	@Column(name = "added_user_id")
 	private Integer addedUserId;
 
@@ -92,7 +92,31 @@ public class Grn {
 
 	@Column(name = "deleted_user_id")
 	private Integer deletedUserId;
-	
-	@OneToMany(mappedBy = "grnId",cascade = CascadeType.ALL,orphanRemoval = true) //map with grnId foreign key property in GrnHasProduct object, use cascade all to access all operations in grn_has_product table
+
+	@OneToMany(mappedBy = "grnId", cascade = CascadeType.ALL, orphanRemoval = true) // map with grnId foreign key property in GrnHasProduct object,use cascade all to access alloperations in grn_has_product table
 	private List<GrnHasProduct> grnHasProducts;
+
+	public Grn(Integer id, String grnCode, Supplier supplierId, PurchaseOrder purchaseOrderId, LocalDateTime addedDateTime, BigDecimal grandTotal,
+			Integer itemCount, GrnStatus grnStatusId) {
+		this.id = id;
+		this.grnCode = grnCode;
+		this.supplierId = supplierId;
+		this.purchaseOrderId = purchaseOrderId;
+		this.grandTotal = grandTotal;
+		this.itemCount = itemCount;
+		this.grnStatusId = grnStatusId;
+		this.addedDateTime = addedDateTime;
+	}
+	
+	public Grn(Integer id, String grnCode, Supplier supplierId, LocalDateTime addedDateTime, BigDecimal grandTotal,
+			Integer itemCount, GrnStatus grnStatusId) {
+		this.id = id;
+		this.grnCode = grnCode;
+		this.supplierId = supplierId;
+		this.grandTotal = grandTotal;
+		this.itemCount = itemCount;
+		this.grnStatusId = grnStatusId;
+		this.addedDateTime = addedDateTime;
+	}
+
 }

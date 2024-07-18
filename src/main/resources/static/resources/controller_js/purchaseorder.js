@@ -590,7 +590,7 @@ const refreshTable = () => {
   $("#purchaseOrdersTable").dataTable();
 };
 
-// // ********* TABLE OPERATIONS *********
+// ********* TABLE OPERATIONS *********
 
 // //function for get Supplier
 const getSupplier = (rowObject) => {
@@ -655,7 +655,6 @@ const viewRecord = () => {};
 const refillRecord = (rowObject, rowId) => {
   $("#addNewButton").click();
 
-  // default = rowObject;
   purchaseOrder = JSON.parse(JSON.stringify(rowObject));
   oldPurchaseOrder = JSON.parse(JSON.stringify(rowObject));
 

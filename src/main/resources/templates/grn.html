@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/grn.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2>
+              <img
+                src="resources/icons/porder-icon2.png"
+                alt="porder-icon"
+                class="me-3"
+                style="height: 40px; width: 40px"
+              />GRN Management
+            </h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="accordion" id="accordionSection">
+          <!-- add new form area start -->
+          <div class="accordion-item" id="addAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#addNewSection"
+                aria-expanded="false"
+                aria-controls="addNewSection"
+                id="addNewButton"
+              >
+                Add New GRN
+              </button>
+            </h2>
+            <div
+              id="addNewSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body">
+                  <form onsubmit="return false">
+                    <!-- * required mark -->
+                    <div class="row">
+                      <div class="col-12 text-end">
+                        <span class="fw-bold"
+                          ><span class="text-danger">* </span>Required</span
+                        >
+                      </div>
+                    </div>
+
+                    <!-- supplier/required date/ po status -->
+                    <div class="row mt-2">
+                      <!-- po id -->
+                      <div class="col-md-3">
+                        <label for="textPOID" class="form-label fw-bold">
+                          PO ID:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Purchase Order ID"
+                          class="form-control"
+                          id="textPOID"
+                        />
+                      </div>
+                      <div class="col-md-1"></div>
+                      <!-- supplier -->
+                      <div class="col-md-4">
+                        <label for="selectSupplier" class="form-label fw-bold">
+                          Supplier : <span class="text-danger"> * </span>
+                        </label>
+                        <select
+                          id="selectSupplier"
+                          class="form-select"
+                          required
+                        >
+                          <option value="" selected disabled>
+                            Select Supplier
+                          </option>
+                          <option value="Option1">Option 1</option>
+                        </select>
+                      </div>
+                      <div class="col-md-1"></div>
+                      <!-- supplier inv code id -->
+                      <div class="col-md-3">
+                        <label
+                          for="textSupplierInvNo"
+                          class="form-label fw-bold"
+                        >
+                          Supplier Invoice No.:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Supplier Invoice ID"
+                          class="form-control"
+                          id="textSupplierInvNo"
+                        />
+                      </div>
+                      <div class="col-md-1"></div>
+                    </div>
+
+                    <!-- note/status -->
+                    <div class="row mt-2">
+                      <!-- note -->
+                      <div class="col-md-8">
+                        <label for="textNote" class="form-label fw-bold">
+                          Note :
+                        </label>
+                        <textarea
+                          id="textNote"
+                          class="form-control"
+                          placeholder="Enter Note Here"
+                        ></textarea>
+                      </div>
+                      <div class="col-md-1"></div>
+                      <!-- PO status -->
+                      <div class="col-md-3">
+                        <label for="selectGRNStatus" class="form-label fw-bold">
+                          Status : <span class="text-danger"> * </span>
+                        </label>
+                        <select
+                          id="selectGRNStatus"
+                          class="form-select"
+                          required
+                        >
+                          <option value="" selected disabled>
+                            Select Status
+                          </option>
+                          <option value="Option1">Option 1</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <hr class="seperator" />
+
+                    <!-- start product details area -->
+                    <p>
+                      <b><i>Product Details</i></b>
+                    </p>
+                    <!-- inner form -->
+                    <div class="row mt-2">
+                      <!-- product -->
+                      <div class="col-md-4">
+                        <label for="selectProduct" class="form-label fw-bold">
+                          Product : <span class="text-danger"> * </span>
+                        </label>
+                        <select id="selectProduct" class="form-select" required>
+                          <option value="" selected disabled>
+                            Select Product
+                          </option>
+                        </select>
+                      </div>
+
+                      <!-- cost price -->
+                      <div class="col-md-2">
+                        <label for="textCostPrice" class="form-label fw-bold">
+                          Purchase Price (Rs.):
+                          <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Purchase Price"
+                          class="form-control"
+                          id="textCostPrice"
+                          required
+                        />
+                      </div>
+
+                      <!-- qty -->
+                      <div class="col-md-1">
+                        <label for="textQty" class="form-label fw-bold">
+                          Qty : <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Qty"
+                          class="form-control"
+                          id="textQty"
+                          required
+                        />
+                      </div>
+
+                      <!-- sell price -->
+                      <div class="col-md-2">
+                        <label for="textSellPrice" class="form-label fw-bold">
+                          Sell Price (Rs.):
+                          <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Sell Price"
+                          class="form-control"
+                          id="textSellPrice"
+                          required
+                        />
+                      </div>
+
+                      <!-- line amount -->
+                      <div class="col-md-2">
+                        <label for="textLineAmount" class="form-label fw-bold">
+                          Total (Rs):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textLineAmount"
+                          required
+                          disabled
+                          style="border: none"
+                        />
+                      </div>
+
+                      <!-- add product button -->
+                      <div class="col-md-1">
+                        <label
+                          for="btnAddProduct"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddProduct"
+                          style="display: block"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- inner table -->
+                    <div class="row mt-4">
+                      <table
+                        class="table table-hover pt-3 mb-3"
+                        id="productsTable"
+                      >
+                        <thead class="table-dark">
+                          <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Purchase Price (Rs.)</th>
+                            <th>Quantity</th>
+                            <th>Sell Price (Rs.)</th>
+                            <th>Total (Rs.)</th>
+                            <th style="width: 100px; text-align: right">
+                              Modify
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-group-divider"></tbody>
+                      </table>
+                    </div>
+                    <!-- end product details area -->
+                    <hr class="seperator" />
+
+                    <!-- qty -->
+                    <div class="row mt-4">
+                      <div class="col-md-2 ms-auto">
+                        <label for="textTotalQty" class="form-label fw-bold">
+                          Total Qty:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textTotalQty"
+                          required
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    <!-- total amount/discount/grand total/paid total -->
+                    <div class="row mt-2">
+                      <!-- total amount -->
+                      <div class="col-md-3">
+                        <label for="textTotalAmount" class="form-label fw-bold">
+                          Total Amount (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textTotalAmount"
+                          required
+                          disabled
+                        />
+                      </div>
+                      <!-- discount -->
+                      <div class="col-md-3">
+                        <label for="textDiscount" class="form-label fw-bold">
+                          Discount (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Discount"
+                          class="form-control"
+                          id="textDiscount"
+                        />
+                      </div>
+                      <!-- grand total amount -->
+                      <div class="col-md-3">
+                        <label for="textGrandTotal" class="form-label fw-bold">
+                          Total Amount (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textGrandTotal"
+                          required
+                          disabled
+                        />
+                      </div>
+                      <!-- paid total amount -->
+                      <div class="col-md-3">
+                        <label for="textPaid" class="form-label fw-bold">
+                          Paid Amount (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textPaid"
+                          disabled
+                        />
+                      </div>
+                    </div>
+
+                    <!-- buttons -->
+                    <div class="row mt-4 justify-content-end">
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-clear"
+                          id="btnReset"
+                        >
+                          <i class="fa-solid fa-recycle me-2"></i>Clear
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-update"
+                          id="btnUpdate"
+                        >
+                          <i class="fa-solid fa-gears me-2"></i>Update
+                        </button>
+                      </div>
+                      <div class="col-auto text-center">
+                        <button
+                          type="button"
+                          class="btn fw-bold btn-add"
+                          id="btnAdd"
+                        >
+                          <i class="fa-solid fa-square-plus me-2"></i>Add
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- add new form area end -->
+
+          <!-- view all table area start -->
+          <div class="accordion-item" id="viewAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View All GRNs
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <table class="table table-hover pt-3 mb-3" id="grnTable">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>GRN Code</th>
+                        <th>Supplier</th>
+                        <th>PO Id</th>
+                        <th>Added Date</th>
+                        <th>Item Count</th>
+                        <th>Grand Total</th>
+                        <th>Status</th>
+                        <th style="width: 50px; text-align: right">Modify</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
+        </div>
+        <!-- content area end -->
+      </div>
+      <!-- view record model start -->
+      <div class="modal" id="modelView">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>View # Details</h2>
+              <button class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <table id="printTable" class="table">
+                <tr>
+                  <th>FullName</th>
+                  <td id="tdFullName"></td>
+                </tr>
+                <tr>
+                  <th>NIC</th>
+                  <td id="tdNIC"></td>
+                </tr>
+                <tr>
+                  <th>Mobile</th>
+                  <td id="tdMobile"></td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td id="tdStatus"></td>
+                </tr>
+              </table>
+            </div>
+            <dv class="modal-footer">
+              <button class="btn btn-info" id="btnViewPrint">Print</button>
+            </dv>
+          </div>
+        </div>
+      </div>
+      <!-- view record model end -->
+    </div>
+    <div th:replace="~{alertbox :: alertFragment}"></div>
+  </body>
+</html>

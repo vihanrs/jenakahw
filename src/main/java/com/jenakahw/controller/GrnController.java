@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,8 +50,10 @@ public class GrnController {
 	
 	@Autowired
 	private StockRepository stockRepository;
+	
+	private static final String MODULE = "GRN";
 
-	// supplier UI service [/purchaseorder -- return Purchase Order UI]
+	// GRN UI service [/grn -- return GRN UI]
 	@GetMapping
 	public ModelAndView grnUI() {
 		// get logged user authentication object
@@ -59,26 +62,36 @@ public class GrnController {
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("title", "GRN | Jenaka Hardware");
 		modelAndView.addObject("logusername", auth.getName());
-//		modelAndView.setViewName("grn.html");
+		modelAndView.setViewName("grn.html");
 		return modelAndView;
 	}
 
 	// get mapping for get all grn data -- [/grn/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Grn> findAll() {
-		if (privilegeController.hasPrivilege("Supplier", "select")) {
-			return grnRepository.findAll(Sort.by(Direction.DESC, "id"));
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return grnRepository.findAll();
 		} else {
 			return null;
 		}
 	}
+	
+	// get mapping for get all grn data by grnID -- [/grn/findall]
+		@GetMapping(value = "/findbyid/{grnId}", produces = "application/json")
+		public Grn findByGrnId(@PathVariable("grnId") Integer grnId) {
+			if (privilegeController.hasPrivilege(MODULE, "select")) {
+				return grnRepository.getGrnById(grnId);
+			} else {
+				return null;
+			}
+		}
 
 	// post mapping for save grn
 	@Transactional
 	@PostMapping
 	public String saveGrn(@RequestBody Grn grn) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("GRN", "insert")) {
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
@@ -122,7 +135,7 @@ public class GrnController {
 	@PutMapping
 	public String updateGrn(@RequestBody Grn grn) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("GRN", "update")) {
+		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
 
@@ -155,7 +168,7 @@ public class GrnController {
 	@DeleteMapping
 	public String deleteGrn(@RequestBody Grn grn) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("GRN", "delete")) {
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 

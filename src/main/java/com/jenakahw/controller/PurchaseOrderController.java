@@ -47,7 +47,7 @@ public class PurchaseOrderController {
 	
 	private static final String MODULE = "Purchase Order";
 
-	// supplier UI service [/purchaseorder -- return Purchase Order UI]
+	// GRN UI service [/purchaseorder -- return Purchase Order UI]
 	@GetMapping
 	public ModelAndView purchaseOrderUI() {
 		// get logged user authentication object

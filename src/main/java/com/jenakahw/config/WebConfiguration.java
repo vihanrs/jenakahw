@@ -28,6 +28,7 @@ public class WebConfiguration {
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
 			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/purchaseorder/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
+			.requestMatchers("/grn/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.anyRequest().authenticated();
 		})
 		//login form detail
