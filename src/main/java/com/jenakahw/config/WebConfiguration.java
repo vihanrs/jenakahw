@@ -24,7 +24,6 @@ public class WebConfiguration {
 			.requestMatchers("/dashboard/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
 			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager")
 			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
-//			.requestMatchers("/privilege/byloggeduserandmodule/**").permitAll()
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
 			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/purchaseorder/**").hasAnyAuthority("Admin","Manager","Store-Keeper")

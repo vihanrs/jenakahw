@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,7 +42,8 @@ public class Grn {
 	@JoinColumn(name = "supplier_id", referencedColumnName = "id") // join column condition
 	private Supplier supplierId;
 
-	@ManyToOne // relationship format
+	@Nullable
+	@ManyToOne(optional = true) // relationship format
 	@JoinColumn(name = "purchase_order_id", referencedColumnName = "id") // join column condition
 	private PurchaseOrder purchaseOrderId;
 

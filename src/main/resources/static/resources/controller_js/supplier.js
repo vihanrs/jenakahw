@@ -255,19 +255,16 @@ const refillBankDetail = (rowObject) => {
 //function for delete selected bank detail
 const deleteBankDetail = (rowObject) => {
   // get user confirmation
-  let userConfirm = window.confirm(
-    "Are you sure you want to delete this bank detail...?\n" +
-      rowObject.bankName +
-      " - " +
-      rowObject.accNo
-  );
-
-  if (userConfirm) {
-    //remove deleted bank detail from supplier.bankDetails
-    supplier.bankDetails = supplier.bankDetails.filter(
-      (bankdetail) => bankdetail.id != rowObject.id
-    );
-  }
+  let title = "Are you sure you want to delete this bank detail...?";
+  let message = rowObject.bankName + " - " + rowObject.accNo;
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //remove deleted bank detail from supplier.bankDetails
+      supplier.bankDetails = supplier.bankDetails.filter(
+        (bankdetail) => bankdetail.id != rowObject.id
+      );
+    }
+  });
   // refresh inner table
   refreshInnerFormAndTable();
 };
@@ -349,25 +346,26 @@ const addBankDetail = () => {
   let formErrors = checkInnerFormErrors();
   if (formErrors == "") {
     // get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following bank detail..?\n" +
-        "\nBank : " +
-        bankDetail.bankName +
-        " - " +
-        bankDetail.branchName +
-        "\nAcc No. : " +
-        bankDetail.accNo +
-        "\nAcc Holder Name : " +
-        bankDetail.accHolderName
-    );
+    let title = "Are you sure to add following bank detail..?";
+    let message =
+      "Bank : " +
+      bankDetail.bankName +
+      " - " +
+      bankDetail.branchName +
+      "\nAcc No. : " +
+      bankDetail.accNo +
+      "\nAcc Holder Name : " +
+      bankDetail.accHolderName;
 
-    if (userConfirm) {
-      //add object into array
-      supplier.bankDetails.push(bankDetail);
-      refreshInnerFormAndTable();
-    }
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //add object into array
+        supplier.bankDetails.push(bankDetail);
+        refreshInnerFormAndTable();
+      }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    showAlert("error", "Error\n" + formErrors);
   }
 };
 
@@ -479,25 +477,26 @@ const refillRecord = (rowObject, rowId) => {
 //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  const userConfirm = confirm(
-    "Are you sure to delete following record? \n" +
-      rowObject.firstName +
-      " " +
-      rowObject.lastName
-  );
-
-  if (userConfirm) {
-    //response from backend ...
-    let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
-    //check back end response
-    if (serverResponse == "OK") {
-      alert("Delete sucessfully..! \n" + serverResponse);
-      //need to refresh table and form
-      refreshAll();
-    } else {
-      alert("Delete not sucessfully..! have some errors \n" + serverResponse);
+  let title = "Are you sure to delete following record?";
+  let message = rowObject.firstName + " " + rowObject.lastName;
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //response from backend ...
+      let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
+      //check back end response
+      if (serverResponse == "OK") {
+        showAlert("success", "Delete sucessfully..! \n" + serverResponse);
+        //need to refresh table and form
+        refreshAll();
+      } else {
+        showAlert(
+          "error",
+          "Delete not successfully..! There were some errors \n" +
+            serverResponse
+        );
+      }
     }
-  }
+  });
 };
 
 // ********* FORM OPERATIONS *********
@@ -603,32 +602,36 @@ const addRecord = () => {
   //check form errors -
   let formErrors = checkError();
   if (formErrors == "") {
+    let title = "Are you sure to add following record..?";
+    let message =
+      "Supplier Name : " +
+      supplier.firstName +
+      " " +
+      (supplier.lastName != null ? supplier.lastName : " ") +
+      "\nContact : " +
+      supplier.contact;
     //get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following record..?\n" +
-        "\nSupplier Name : " +
-        supplier.firstName +
-        " " +
-        (supplier.lastName != null ? supplier.lastName : " ") +
-        "\nContact : " +
-        supplier.contact
-    );
 
-    if (userConfirm) {
-      //pass data into back end
-      let serverResponse = ajaxRequestBody("/supplier", "POST", supplier); // url,method,object
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //pass data into back end
+        let serverResponse = ajaxRequestBody("/supplier", "POST", supplier); // url,method,object
 
-      //check back end response
-      if (serverResponse == "OK") {
-        alert("Save sucessfully..! " + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        alert("Save not sucessfully..! have some errors \n" + serverResponse);
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Save sucessfully..! " + serverResponse);
+          //need to refresh table and form
+          refreshAll();
+        } else {
+          showAlert(
+            "error",
+            "Save not sucessfully..! have some errors \n" + serverResponse
+          );
+        }
       }
-    }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    showAlert("error", "Error\n" + formErrors);
   }
 };
 
@@ -638,31 +641,37 @@ const updateRecord = () => {
   if (errors == "") {
     let updates = checkUpdate();
     if (updates != "") {
-      let userConfirm = confirm(
-        "Are you sure you want to update following changes...?\n" + updates
-      );
-      if (userConfirm) {
-        let updateServiceResponse = ajaxRequestBody(
-          "/supplier",
-          "PUT",
-          supplier
-        );
-        if (updateServiceResponse == "OK") {
-          alert("Update sucessfully..! ");
-          //need to refresh table and form
-          refreshAll();
-        } else {
-          alert(
-            "Update not sucessfully..! have some errors \n" +
-              updateServiceResponse
+      let title = "Are you sure you want to update following changes...?";
+      let message = updates;
+
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          let updateServiceResponse = ajaxRequestBody(
+            "/supplier",
+            "PUT",
+            supplier
           );
+          if (updateServiceResponse == "OK") {
+            showAlert("success", "Update sucessfully..! ");
+            //need to refresh table and form
+            refreshAll();
+          } else {
+            showAlert(
+              "error",
+              "Update not sucessfully..! have some errors \n" +
+                updateServiceResponse
+            );
+          }
         }
-      }
+      });
     } else {
-      alert("Nothing to Update...!");
+      showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    alert("Cannot update!!!\n form has following errors \n" + errors);
+    showAlert(
+      "error",
+      "Cannot update!!!\n form has following errors \n" + errors
+    );
   }
 };
 
@@ -743,7 +752,7 @@ const addOneProduct = () => {
       "name"
     );
   } else {
-    alert("Please select value before add...!");
+    showAlert("warning", "Please select value before add...!");
   }
 };
 
@@ -784,7 +793,7 @@ const removeOneProduct = () => {
       "name"
     );
   } else {
-    alert("Please select value before remove...!");
+    showAlert("warning", "Please select value before remove...!");
   }
 };
 

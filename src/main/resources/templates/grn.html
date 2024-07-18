@@ -170,9 +170,9 @@
                           </option>
                         </select>
                       </div>
-
+                      <div class="col-md-1"></div>
                       <!-- cost price -->
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label for="textCostPrice" class="form-label fw-bold">
                           Purchase Price (Rs.):
                           <span class="text-danger"> * </span>
@@ -185,9 +185,9 @@
                           required
                         />
                       </div>
-
+                      <div class="col-md-1"></div>
                       <!-- qty -->
-                      <div class="col-md-1">
+                      <div class="col-md-3">
                         <label for="textQty" class="form-label fw-bold">
                           Qty : <span class="text-danger"> * </span>
                         </label>
@@ -199,9 +199,10 @@
                           required
                         />
                       </div>
-
+                    </div>
+                    <div class="row mt-2">
                       <!-- sell price -->
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label for="textSellPrice" class="form-label fw-bold">
                           Sell Price (Rs.):
                           <span class="text-danger"> * </span>
@@ -214,9 +215,9 @@
                           required
                         />
                       </div>
-
+                      <div class="col-md-2"></div>
                       <!-- line amount -->
-                      <div class="col-md-2">
+                      <div class="col-md-3">
                         <label for="textLineAmount" class="form-label fw-bold">
                           Total (Rs):
                         </label>
@@ -232,7 +233,7 @@
                       </div>
 
                       <!-- add product button -->
-                      <div class="col-md-1">
+                      <div class="col-md-1 ml-auto">
                         <label
                           for="btnAddProduct"
                           class="form-label fw-bold"
@@ -278,17 +279,17 @@
                     <!-- end product details area -->
                     <hr class="seperator" />
 
-                    <!-- qty -->
+                    <!-- item count -->
                     <div class="row mt-4">
                       <div class="col-md-2 ms-auto">
-                        <label for="textTotalQty" class="form-label fw-bold">
-                          Total Qty:
+                        <label for="textItemCount" class="form-label fw-bold">
+                          Item Count:
                         </label>
                         <input
                           type="text"
                           placeholder=""
                           class="form-control"
-                          id="textTotalQty"
+                          id="textItemCount"
                           required
                           disabled
                         />
@@ -326,7 +327,7 @@
                       <!-- grand total amount -->
                       <div class="col-md-3">
                         <label for="textGrandTotal" class="form-label fw-bold">
-                          Total Amount (Rs.):
+                          Grand Total Amount (Rs.):
                         </label>
                         <input
                           type="text"
@@ -422,7 +423,7 @@
                         <th>Item Count</th>
                         <th>Grand Total</th>
                         <th>Status</th>
-                        <th style="width: 50px; text-align: right">Modify</th>
+                        <th style="width: 80px; text-align: right">Modify</th>
                       </tr>
                     </thead>
                     <tbody class="table-group-divider"></tbody>

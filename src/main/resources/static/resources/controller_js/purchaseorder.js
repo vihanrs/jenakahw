@@ -189,24 +189,6 @@ const refreshForm = () => {
   getProductListBySupplier(0);
 };
 
-//function for get product list related to the selected supplier
-const getProductListBySupplier = (supplierId) => {
-  products = ajaxGetRequest("/product/availablelistWithSupplier/" + supplierId);
-  fillMoreDataIntoSelect(
-    selectProduct,
-    "Select Product",
-    products,
-    "barcode",
-    "name"
-  );
-};
-
-//clear previously added products and refresh when selecting another supplier
-const clearPreviousProducts = () => {
-  purchaseOrder.poHasProducts = [];
-  refreshInnerFormAndTable();
-};
-
 //function for refresh inner product form/table area
 const refreshInnerFormAndTable = () => {
   poProduct = {};
@@ -241,6 +223,25 @@ const refreshInnerFormAndTable = () => {
 };
 
 // ********* INNER FORM/TABLE OPERATIONS *********
+
+//function for get product list related to the selected supplier
+const getProductListBySupplier = (supplierId) => {
+  products = ajaxGetRequest("/product/availablelistWithSupplier/" + supplierId);
+  fillMoreDataIntoSelect(
+    selectProduct,
+    "Select Product",
+    products,
+    "barcode",
+    "name"
+  );
+};
+
+//clear previously tabel added products and refresh when selecting another supplier
+const clearPreviousProducts = () => {
+  purchaseOrder.poHasProducts = [];
+  refreshInnerFormAndTable();
+};
+
 // function for get product name and barcode
 const getProductName = (rowObject) => {
   return rowObject.productId.barcode + "-" + rowObject.productId.name;
@@ -257,7 +258,7 @@ const calLineAmount = () => {
   //display line amount
   textLineAmount.value =
     poProduct.lineAmount != 0
-      ? parseFloat(poProduct.purchasePrice * poProduct.qty).toFixed(2)
+      ? parseFloat(poProduct.lineAmount).toFixed(2)
       : "";
 };
 
@@ -395,7 +396,7 @@ const refreshRemainProductList = (selectedProduct) => {
 
 // ********* MAIN FORM OPERATIONS *********
 
-// //function for check errors
+//function for check errors
 const checkErrors = () => {
   //need to check all required prperty filds
   let error = "";
@@ -422,7 +423,7 @@ const checkErrors = () => {
 
 //function for check updates
 const checkUpdates = () => {
-  let updates = ""; //when using 'let' this object only usable is this functional area
+  let updates = "";
 
   if (oldPurchaseOrder.requiredDate != purchaseOrder.requiredDate) {
     updates +=
@@ -544,6 +545,8 @@ const updateRecord = () => {
   }
 };
 
+// ********* TABLE OPERATIONS *********
+
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
@@ -589,9 +592,6 @@ const refreshTable = () => {
 
   $("#purchaseOrdersTable").dataTable();
 };
-
-// ********* TABLE OPERATIONS *********
-
 // //function for get Supplier
 const getSupplier = (rowObject) => {
   return (
