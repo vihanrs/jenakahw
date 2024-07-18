@@ -28,4 +28,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
 	@Query(value = "select new Product(p.id,p.name,p.barcode) from Product p where p.productStatusId.id = (select ps.id from ProductStatus ps where ps.name = 'Available') "
 			+ "and p.id in (select phs.productId.id from ProductHasSupplier phs where phs.supplierId.id = ?1) order by p.id desc")
 	public List<Product> getAvailableProductsWithSupplier(Integer supplierId);
+	
+	// query for get product by name
+	@Query(value = "Select p from Product p where p.name = ?1")
+	public Product getProductByName(String name);
+	
+	// query for generate next barcode
+	@Query(value = "")
+	public String getNextBarcode();
 }

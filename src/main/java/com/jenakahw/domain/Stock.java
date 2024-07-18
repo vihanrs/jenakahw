@@ -26,9 +26,13 @@ public class Stock {
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
 
-	@Column(name = "qty")
+	@Column(name = "total_qty")
 	@NotNull
-	private BigDecimal qty;
+	private BigDecimal totalQty;
+	
+	@Column(name = "available_qty")
+	@NotNull
+	private BigDecimal availableQty;
 
 	@Column(name = "cost_price")
 	@NotNull
@@ -45,16 +49,4 @@ public class Stock {
 	@JoinColumn(name = "product_id", referencedColumnName = "id") // join column condition
 	private Product productId; 
 	
-	@Column(name = "grn_has_product_id")
-	@NotNull
-	private Integer grnHasProductId;
-	
-	public Stock(BigDecimal qty,BigDecimal costPrice,BigDecimal sellPrice,Boolean isActive,Product productId,Integer grnHasProductId) {
-		this.qty = qty;
-		this.costPrice = costPrice;
-		this.sellPrice = sellPrice;
-		this.isActive = isActive;
-		this.productId = productId;
-		this.grnHasProductId = grnHasProductId;
-	}
 }

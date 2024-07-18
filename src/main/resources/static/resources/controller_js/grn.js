@@ -422,7 +422,8 @@ const calLineAmount = () => {
   //calculate line amount
   grnProduct.lineAmount =
     grnProduct.costPrice != null && grnProduct.qty != null
-      ? grnProduct.costPrice * grnProduct.qty
+      ? parseFloat(grnProduct.costPrice).toFixed(2) *
+        parseFloat(grnProduct.qty).toFixed(2)
       : 0;
 
   //display line amount
@@ -578,6 +579,7 @@ const calculateGRNTotal = () => {
 const getItemCount = () => {
   let count = grn.grnHasProducts.length;
   textItemCount.value = count;
+  grn.itemCount = count;
 };
 
 // ********* TABLE OPERATIONS *********

@@ -13,7 +13,7 @@ public interface GrnRepository extends JpaRepository<Grn, Integer> {
 
 	// query for generate next grn code formate - 'GRNyyyymm001'
 	@Query(value = "SELECT concat('GRN',YEAR(CURRENT_DATE()),lpad(MONTH(CURRENT_DATE()),2,0),lpad(substring(max(grn.grn_code),10)+1,3,0)) as next_grn_code "
-			+ "FROM jenakahw.grn as grn where DATE(grn.added_datetime) = CURRENT_DATE()", nativeQuery = true)
+			+ "FROM jenakahw.grn as grn where MONTH(DATE(grn.added_datetime)) = MONTH(CURRENT_DATE())", nativeQuery = true)
 	public String getNextGRNCode();
 	
 	// query for get selected data

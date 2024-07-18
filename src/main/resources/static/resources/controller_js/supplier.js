@@ -263,10 +263,11 @@ const deleteBankDetail = (rowObject) => {
       supplier.bankDetails = supplier.bankDetails.filter(
         (bankdetail) => bankdetail.id != rowObject.id
       );
+
+      // refresh inner table
+      refreshInnerFormAndTable();
     }
   });
-  // refresh inner table
-  refreshInnerFormAndTable();
 };
 //function for refresh table records
 const refreshTable = () => {

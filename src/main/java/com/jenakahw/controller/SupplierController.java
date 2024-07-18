@@ -182,7 +182,7 @@ public class SupplierController {
 			supplier.setDeletedUserId(userController.getLoggedUser().getId());
 			
 			// set supplier statuts to 'Deleted'
-			supplier.setSupplierStatusId(supplierStatusRepository.getReferenceById(3)); // set supplier status to 'Deleted'
+			supplier.setSupplierStatusId(supplierStatusRepository.getReferenceById(3)); 
 			
 			for(SupplierBankDetails bankDetails : supplier.getBankDetails()) {
 				bankDetails.setSupplierId(supplier);

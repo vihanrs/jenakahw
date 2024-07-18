@@ -252,7 +252,8 @@ const calLineAmount = () => {
   //calculate line amount
   poProduct.lineAmount =
     poProduct.purchasePrice != null && poProduct.qty != null
-      ? poProduct.purchasePrice * poProduct.qty
+      ? parseFloat(poProduct.purchasePrice).toFixed(2) *
+        parseFloat(poProduct.qty).toFixed(2)
       : 0;
 
   //display line amount
@@ -266,7 +267,7 @@ const calLineAmount = () => {
 const calculatePOTotal = () => {
   let poTotal = 0;
   purchaseOrder.poHasProducts.forEach((product) => {
-    poTotal += parseFloat(product.lineAmount);
+    poTotal += parseFloat(product.lineAmount).toFixed(2);
   });
 
   //bind value to totalAmount
@@ -414,7 +415,7 @@ const checkErrors = () => {
     selectPOStatus.style.border = "1px solid red";
   }
 
-  if (parseFloat(purchaseOrder.totalAmount).toFixed(2) == 0.0) {
+  if (purchaseOrder.poHasProducts.length == 0) {
     error = error + "Please Select Products...!\n";
   }
 
@@ -454,7 +455,7 @@ const checkUpdates = () => {
   }
   if (oldPurchaseOrder.totalAmount != purchaseOrder.totalAmount) {
     updates +=
-      "Products Updated...!\nTotal Amount has changed Rs." +
+      "Total Amount has changed Rs." +
       oldPurchaseOrder.totalAmount +
       " into Rs." +
       purchaseOrder.totalAmount +
@@ -632,6 +633,7 @@ const getStatus = (rowObject) => {
 
 const viewRecord = () => {};
 // //function for view record
+
 // const viewRecord = (rowObject, rowId) => {
 //   //need to get full object
 //   let printObj = rowObject;
@@ -652,6 +654,7 @@ const viewRecord = () => {};
 // };
 
 //function for refill record
+
 const refillRecord = (rowObject, rowId) => {
   $("#addNewButton").click();
 

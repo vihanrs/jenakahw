@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jenakahw.domain.User;
 import com.jenakahw.domain.Product;
 import com.jenakahw.repository.ProductRepository;
+import com.jenakahw.repository.ProductStatusRepository;
 
 @RestController
 // add class level mapping /product
@@ -35,9 +36,14 @@ public class ProductController {
 
 	@Autowired
 	private PrivilegeController privilegeController;
+	
+	@Autowired
+	private ProductStatusRepository productStatusRepository;
 
 	@Autowired
 	private UserController userController;
+
+	private static final String MODULE = "Product";
 
 	// get mapping for generate product UI
 	@GetMapping
@@ -56,7 +62,7 @@ public class ProductController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Product> findAll() {
 		// check privileges
-		if (privilegeController.hasPrivilege("Product", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return productRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
@@ -68,7 +74,7 @@ public class ProductController {
 	@GetMapping(value = "/availablelist", produces = "application/json")
 	public List<Product> getAvilableProducts() {
 		// check privileges
-		if (privilegeController.hasPrivilege("Product", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return productRepository.getAvailableProducts();
 		} else {
 			return null;
@@ -79,7 +85,7 @@ public class ProductController {
 	@GetMapping(value = "/availablelistWithoutSupplier/{supplierId}", produces = "application/json")
 	public List<Product> getAvilableProductsWithoutSupplier(@PathVariable("supplierId") Integer supplierId) {
 		// check privileges
-		if (privilegeController.hasPrivilege("Product", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return productRepository.getAvailableProductsWithoutSupplier(supplierId);
 		} else {
 			return null;
@@ -90,7 +96,7 @@ public class ProductController {
 	@GetMapping(value = "/availablelistWithSupplier/{supplierId}", produces = "application/json")
 	public List<Product> getAvilableProductsWithSupplier(@PathVariable("supplierId") Integer supplierId) {
 		// check privileges
-		if (privilegeController.hasPrivilege("Product", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return productRepository.getAvailableProductsWithSupplier(supplierId);
 		} else {
 			return null;
@@ -101,24 +107,23 @@ public class ProductController {
 	@PostMapping
 	public String savePrivilege(@RequestBody Product product) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Product", "insert")) {
-			return "Access Denied !!!";
-		}
-		// get logged user
-		User loggedUser = userController.getLoggedUser();
-
-		// check privileges
-		if (!privilegeController.hasPrivilege("Privilege", "insert")) {
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
 		// check duplicates...
+		Product extProductByName = productRepository.getProductByName(product.getName());
+		if (extProductByName != null) {
+			return "Product Save Not Completed : product name already exist...!";
+		}
 
 		try {
+			// generate barcode
+
 			// set added date time
 			product.setAddedDateTime(LocalDateTime.now());
 			// set added user
-			product.setUserId(loggedUser);
+			product.setAddedUserId(userController.getLoggedUser().getId());
 
 			productRepository.save(product);
 			return "OK";
@@ -131,21 +136,24 @@ public class ProductController {
 	@PutMapping
 	public String updateUser(@RequestBody Product product) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Product", "update")) {
+		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
-		// get logged user
-		User loggedUser = userController.getLoggedUser();
 
 		// check duplicates...
+		Product extProductByName = productRepository.getProductByName(product.getName());
+		if (extProductByName != null && product.getId() != extProductByName.getId()) {
+			return "Product Updadte Not Completed : product name already exist...!";
+		}
 
 		try {
 			// set last updated date time
 			product.setLastUpdatedDateTime(LocalDateTime.now());
 			// set updated user id
-			product.setUpdatedUserId(loggedUser.getId());
+			product.setUpdatedUserId(userController.getLoggedUser().getId());
 
 			productRepository.save(product);
+			
 			return "OK";
 		} catch (Exception e) {
 			return "Update not completed : " + e.getMessage();
@@ -156,13 +164,26 @@ public class ProductController {
 	@DeleteMapping
 	public String deleteUser(@RequestBody Product product) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Product", "delete")) {
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 
 		// check given product exist or not
+		Product extProduct = productRepository.getReferenceById(product.getId());
+		if(extProduct == null) {
+			return "Product Delete Not Completed : Product Not Exist..!";
+		}
 
 		try {
+			//set deleted data and time
+			product.setDeletedDateTime(LocalDateTime.now());
+			
+			//set deleted user id
+			product.setDeletedUserId(userController.getLoggedUser().getId());
+			
+			// set product statuts to 'Deleted'
+			product.setProductStatusId(productStatusRepository.getReferenceById(3));
+			
 			return "OK";
 		} catch (Exception e) {
 			return "Delete not complete :" + e.getMessage();

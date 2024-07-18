@@ -6,8 +6,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.GrnHasProduct;
+import com.jenakahw.domain.Product;
 import com.jenakahw.domain.Stock;
 import com.jenakahw.repository.GrnRepository;
 import com.jenakahw.repository.GrnStatusRepository;
@@ -87,7 +86,6 @@ public class GrnController {
 		}
 
 	// post mapping for save grn
-	@Transactional
 	@PostMapping
 	public String saveGrn(@RequestBody Grn grn) {
 		// check privileges
@@ -116,13 +114,34 @@ public class GrnController {
 
 			for (GrnHasProduct grnHasProduct : grn.getGrnHasProducts()) {
 				grnHasProduct.setGrnId(grn);
-				
-//				Stock stock = new Stock(grnHasProduct.getQty() ,grnHasProduct.getCostPrice(),grnHasProduct.getSellPrice(),true,grnHasProduct.getProductId(),grnHasProduct.getId());
-//				stockRepository.save(stock);
 			}
 			
 			
-			grnRepository.save(grn);
+			Grn newGrn = grnRepository.save(grn);
+
+			//need to update stock
+			for (GrnHasProduct grnHasProduct : newGrn.getGrnHasProducts()) {
+				Product product = grnHasProduct.getProductId();
+				Stock extStock = stockRepository.getByProductAndPrice(product.getId(),grnHasProduct.getCostPrice());
+				if(extStock != null) {
+					System.err.println("T1");
+					extStock.setAvailableQty(extStock.getAvailableQty().add(grnHasProduct.getQty()));
+					extStock.setTotalQty(extStock.getTotalQty().add(grnHasProduct.getQty()));
+					extStock.setIsActive(true);
+					stockRepository.save(extStock);
+					
+				}else {
+					System.err.println("T2");
+					Stock newStock = new Stock();
+					newStock.setProductId(product);
+					newStock.setCostPrice(grnHasProduct.getCostPrice());
+					newStock.setSellPrice(grnHasProduct.getSellPrice());
+					newStock.setAvailableQty(grnHasProduct.getQty());
+					newStock.setTotalQty(grnHasProduct.getQty());
+					newStock.setIsActive(true);
+					stockRepository.save(newStock);
+				}
+			}
 
 			return "OK";
 		} catch (Exception e) {
