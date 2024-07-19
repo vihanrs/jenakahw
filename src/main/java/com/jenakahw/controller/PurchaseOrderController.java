@@ -111,6 +111,7 @@ public class PurchaseOrderController {
 	}
 
 	// put mapping for update existing purchase order
+	@Transactional
 	@PutMapping
 	public String updatePerchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
@@ -143,6 +144,7 @@ public class PurchaseOrderController {
 	}
 
 	// delete mapping for delete a purchase order
+	@Transactional
 	@DeleteMapping
 	public String deletePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges

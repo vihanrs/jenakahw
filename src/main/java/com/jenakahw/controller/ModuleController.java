@@ -29,7 +29,6 @@ public class ModuleController {
 	//get mapping for get module date by given role id - [/module/listbyrole?roleid=1]
 	@GetMapping(value = "/listbyrole", params = {"roleid"}, produces = "application/json")
 	public List<Module> getModulesByRoleWithoutPrivileges(@RequestParam("roleid") Integer roleId){
-		System.out.println(roleId);
 		return moduleRepository.getModulesByRoleWithoutPrivileges(roleId);
 	}
 }

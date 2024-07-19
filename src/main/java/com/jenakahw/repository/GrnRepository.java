@@ -18,10 +18,6 @@ public interface GrnRepository extends JpaRepository<Grn, Integer> {
 	
 	// query for get selected data
 	@Query(value = "Select new Grn(g.id,g.grnCode,g.supplierId,g.purchaseOrderId,g.addedDateTime,g.grandTotal,g.itemCount,g.grnStatusId) from Grn g order by g.id desc")
-	public List<Grn> findAlls();
-	
-	// query for get selected data
-	@Query(value = "Select new Grn(g.id,g.grnCode,g.supplierId,g.addedDateTime,g.grandTotal,g.itemCount,g.grnStatusId) from Grn g order by g.id desc")
 	public List<Grn> findAll();
 	
 	// query for get grn by id

@@ -42,8 +42,9 @@ public class Stock {
 	@NotNull
 	private BigDecimal sellPrice;
 
-	@Column(name = "is_active")
-	private Boolean isActive;
+	@ManyToOne // relationship format
+	@JoinColumn(name = "stock_status_id", referencedColumnName = "id") // join column condition
+	private StockStatus stockStatus; 
 	
 	@ManyToOne // relationship format
 	@JoinColumn(name = "product_id", referencedColumnName = "id") // join column condition

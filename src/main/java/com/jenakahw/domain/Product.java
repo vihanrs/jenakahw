@@ -61,8 +61,8 @@ public class Product {
 	private ProductStatus productStatusId;
 
 	@ManyToOne // relationship format
-	@JoinColumn(name = "unit_type", referencedColumnName = "id") // join column condition
-	private UnitType unitType;
+	@JoinColumn(name = "unit_type_id", referencedColumnName = "id") // join column condition
+	private UnitType unitTypeId;
 
 	@Column(name = "added_datetime")
 	@NotNull
@@ -89,4 +89,12 @@ public class Product {
 		this.name = name;
 		this.barcode = barcode;
 	}
+	
+	// parameterised constructor
+		public Product(Integer id, String name, String barcode,UnitType type) {
+			this.id = id;
+			this.name = name;
+			this.barcode = barcode;
+			this.unitTypeId=type;
+		}
 }

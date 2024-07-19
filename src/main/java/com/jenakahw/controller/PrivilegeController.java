@@ -32,6 +32,8 @@ public class PrivilegeController {
 	 */
 	@Autowired
 	private PrivilegeRepository privilegeRepository;
+	
+	private static final String MODULE = "Privilege";
 
 	// get mapping for generate privilege UI
 	@GetMapping()
@@ -57,7 +59,7 @@ public class PrivilegeController {
 	public String savePrivilege(@RequestBody Privilege privilege) {
 
 		// check privileges
-		if (!hasPrivilege("Privilege", "insert")) {
+		if (!hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
@@ -81,7 +83,7 @@ public class PrivilegeController {
 	public String updatePrivilege(@RequestBody Privilege privilege) {
 
 		// check privileges
-		if (!hasPrivilege("Privilege", "update")) {
+		if (!hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
 
@@ -104,7 +106,7 @@ public class PrivilegeController {
 	public String deletePrivilege(@RequestBody Privilege privilege) {
 		
 		// check privileges
-		if (!hasPrivilege("Privilege", "delete")) {
+		if (!hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 		// check existing

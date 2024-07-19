@@ -44,7 +44,8 @@ const addEventListeners = () => {
   });
 
   selectProduct.addEventListener("change", () => {
-    selectDFieldValidator(selectProduct, "grnProduct", "productId");
+    selectDFieldValidator(selectProduct, "grnProduct", "productId"),
+      setUnitType(grnProduct.productId);
   });
 
   textCostPrice.addEventListener("keyup", () => {
@@ -366,6 +367,7 @@ const refreshInnerFormAndTable = () => {
   textSellPrice.value = "";
   textLineAmount.value = "";
   selectProduct.value = "";
+  textUnitType.innerText = "";
 
   //set default border color
   let elements = [
@@ -409,6 +411,12 @@ const getProductListBySupplier = (supplierId) => {
     "barcode",
     "name"
   );
+  textUnitType.innerText = "";
+};
+
+// function for get unit type for selected product
+const setUnitType = (product) => {
+  textUnitType.innerText = "(" + product.unitTypeId.name + ")";
 };
 
 //clear previously tabel added products and refresh when selecting another supplier
@@ -641,14 +649,24 @@ const getSupplier = (rowObject) => {
   );
 };
 
-const getPurchaseOrderId = (rowObject) => {};
+const getPurchaseOrderId = (rowObject) => {
+  return rowObject.purchaseOrderId.poCode;
+};
 
 const getAddedDate = (rowObject) => {
   return rowObject.addedDateTime.substring(0, 10);
 };
 
 const getStatus = (rowObject) => {
-  return rowObject.grnStatusId.name;
+  if (rowObject.grnStatusId.name == "Received") {
+    return (
+      '<p class = "status status-active">' + rowObject.grnStatusId.name + "</p>"
+    );
+  } else if (rowObject.grnStatusId.name == "Deleted") {
+    return (
+      '<p class = "status status-error">' + rowObject.grnStatusId.name + "</p>"
+    );
+  }
 };
 
 const refillRecord = (rowObject, rowId) => {
@@ -657,7 +675,7 @@ const refillRecord = (rowObject, rowId) => {
   grn = ajaxGetRequest("/grn/findbyid/" + rowObject.id);
   oldGrn = JSON.parse(JSON.stringify(grn));
 
-  textPOID.value = grn.purchaseOrderId != null ? grn.purchaseOrderId : "";
+  textPOID.value = grn.purchaseOrderId.poCode;
   textSupplierInvNo.value = grn.supplierInvId != null ? grn.supplierInvId : "";
   textNote.value = grn.note != null ? grn.note : "";
   textDiscount.value = grn.discount != null ? grn.discount : "";
@@ -727,11 +745,7 @@ const deleteRecord = (rowObject, rowId) => {
   showConfirm(title, message).then((userConfirm) => {
     if (userConfirm) {
       //response from backend ...
-      let serverResponse = ajaxRequestBody(
-        "/purchaseorder",
-        "DELETE",
-        rowObject
-      ); // url,method,object
+      let serverResponse = ajaxRequestBody("/grn", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
         showAlert("success", "Delete successfully..! \n" + serverResponse).then(

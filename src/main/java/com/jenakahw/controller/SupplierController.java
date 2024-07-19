@@ -22,6 +22,8 @@ import com.jenakahw.domain.SupplierBankDetails;
 import com.jenakahw.repository.SupplierRepository;
 import com.jenakahw.repository.SupplierStatusRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 @RequestMapping(value = "/supplier") // class level mapping
 public class SupplierController {
@@ -42,6 +44,7 @@ public class SupplierController {
 	@Autowired
 	private UserController userController;
 
+	private static final String MODULE = "Supplier";
 	// supplier UI service [/supplier -- return supplier UI]
 	@GetMapping
 	public ModelAndView supplierUI() {
@@ -58,7 +61,7 @@ public class SupplierController {
 	// get mapping for get all supplier data -- [/supplier/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Supplier> findAll() {
-		if (privilegeController.hasPrivilege("Supplier", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return supplierRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
@@ -68,7 +71,7 @@ public class SupplierController {
 	// get mapping for get all active supplier selected data -- [/supplier/getactivesuppliers]
 	@GetMapping(value = "/findactivesuppliers", produces = "application/json")
 	public List<Supplier> findActiveSuppliers() {
-		if (privilegeController.hasPrivilege("Supplier", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return supplierRepository.findActiveSuppliers();
 		} else {
 			return null;
@@ -76,10 +79,11 @@ public class SupplierController {
 	}
 
 	// post mapping for save new supplier
+	@Transactional
 	@PostMapping
 	public String saveSupplier(@RequestBody Supplier supplier) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Supplier", "insert")) {
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
@@ -115,10 +119,11 @@ public class SupplierController {
 	}
 
 	// put mapping for update supplier
+	@Transactional
 	@PutMapping
 	public String updateSupplier(@RequestBody Supplier supplier) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Supplier", "update")) {
+		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
 
@@ -161,10 +166,11 @@ public class SupplierController {
 	}
 
 	// delete mapping for delete supplier
+	@Transactional
 	@DeleteMapping
 	public String deleteSupplier(@RequestBody Supplier supplier) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("Supplier", "delete")) {
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 

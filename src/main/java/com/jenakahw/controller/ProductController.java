@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jenakahw.domain.User;
 import com.jenakahw.domain.Product;
 import com.jenakahw.repository.ProductRepository;
 import com.jenakahw.repository.ProductStatusRepository;
@@ -114,11 +113,12 @@ public class ProductController {
 		// check duplicates...
 		Product extProductByName = productRepository.getProductByName(product.getName());
 		if (extProductByName != null) {
-			return "Product Save Not Completed : product name already exist...!";
+			return "Product Name Already Exist...!";
 		}
 
 		try {
 			// generate barcode
+			product.setBarcode("P000001");
 
 			// set added date time
 			product.setAddedDateTime(LocalDateTime.now());
@@ -128,7 +128,7 @@ public class ProductController {
 			productRepository.save(product);
 			return "OK";
 		} catch (Exception e) {
-			return "Save not completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -143,7 +143,7 @@ public class ProductController {
 		// check duplicates...
 		Product extProductByName = productRepository.getProductByName(product.getName());
 		if (extProductByName != null && product.getId() != extProductByName.getId()) {
-			return "Product Updadte Not Completed : product name already exist...!";
+			return "Product Name Already Exist...!";
 		}
 
 		try {
@@ -156,11 +156,11 @@ public class ProductController {
 			
 			return "OK";
 		} catch (Exception e) {
-			return "Update not completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
-	// delete mapping for delete user account [/user]
+	// delete mapping for delete product [/user]
 	@DeleteMapping
 	public String deleteUser(@RequestBody Product product) {
 		// check privileges
@@ -184,6 +184,7 @@ public class ProductController {
 			// set product statuts to 'Deleted'
 			product.setProductStatusId(productStatusRepository.getReferenceById(3));
 			
+			productRepository.save(product);
 			return "OK";
 		} catch (Exception e) {
 			return "Delete not complete :" + e.getMessage();

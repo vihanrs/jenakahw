@@ -119,7 +119,7 @@ const passwordRTValidator = () => {
       user.password = null;
     }
   } else {
-    alert("Please fill the password field first...!");
+    showAlert("warning", "Please fill the password field first...!");
     textPassword.style.border = "1px solid red";
     textRPassword.style.border = "1px solid red";
     textRPassword.value = "";
@@ -345,30 +345,37 @@ const refillRecord = (rowObject, rowId) => {
 //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  const userConfirm = confirm(
-    "Are you sure!\nYou wants to delete following record? \n" +
-      "First Name : " +
-      rowObject.firstName +
-      "\n" +
-      "Username : " +
-      rowObject.username +
-      "\n" +
-      "Email : " +
-      rowObject.email
-  );
+  let title = "Are you sure!\nYou wants to delete following record?\n";
+  let message =
+    "First Name : " +
+    rowObject.firstName +
+    "\n" +
+    "Username : " +
+    rowObject.username +
+    "\n" +
+    "Email : " +
+    rowObject.email;
 
-  if (userConfirm) {
-    //response from backend ...
-    let serverResponse = ajaxRequestBody("/user", "DELETE", rowObject); // url,method,object
-    //check back end response
-    if (serverResponse == "OK") {
-      alert("Delete sucessfully..! \n" + serverResponse);
-      //need to refresh table and form
-      refreshAll();
-    } else {
-      alert("Delete not sucessfully..! have some errors \n" + serverResponse);
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //response from backend ...
+      let serverResponse = ajaxRequestBody("/user", "DELETE", rowObject); // url,method,object
+      //check back end response
+      if (serverResponse == "OK") {
+        showAlert("success", "Delete sucessfully..! \n" + serverResponse).then(
+          () => {
+            //need to refresh table and form
+            refreshAll();
+          }
+        );
+      } else {
+        showAlert(
+          "error",
+          "Delete not sucessfully..! have some errors \n" + serverResponse
+        );
+      }
     }
-  }
+  });
 };
 
 // ********* FORM OPERATIONS *********
@@ -516,29 +523,30 @@ const addRecord = () => {
   let formErrors = checkErrors();
   if (formErrors == "") {
     //get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following record..?\n" +
-        "\nFirst Name : " +
-        user.firstName +
-        "\nUsername : " +
-        user.username
-    );
+    let title = "Are you sure to add following record..?\n";
+    let message =
+      "First Name : " + user.firstName + "\nUsername : " + user.username;
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //pass data into back end
+        let serverResponse = ajaxRequestBody("/user", "POST", user); // url,method,object
 
-    if (userConfirm) {
-      //pass data into back end
-      let serverResponse = ajaxRequestBody("/user", "POST", user); // url,method,object
-
-      //check back end response
-      if (serverResponse == "OK") {
-        alert("Save sucessfully..! " + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        alert("Save not sucessfully..! have some errors \n" + serverResponse);
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Save sucessfully..!").then(() => {
+            //need to refresh table and form
+            refreshAll();
+          });
+        } else {
+          showAlert(
+            "error",
+            "Save not sucessfully..! have some errors \n" + serverResponse
+          );
+        }
       }
-    }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    showAlert("error", "Error\n" + formErrors);
   }
 };
 
@@ -548,27 +556,33 @@ const updateRecord = () => {
   if (errors == "") {
     let updates = checkUpdates();
     if (updates != "") {
-      let userConfirm = confirm(
-        "Are you sure you want to update following changes...?\n" + updates
-      );
-      if (userConfirm) {
-        let updateServiceResponse = ajaxRequestBody("/user", "PUT", user);
-        if (updateServiceResponse == "OK") {
-          alert("Update sucessfully..! ");
-          //need to refresh table and form
-          refreshAll();
-        } else {
-          alert(
-            "Update not sucessfully..! have some errors \n" +
-              updateSeriveResponse
-          );
+      let title = "Are you sure you want to update following changes...?\n";
+      let message = updates;
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          let updateServiceResponse = ajaxRequestBody("/user", "PUT", user);
+          if (updateServiceResponse == "OK") {
+            showAlert("success", "Update sucessfully..!").then(() => {
+              //need to refresh table and form
+              refreshAll();
+            });
+          } else {
+            showAlert(
+              "error",
+              "Update not sucessfully..! have some errors \n" +
+                updateSeriveResponse
+            );
+          }
         }
-      }
+      });
     } else {
-      alert("Nothing to Update...!");
+      showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    alert("Cannot update!!!\nForm has following errors \n" + errors);
+    showAlert(
+      "error",
+      "Cannot update!!!\nForm has following errors \n" + errors
+    );
   }
 };
 

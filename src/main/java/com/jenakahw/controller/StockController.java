@@ -24,11 +24,13 @@ public class StockController {
 	
 	@Autowired
 	private PrivilegeController privilegeController;
+	
+	private static final String MODULE = "Stock";
 
 	// get mapping for get all purchaseorder data -- [/purchaseorder/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Stock> findAll() {
-		if (privilegeController.hasPrivilege("Stock", "select")) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return stockRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;

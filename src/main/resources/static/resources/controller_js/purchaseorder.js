@@ -51,7 +51,8 @@ const addEventListeners = () => {
   });
 
   selectProduct.addEventListener("change", () => {
-    selectDFieldValidator(selectProduct, "poProduct", "productId");
+    selectDFieldValidator(selectProduct, "poProduct", "productId"),
+      setUnitType(poProduct.productId);
   });
 
   textPurchasePrice.addEventListener("keyup", () => {
@@ -198,6 +199,7 @@ const refreshInnerFormAndTable = () => {
   textQty.value = "";
   textLineAmount.value = "";
   selectProduct.value = "";
+  textUnitType.value = "";
 
   //set default border color
   let elements = [selectProduct, textPurchasePrice, textQty];
@@ -224,7 +226,7 @@ const refreshInnerFormAndTable = () => {
 
 // ********* INNER FORM/TABLE OPERATIONS *********
 
-//function for get product list related to the selected supplier
+// function for get product list related to the selected supplier
 const getProductListBySupplier = (supplierId) => {
   products = ajaxGetRequest("/product/availablelistWithSupplier/" + supplierId);
   fillMoreDataIntoSelect(
@@ -234,6 +236,12 @@ const getProductListBySupplier = (supplierId) => {
     "barcode",
     "name"
   );
+  textUnitType.innerText = "";
+};
+
+// function for get unit type for selected product
+const setUnitType = (product) => {
+  textUnitType.innerText = "(" + product.unitTypeId.name + ")";
 };
 
 //clear previously tabel added products and refresh when selecting another supplier
@@ -519,12 +527,12 @@ const updateRecord = () => {
       let message = updates;
       showConfirm(title, message).then((userConfirm) => {
         if (userConfirm) {
-          let updateServiceResponse = ajaxRequestBody(
+          let serverResponse = ajaxRequestBody(
             "/purchaseorder",
             "PUT",
             purchaseOrder
           );
-          if (updateServiceResponse == "OK") {
+          if (serverResponse == "OK") {
             showAlert("success", "Update sucessfully..!").then(() => {
               //need to refresh table and form
               refreshAll();
@@ -532,9 +540,8 @@ const updateRecord = () => {
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" +
-                updateSeriveResponse
-            ).then(() => {});
+              "Update not sucessfully..! have some errors \n" + serverResponse
+            );
           }
         }
       });
@@ -542,7 +549,7 @@ const updateRecord = () => {
       showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    showAlert("error", "Cannot update!!!\n\n" + formErrors);
+    showAlert("error", "Cannot update!!!\n" + errors);
   }
 };
 
@@ -593,7 +600,8 @@ const refreshTable = () => {
 
   $("#purchaseOrdersTable").dataTable();
 };
-// //function for get Supplier
+
+//function for get Supplier
 const getSupplier = (rowObject) => {
   return (
     rowObject.supplierId.firstName +
@@ -603,6 +611,7 @@ const getSupplier = (rowObject) => {
   );
 };
 
+// function for get Status
 const getStatus = (rowObject) => {
   if (rowObject.purchaseOrderStatusId.name == "Requested") {
     return (
@@ -631,35 +640,29 @@ const getStatus = (rowObject) => {
   }
 };
 
-const viewRecord = () => {};
 // //function for view record
-
-// const viewRecord = (rowObject, rowId) => {
-//   //need to get full object
-//   let printObj = rowObject;
-
-//   tdFirstName.innerText = printObj.firstName;
-//   tdLastName.innerText = printObj.lastName;
-//   tdContact.innerText = printObj.contact;
-//   tdNIC.innerText = printObj.nic;
-//   tdGender.innerText = printObj.gender;
-//   tdEmail.innerText = printObj.email;
-//   tdUsername.innerText = printObj.username;
-
-//   tdRole.innerText = printObj.roles.map((role) => role.name).join(", ");
-
-//   tdStatus.innerText = printObj.userStatusId.name;
-//   //open model
-//   $("#modelDetailedView").modal("show");
-// };
+const viewRecord = (rowObject, rowId) => {
+  //   //need to get full object
+  //   let printObj = rowObject;
+  //   tdFirstName.innerText = printObj.firstName;
+  //   tdLastName.innerText = printObj.lastName;
+  //   tdContact.innerText = printObj.contact;
+  //   tdNIC.innerText = printObj.nic;
+  //   tdGender.innerText = printObj.gender;
+  //   tdEmail.innerText = printObj.email;
+  //   tdUsername.innerText = printObj.username;
+  //   tdRole.innerText = printObj.roles.map((role) => role.name).join(", ");
+  //   tdStatus.innerText = printObj.userStatusId.name;
+  //   //open model
+  //   $("#modelDetailedView").modal("show");
+};
 
 //function for refill record
-
 const refillRecord = (rowObject, rowId) => {
   $("#addNewButton").click();
 
-  purchaseOrder = JSON.parse(JSON.stringify(rowObject));
-  oldPurchaseOrder = JSON.parse(JSON.stringify(rowObject));
+  purchaseOrder = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
+  oldPurchaseOrder = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
 
   dateRequiredDate.value = purchaseOrder.requiredDate;
   //set optional fields
