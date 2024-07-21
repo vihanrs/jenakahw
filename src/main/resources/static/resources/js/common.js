@@ -137,10 +137,14 @@ function showDefaultSection(buttonId, sectionId) {
 
 // function for logout user with user confirmation
 const logoutUser = () => {
-  let userConfirmation = confirm("Are you sure to logout...?");
-  if (userConfirmation) {
-    window.location.assign("/logout");
-  }
+  let title = "<span style ='color:red; font-size: 25px'>LogOut!</span>";
+  let message = "Are you sure you want to logout...?\n";
+
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      window.location.assign("/logout");
+    }
+  });
 };
 
 // function for set elements border color
@@ -168,41 +172,3 @@ const manageFormButtons = (opetation, privilegeObj) => {
     }
   }
 };
-
-// alert box functions
-// Load alertbox.html content and append it to the body
-// function loadAlertBox() {
-//   fetch("../../../../templates/alertbox.html") // Adjust the path as necessary
-//     .then((response) => response.text())
-//     .then((data) => {
-//       document.body.insertAdjacentHTML("beforeend", data);
-//     })
-//     .catch((error) => console.error("Error loading alert box:", error));
-// }
-
-// // Add event listener to load the alert box on DOMContentLoaded
-// document.addEventListener("DOMContentLoaded", loadAlertBox);
-
-// // Function to show the custom alert box
-// function showAlert(imageSrc, title, message) {
-//   var alertBox = document.getElementById("customAlertBox");
-//   // var alertImage = document.getElementById("alertImage");
-//   console.log(document.getElementById("alertTitle"));
-//   console.log(document.getElementById("customAlertBox"));
-//   var alertTitle = document.getElementById("alertTitle");
-//   var alertMessage = document.getElementById("alertMessage");
-
-//   // alertImage.src = imageSrc;
-//   alertTitle.textContent = title;
-//   alertMessage.textContent = message;
-
-//   alertBox.classList.remove("hidden");
-//   document.body.classList.add("no-scroll");
-// }
-
-// // Function to hide the custom alert box
-// function hideAlert() {
-//   var alertBox = document.getElementById("customAlertBox");
-//   alertBox.classList.add("hidden");
-//   document.body.classList.remove("no-scroll");
-// }

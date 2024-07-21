@@ -97,7 +97,7 @@ const addEventListeners = () => {
 
   //record print function call
   btnViewPrint.addEventListener("click", () => {
-    // printViewRecord();
+    printViewRecord();
   });
 };
 
@@ -483,7 +483,24 @@ const getStatus = (rowObject) => {
 };
 
 //function for view record
-const viewRecord = () => {};
+const viewRecord = (rowObject, rowId) => {
+  //need to get full object
+  let printObj = rowObject;
+
+  tdProductName.innerText = printObj.name;
+  tdBarcode.innerText = printObj.barcode;
+  tdBrand.innerText = printObj.brandId.name;
+  tdCategory.innerText = printObj.subCategoryId.categoryId.name;
+  tdSubCategory.innerText = printObj.subCategoryId.name;
+  tdUnitType.innerText = printObj.unitTypeId.name;
+  tdDescription.innerText = printObj.description;
+  tdROL.innerText = printObj.rol;
+  tdProfitRate.innerText = printObj.profitRate + "%";
+  tdStatus.innerText = printObj.productStatusId.name;
+
+  //open model
+  $("#modelProductDetailedView").modal("show");
+};
 
 //function for refill record
 const refillRecord = (rowObject, rowId) => {
@@ -592,4 +609,41 @@ const deleteRecord = (rowObject, rowId) => {
       }
     }
   });
+};
+
+// ********* PRINT OPERATIONS *********
+
+//print function
+const printViewRecord = () => {
+  newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>User Details</title>" +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2 style = 'font-weight:bold'>Product Details</h2>" +
+      printTable.outerHTML
+  );
+
+  //triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};
+
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Employee</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2>Employee Details</h2>" +
+      tableId.outerHTML +
+      '<script>$(".modify-button").css("display","none")</script>'
+  );
+
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
 };

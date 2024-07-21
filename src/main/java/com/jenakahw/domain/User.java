@@ -57,8 +57,8 @@ public class User {
 	@NotNull
 	private String gender;
 
-	@Column(name = "photo_url")
-	private byte[] photoURL;
+	@Column(name = "user_photo")
+	private byte[] userPhoto;
 	
 	@Column(name = "photo_name")
 	private String photoName;

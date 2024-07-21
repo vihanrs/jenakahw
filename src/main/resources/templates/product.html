@@ -308,26 +308,50 @@
         <!-- content area end -->
       </div>
       <!-- view record model start -->
-      <div class="modal" id="modelView">
+      <div class="modal" id="modelProductDetailedView">
         <div class="modal-dialog">
-          <div class="modal-content">
+          <div class="modal-content" style="margin: 5px">
             <div class="modal-header">
-              <h2>View Product Details</h2>
+              <h2 class="fw-bold">View Product Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <table id="printTable" class="table">
+              <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>FullName</th>
-                  <td id="tdFullName"></td>
+                  <th>Product Name</th>
+                  <td id="tdProductName"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdNIC"></td>
+                  <th>Barcode</th>
+                  <td id="tdBarcode"></td>
                 </tr>
                 <tr>
-                  <th>Mobile</th>
-                  <td id="tdMobile"></td>
+                  <th>Brand</th>
+                  <td id="tdBrand"></td>
+                </tr>
+                <tr>
+                  <th>Category</th>
+                  <td id="tdCategory"></td>
+                </tr>
+                <tr>
+                  <th>Sub-Category</th>
+                  <td id="tdSubCategory"></td>
+                </tr>
+                <tr>
+                  <th>Unit Type</th>
+                  <td id="tdUnitType"></td>
+                </tr>
+                <tr>
+                  <th>Description</th>
+                  <td id="tdDescription"></td>
+                </tr>
+                <tr>
+                  <th>Re-Order Level</th>
+                  <td id="tdROL"></td>
+                </tr>
+                <tr>
+                  <th>Profit Rate(%)</th>
+                  <td id="tdProfitRate"></td>
                 </tr>
                 <tr>
                   <th>Status</th>
@@ -336,7 +360,9 @@
               </table>
             </div>
             <dv class="modal-footer">
-              <button class="btn btn-info" id="btnViewPrint">Print</button>
+              <button id="btnViewPrint" class="btn btn-info">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
             </dv>
           </div>
         </div>

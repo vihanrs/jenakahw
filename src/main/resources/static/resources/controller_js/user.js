@@ -23,7 +23,7 @@ const addEventListeners = () => {
   let namePattern = "^[A-Z][a-z]{2,20}$";
   let contactPattern = "^[0][7][01245678][0-9]{7}$";
   let nicPattern = "^(([0-9]{9}[VvXxSs])|([2][0][0-9]{2}[0-9]{8}))$";
-  let emailPattern = "^[A-Za-z0-9]{6,20}[@][a-z]{3,10}[.][a-z]{2,3}$";
+  let emailPattern = "^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$";
   let unameandpwPattern = "^^[a-zA-Z0-9]{5,16}$";
 
   textFirstName.addEventListener("keyup", () => {
@@ -59,14 +59,18 @@ const addEventListeners = () => {
       fileUserPhoto,
       "user",
       "photoName",
-      "photoURL",
-      fileUserPhoto,
+      "userPhoto",
+      imgUserPhoto,
       textUserPhoto
     );
   });
 
   btnSelectImage.addEventListener("click", () => {
     fileUserPhoto.click();
+  });
+
+  btnClearImage.addEventListener("click", () => {
+    clearUserPhoto();
   });
 
   textUsername.addEventListener("keyup", () => {
@@ -103,6 +107,10 @@ const addEventListeners = () => {
   //record print function call
   btnViewPrint.addEventListener("click", () => {
     printViewRecord();
+  });
+  //record print function call
+  printAllData.addEventListener("click", () => {
+    printFullTable();
   });
 };
 
@@ -167,6 +175,9 @@ const refreshForm = () => {
   textPassword.value = "";
   textRPassword.value = "";
 
+  //clear image
+  clearUserPhoto();
+
   //enable pw field
   textPassword.disabled = false;
   textRPassword.disabled = false;
@@ -202,6 +213,7 @@ const refreshTable = () => {
   //String - number/string/date
   //function - object/array/boolean
   const displayProperties = [
+    { property: "userPhoto", datatype: "photoarray" },
     { property: "empId", datatype: "String" },
     { property: "firstName", datatype: "String" },
     { property: "lastName", datatype: "String" },
@@ -227,7 +239,7 @@ const refreshTable = () => {
     if (userPrivilages.delete && user.userStatusId.name == "Resigned") {
       //catch the button
       let targetElement =
-        tblUser.children[1].children[index].children[7].children[
+        tblUser.children[1].children[index].children[8].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
       //add changes
@@ -318,6 +330,15 @@ const refillRecord = (rowObject, rowId) => {
     radioGenderFemale.checked = true;
   }
 
+  // set user image
+  if (user.userPhoto == null) {
+    imgUserPhoto.src = "resources/images/default-user-img.jpg";
+    textUserPhoto.value = "";
+  } else {
+    imgUserPhoto.src = atob(user.userPhoto);
+    textUserPhoto.value = user.photoName;
+  }
+
   //set optional fields
   if (user.lastName != null) textLastName.value = user.lastName;
   else textLastName.value = "";
@@ -332,7 +353,17 @@ const refillRecord = (rowObject, rowId) => {
     user.userStatusId.name
   );
 
-  setBorderStyle([selectStatus]);
+  setBorderStyle([
+    selectStatus,
+    textFirstName,
+    textContact,
+    textUsername,
+    textPassword,
+    textRPassword,
+    textLastName,
+    textEmail,
+    textNIC,
+  ]);
 
   //define roles
   createViewRolesUI();
@@ -490,6 +521,10 @@ const checkUpdates = () => {
     updates += "User Roles has changed " + " \n";
   }
 
+  if (oldUserObj.userPhoto != user.userPhoto) {
+    updates += "User Photo has changed " + " \n";
+  }
+
   return updates;
 };
 
@@ -626,9 +661,19 @@ const createViewRolesUI = () => {
 //function for get selected roles
 const setSelectedRoles = () => {
   user.roles.map((role) => {
-    const inputCHK = document.getElementById("chk" + role.name);
-    inputCHK.checked = true;
+    if (role.name != "Admin") {
+      const inputCHK = document.getElementById("chk" + role.name);
+      inputCHK.checked = true;
+    }
   });
+};
+
+const clearUserPhoto = () => {
+  user.userPhoto = null;
+  user.photoName = null;
+  imgUserPhoto.src = "resources/images/default-user-img.jpg";
+  textUserPhoto.value = "";
+  fileUserPhoto.files = null;
 };
 
 // ********* PRINT OPERATIONS *********
@@ -640,7 +685,7 @@ const printViewRecord = () => {
     //  link bootstrap css
     "<head><title>User Details</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>User Details</h2>" +
+      "<h2 style='font-weight=bold'>User Details</h2>" +
       printTable.outerHTML
   );
 
@@ -658,9 +703,9 @@ const printFullTable = () => {
     "<head><title>Print Employee</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Employee Details</h2>" +
-      tableId.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      "<h2 style='font-weight=bold'>Employee Details</h2>" +
+      tblUser.outerHTML +
+      '<script>$("modifyButtons").css("display","none")</script>'
   );
 
   setTimeout(function () {

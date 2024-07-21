@@ -35,6 +35,18 @@ const fillDataIntoTable = (
             "<b>Rs. </b>" +
             parseFloat(dataArray[ind][itemOb.property]).toFixed(2);
         }
+      } else if (itemOb.datatype == "photoarray") {
+        let img = document.createElement("img");
+        img.style.width = "50px";
+        img.style.height = "50px";
+
+        if (dataArray[ind][itemOb.property] == null) {
+          img.src = "resources/images/default-user-img.jpg";
+        } else {
+          img.src = atob(dataArray[ind][itemOb.property]);
+        }
+
+        td.appendChild(img);
       } else if (itemOb.datatype == "function") {
         td.innerHTML = itemOb.property(dataArray[ind]);
       }

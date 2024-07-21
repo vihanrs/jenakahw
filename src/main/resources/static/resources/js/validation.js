@@ -160,10 +160,19 @@ const fileFieldValidator = (
   nameFieldId
 ) => {
   if (fieldId.value != "") {
-    let file = fieldId.file[0];
+    let file = fieldId.files[0]; // file details object (name)
     nameFieldId.value = file["name"];
+    window[object][propertyOne] = file["name"]; // bind img name
 
-    // let fileReader = new FileReader();
-    // fileReader.onload;
+    let fileReader = new FileReader();
+
+    fileReader.onload = function (e) {
+      //set selected image
+      previewId.src = e.target.result;
+      window[object][propertyTwo] = btoa(e.target.result); //bind image
+    };
+
+    fileReader.readAsDataURL(file);
+    return;
   }
 };
