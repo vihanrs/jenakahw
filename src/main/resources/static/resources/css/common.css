@@ -1,4 +1,4 @@
-/* css classes for common buttons */
+/* ************************************ Buttons CSS ************************************  */
 .btn-clear {
   background-color: #fbb6b5;
   border: 1px solid #ff2c28;
@@ -46,7 +46,19 @@
   margin-top: 5px;
 }
 
-/* css for heading  */
+.btn-success-alert {
+  border: 1px solid #32ba7c;
+  color: #32ba7c;
+  background-color: #fff;
+}
+
+.btn-success-alert:hover {
+  color: #fff;
+  background-color: #32ba7c;
+}
+
+/* ************************************ Body Area CSS ************************************  */
+
 .heading-area {
   text-align: center;
   color: #235ebd;
@@ -84,8 +96,61 @@
   }
 }
 
-/* css classes for common status */
-/* Common styles for all status */
+/* ************************************ Dashboard CSS ************************************  */
+.dashboard-card {
+  padding: 0;
+  position: relative;
+  background: linear-gradient(45deg, #0081eb, #7bfff4c4);
+}
+.dashboard-card .card-title {
+  font-size: 18px;
+  color: #fdfdfd;
+}
+
+.dashboard-card .card-body {
+  padding-bottom: 10px;
+}
+.dashboard-card .card-text {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  padding: 5px 0 0 0;
+  margin: 0;
+}
+
+.dashboard-card .secondary-msg {
+  font-size: 14px;
+  font-style: italic;
+  margin: 0;
+  padding: 5px 0;
+  color: #eeeeee;
+}
+
+.top-right-icon {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  color: #eeeeee;
+}
+
+.dashboard-card:hover {
+  box-shadow: 0 0 5px #57fccabe, 0 7px 5px #1e6dff;
+}
+
+.dashboard-card:hover .top-right-icon {
+  color: #ffffff; /* Color change on hover */
+}
+.notifications-card {
+  padding: 0;
+  height: 80vh; /* view height */
+  background: linear-gradient(45deg, #fcffee9a, #eeff8bc4);
+}
+.notifications-card .card-title {
+  padding-bottom: 30px;
+  font-weight: bold;
+}
+
+/* ************************************ Statuses CSS ************************************  */
 .status {
   text-align: center;
   font-weight: bold;
@@ -117,7 +182,7 @@
   margin: 20px 0;
 }
 
-/* alert box styles */
+/* ************************************ AlertBox CSS ************************************  */
 .hidden {
   display: none;
 }
@@ -165,15 +230,4 @@
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
   z-index: 999; /* Ensure it's above other content */
-}
-
-.btn-success-alert {
-  border: 1px solid #32ba7c;
-  color: #32ba7c;
-  background-color: #fff;
-}
-
-.btn-success-alert:hover {
-  color: #fff;
-  background-color: #32ba7c;
 }

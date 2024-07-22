@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/reportpurchaseorder.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2>
+              <img
+                src="resources/icons/porder-icon2.png"
+                alt="porder-icon"
+                class="me-3"
+                style="height: 40px; width: 40px"
+              />Purchase Orders Reports
+            </h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="card card-body p-2">
+          <!-- supplier -->
+          <div class="row mt-2 mb-4 ms-2">
+            <div class="col-md-3">
+              <label for="selectSupplier" class="form-label fw-bold">
+                Supplier
+              </label>
+              <select id="selectSupplier" class="form-select me-2">
+                <option value="" selected disabled>Select Supplier</option>
+              </select>
+            </div>
+            <!-- status -->
+            <div class="col-md-3">
+              <label for="selectPOStatus" class="form-label fw-bold">
+                Status
+              </label>
+              <select id="selectPOStatus" class="form-select me-2">
+                <option value="" selected disabled>Select Status</option>
+              </select>
+            </div>
+
+            <!-- search button -->
+            <div class="col-md-1">
+              <label
+                for="btnSearch"
+                class="form-label fw-bold"
+                style="color: #d8d8d834"
+              >
+                .
+              </label>
+              <br />
+              <button class="btn btn-plus" type="button" id="btnSearch">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+            </div>
+
+            <!-- reset button -->
+            <div class="col-md-1">
+              <label
+                for="btnReset"
+                class="form-label fw-bold"
+                style="color: #d8d8d834"
+              >
+                .
+              </label>
+              <br />
+              <button
+                class="btn btn-outline-danger"
+                type="button"
+                id="btnReset"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </div>
+
+          <table
+            class="table table-hover pt-3 mb-3"
+            id="purchaseOrdersReportTable"
+          >
+            <thead class="table-dark">
+              <tr>
+                <th>#</th>
+                <th>PO Code</th>
+                <th>Supplier</th>
+                <th>Required Date</th>
+                <th>Item Count</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody class="table-group-divider"></tbody>
+          </table>
+        </div>
+        <div class="row ml-auto">
+          <div class="col-2 ml-auto">
+            <button class="btn btn-info" id="printAllData">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+        <!-- content area end -->
+      </div>
+      <!-- view record model start -->
+      <div class="modal" id="modelView">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h2>View # Details</h2>
+              <button class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <table id="printTable" class="table">
+                <tr>
+                  <th>FullName</th>
+                  <td id="tdFullName"></td>
+                </tr>
+                <tr>
+                  <th>NIC</th>
+                  <td id="tdNIC"></td>
+                </tr>
+                <tr>
+                  <th>Mobile</th>
+                  <td id="tdMobile"></td>
+                </tr>
+                <tr>
+                  <th>Status</th>
+                  <td id="tdStatus"></td>
+                </tr>
+              </table>
+            </div>
+            <dv class="modal-footer">
+              <button class="btn btn-info" id="btnViewPrint">Print</button>
+            </dv>
+          </div>
+        </div>
+      </div>
+      <!-- view record model end -->
+    </div>
+    <div th:replace="~{alertbox :: alertFragment}"></div>
+  </body>
+</html>

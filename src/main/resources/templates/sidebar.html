@@ -6,10 +6,15 @@
   <!-- Brand Logo -->
   <div class="brand-link">
     <img
-      src="resources/navbar_template/img/logo.png"
+      src="resources/images/logo.png"
       alt="Logo"
-      class="brand-image img-circle elevation-3"
-      style="opacity: 0.8; width: 35px; height: 35px"
+      style="
+        width: auto;
+        height: 40px;
+        margin-top: -8px;
+        margin-left: 10px;
+        border-radius: 50%;
+      "
     />
     <span class="brand-text font-weight-light"
       ><small>Janaka Hardware</small></span
@@ -26,32 +31,34 @@
         role="menu"
         data-accordion="false"
       >
-        <!-- Add icons to the links using the .nav-icon class
-              with font-awesome or any other icon font library -->
+        <!-- Home -->
         <li class="nav-item user-panel">
           <a href="/dashboard" class="nav-link">
             <i class="nav-icon"
               ><img
-                src="resources/icons/home-icon.png"
+                src="resources/icons/dashboard-icon.png"
                 alt="dashboard-icon"
                 style="height: 24px; width: 24px"
             /></i>
-            <p>Home</p>
+            <p>Dashboard</p>
           </a>
         </li>
 
+        <!-- Invoice -->
         <li class="nav-item user-panel">
           <a href="/product" class="nav-link">
             <i class="nav-icon fas fa-user"></i>
             <p>Invoice</p>
           </a>
         </li>
+        <!-- Product -->
         <li class="nav-item user-panel">
           <a href="/product" class="nav-link">
             <i class="nav-icon fas fa-user"></i>
             <p>Product</p>
           </a>
         </li>
+        <!-- Supplier -->
         <li class="nav-item user-panel">
           <a href="/supplier" class="nav-link">
             <i class="nav-icon"
@@ -63,6 +70,7 @@
             <p>Supplier</p>
           </a>
         </li>
+        <!-- Purchase Order -->
         <li class="nav-item user-panel">
           <a href="/purchaseorder" class="nav-link">
             <i class="nav-icon"
@@ -74,6 +82,7 @@
             <p>Purchase Order</p>
           </a>
         </li>
+        <!-- GRN -->
         <li class="nav-item user-panel">
           <a href="/grn" class="nav-link">
             <i class="nav-icon"
@@ -85,10 +94,24 @@
             <p>GRN</p>
           </a>
         </li>
+        <!-- stock -->
+        <li class="nav-item user-panel">
+          <a href="/grn" class="nav-link">
+            <i class="nav-icon"
+              ><img
+                src="resources/icons/stock-icon.png"
+                alt="porder-icon"
+                style="height: 24px; width: 24px"
+            /></i>
+            <p>Stock</p>
+          </a>
+        </li>
+
+        <!-- payments -->
         <li class="nav-item user-panel">
           <a href="#" class="nav-link"
             ><i class="nav-icon fas fa-circle"></i>
-            <p>Payments<i class="right fas fa-angle-left"></i></p
+            <p>Payments<i class="fa-solid fa-hand-holding-dollar"></i></p
           ></a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
@@ -115,18 +138,41 @@
             </li>
           </ul>
         </li>
+        <!-- Reports -->
         <li class="nav-item user-panel">
-          <a href="/user" class="nav-link">
-            <i class="nav-icon fas fa-user"></i>
-            <p>Reports</p>
-          </a>
+          <a href="#" class="nav-link"
+            ><i class="nav-icon fas fa-circle"></i>
+            <p>Reports<i class="right fas fa-angle-left"></i></p
+          ></a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="/reportpurchaseorderui" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Purchase Order Reports</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>GRN Reports</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Stock Reports</p></a
+              >
+              <a href="" class="nav-link"
+                ><i class="far fa-circle nav-icon"></i>
+                <p>Sales Reports</p></a
+              >
+            </li>
+          </ul>
         </li>
+        <!-- User -->
         <li class="nav-item user-panel">
           <a href="/user" class="nav-link">
             <i class="nav-icon fas fa-user"></i>
             <p>User</p>
           </a>
         </li>
+        <!-- Privilege -->
         <li class="nav-item user-panel">
           <a href="/privilege" class="nav-link">
             <i class="nav-icon fas fa-lock"></i>

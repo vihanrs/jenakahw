@@ -196,6 +196,7 @@
 
                     <hr class="seperator" />
                     <!-- product list transfer area start -->
+
                     <div class="row mt-3">
                       <div class="col-md-12 form-label fw-bold">
                         <p>
@@ -203,6 +204,96 @@
                           <span class="text-danger"> * </span>
                         </p>
                       </div>
+                      <div
+                        class="row mb-4 p-2"
+                        style="background-color: #d8d8d834; border-radius: 5px"
+                      >
+                        <p style="color: #858585f5">
+                          <i><b>Filter by:</b></i>
+                        </p>
+                        <!-- brand -->
+                        <div class="col-md-3">
+                          <label for="selectBrand" class="form-label fw-bold">
+                            Brand
+                          </label>
+                          <select id="selectBrand" class="form-select me-2">
+                            <option value="" selected disabled>
+                              Select Brand
+                            </option>
+                          </select>
+                        </div>
+
+                        <!-- category -->
+                        <div class="col-md-3">
+                          <label
+                            for="selectCategory"
+                            class="form-label fw-bold"
+                          >
+                            Category
+                          </label>
+                          <select id="selectCategory" class="form-select me-2">
+                            <option value="" selected disabled>
+                              Select Category
+                            </option>
+                          </select>
+                        </div>
+
+                        <!-- subcategory -->
+                        <div class="col-md-3">
+                          <label
+                            for="selectSubCategory"
+                            class="form-label fw-bold"
+                          >
+                            Sub-Category
+                          </label>
+                          <select
+                            id="selectSubCategory"
+                            class="form-select me-2"
+                          >
+                            <option value="" selected disabled>
+                              Select SubCategory
+                            </option>
+                          </select>
+                        </div>
+                        <!-- search button -->
+                        <div class="col-md-1">
+                          <label
+                            for="btnSearch"
+                            class="form-label fw-bold"
+                            style="color: #d8d8d834"
+                          >
+                            .
+                          </label>
+                          <br />
+                          <button
+                            class="btn btn-plus"
+                            type="button"
+                            id="btnSearch"
+                          >
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                          </button>
+                        </div>
+
+                        <!-- reset button -->
+                        <div class="col-md-1">
+                          <label
+                            for="btnReset"
+                            class="form-label fw-bold"
+                            style="color: #d8d8d834"
+                          >
+                            .
+                          </label>
+                          <br />
+                          <button
+                            class="btn btn-outline-danger"
+                            type="button"
+                            id="btnReset"
+                          >
+                            <i class="fa-solid fa-xmark"></i>
+                          </button>
+                        </div>
+                      </div>
+
                       <!-- all available product list -->
                       <div class="col-md-4">
                         <p><i>All Products</i></p>

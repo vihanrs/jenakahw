@@ -568,7 +568,7 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert("success", "Save sucessfully..!").then(() => {
+          showAlert("success", "User save successfully..!").then(() => {
             //need to refresh table and form
             refreshAll();
           });

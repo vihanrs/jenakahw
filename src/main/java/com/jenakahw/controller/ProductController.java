@@ -118,7 +118,7 @@ public class ProductController {
 
 		try {
 			// generate barcode
-			product.setBarcode("P000001");
+			product.setBarcode("23000001");
 
 			// set added date time
 			product.setAddedDateTime(LocalDateTime.now());
