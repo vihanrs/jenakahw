@@ -15,69 +15,6 @@ window.addEventListener("load", () => {
 // ********* LISTENERS *********
 
 const addEventListeners = () => {
-  // let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
-  // selectSupplier.addEventListener("change", () => {
-  //   selectDFieldValidator(selectSupplier, "purchaseOrder", "supplierId"),
-  //     getProductListBySupplier(purchaseOrder.supplierId.id),
-  //     clearPreviousProducts();
-  // });
-  // dateRequiredDate.addEventListener("change", () => {
-  //   dateFieldValidator(dateRequiredDate, "purchaseOrder", "requiredDate");
-  // });
-  // dateRequiredDate.addEventListener("keydown", (event) => {
-  //   event.preventDefault();
-  // });
-  // selectPOStatus.addEventListener("change", () => {
-  //   selectDFieldValidator(
-  //     selectPOStatus,
-  //     "purchaseOrder",
-  //     "purchaseOrderStatusId"
-  //   );
-  // });
-  // textNote.addEventListener("keyup", () => {
-  //   textFieldValidator(textNote, "^.*$", "purchaseOrder", "note");
-  // });
-  // selectProduct.addEventListener("change", () => {
-  //   selectDFieldValidator(selectProduct, "poProduct", "productId"),
-  //     setUnitType(poProduct.productId);
-  // });
-  // textPurchasePrice.addEventListener("keyup", () => {
-  //   textFieldValidator(
-  //     textPurchasePrice,
-  //     numberWithdecimals,
-  //     "poProduct",
-  //     "purchasePrice"
-  //   ),
-  //     calLineAmount();
-  // });
-  // textQty.addEventListener("keyup", () => {
-  //   textFieldValidator(
-  //     textQty,
-  //     "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{1,2}))$",
-  //     "poProduct",
-  //     "qty"
-  //   ),
-  //     calLineAmount();
-  // });
-  // //form reset button function call
-  // btnReset.addEventListener("click", () => {
-  //   refreshForm();
-  // });
-  // //record update function call
-  // btnUpdate.addEventListener("click", () => {
-  //   updateRecord();
-  // });
-  // //record save function call
-  // btnAdd.addEventListener("click", () => {
-  //   addRecord();
-  // });
-  // //record print function call
-  // btnViewPrint.addEventListener("click", () => {
-  //   printViewRecord();
-  // });
-  selectPOStatus.addEventListener("change", () => {});
-  selectSupplier.addEventListener("change", () => {});
-
   btnSearch.addEventListener("click", () => {
     search();
   });
@@ -91,10 +28,16 @@ const addEventListeners = () => {
 const refreshAll = () => {
   //array for store data list
   purchaseOrders = ajaxGetRequest("/purchaseorder/findall");
+
+  poSummaryBySupplier = ajaxGetRequest(
+    "/report/reportpurchaseorder/findposupplierwisesummary"
+  );
   // call refresh filters function
   refreshFilters();
   //Call table refresh function
   refreshTable();
+  //Call summary table refresh function
+  refreshSummaryTable();
 };
 
 //function for refresh form area
@@ -113,18 +56,14 @@ const refreshFilters = () => {
   fillDataIntoSelect(selectPOStatus, "Select Status", poStatuses, "name");
 };
 
+// function for reset filters
 const resetFilters = () => {
-  fillMoreDataIntoSelect(
-    selectSupplier,
-    "Select Supplier",
-    suppliers,
-    "firstName",
-    "company"
-  );
-  fillDataIntoSelect(selectPOStatus, "Select Status", poStatuses, "name");
+  selectSupplier.value = "";
+  selectPOStatus.value = "";
   search();
 };
 
+// function for get table data from backend
 const search = () => {
   let selectedSupplier =
     selectSupplier.value != "" ? JSON.parse(selectSupplier.value) : "";
@@ -211,6 +150,7 @@ const getItemCount = (rowObject) => {
   return rowObject.poHasProducts.length;
 };
 
+// function for get total amount
 const getTotalamount = (purchaseOrders) => {
   let total = 0;
   purchaseOrders.forEach((po) => {
@@ -249,6 +189,77 @@ const getStatus = (rowObject) => {
   }
 };
 
+const refreshSummaryTable = () => {
+  const displayProperties = [
+    { property: getSummarySupplier, datatype: "function" },
+    { property: "count", datatype: "String" },
+    { property: "total", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
+  fillDataIntoTable(
+    poSummaryTable,
+    poSummaryBySupplier,
+    displayProperties,
+    viewRecord,
+    refillRecord,
+    deleteRecord,
+    false,
+    userPrivilages
+  );
+
+  refreshChart(poSummaryBySupplier);
+};
+
+const getSummarySupplier = (rowObject) => {
+  return (
+    rowObject.supplierFirstName +
+    (rowObject.company != null ? " - " + rowObject.company : "")
+  );
+};
+
+const refreshChart = (po) => {
+  labelArray = new Array();
+  dataArray = new Array();
+
+  po.forEach((po) => {
+    labelArray.push(getSummarySupplier(po));
+    dataArray.push(po.total);
+  });
+
+  const ctx = document.getElementById("myChart");
+
+  myChartView = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labelArray,
+      datasets: [
+        {
+          label: "Supplier Wise Pending Purchase Order Total",
+          data: dataArray,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+};
+const printChart = () => {
+  viewChart.src = myChartView.toBase64Image();
+
+  let newWindow = window.open();
+
+  newWindow.document.write(
+    viewChart.outerHTML +
+      "<script>viewChart.style.removeProperty('display');<//script>"
+  );
+};
 // // ********* PRINT OPERATIONS *********
 
 // //print function

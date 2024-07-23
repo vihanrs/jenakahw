@@ -22,6 +22,6 @@ public class DashboardController {
 	// get mapping for get purchase order report by status
 	@GetMapping(value = "/activesuppliercount", produces = "application/json")
 	public int getActiveSupplierCount() {
-		return reportRepository.getactiveSupplierCount();
+		return reportRepository.getactiveSupplierCount1();
 	}
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.domain.ReportGrn;
+import com.jenakahw.domain.ReportPurchaseOrder;
 import com.jenakahw.repository.ReportRepository;
 
 @RestController
@@ -25,7 +26,6 @@ public class ReportDataController {
 
 	@Autowired
 	private ReportRepository reportRepository;
-
 	// Purchase Order Reports
 
 	// [/report/reportpurchaseorder/findbystatus//2]
@@ -50,10 +50,29 @@ public class ReportDataController {
 		return reportRepository.purchaseOrderByStatusAndSupplier(statusId, supplierId);
 	}
 
+	// [/report/reportpurchaseorder/findposummarybysupplier/8]
+	// get mapping for get purchase order summary report by supplier
+	@GetMapping(value = "/reportpurchaseorder/findposupplierwisesummary", produces = "application/json")
+	public List<ReportPurchaseOrder> getPurchaseOrderSummaryBySupplier() {
+		String[][] queryDataList = reportRepository.purchaseOrderSummaryBysupplier();
+		List<ReportPurchaseOrder> reportPOs = new ArrayList<>();
+
+		for (String[] queryData : queryDataList) {
+			ReportPurchaseOrder reportPurchaseOrder = new ReportPurchaseOrder();
+			reportPurchaseOrder.setSupplierFirstName(queryData[0]);
+			reportPurchaseOrder.setCompany(queryData[1]);
+			reportPurchaseOrder.setCount(queryData[2]);
+			reportPurchaseOrder.setTotal(queryData[3]);
+
+			reportPOs.add(reportPurchaseOrder);
+		}
+		return reportPOs;
+	}
+
 	// GRN Reports
 
-	// [/report/reportgrn/findbysupplier/9]
-	// get mapping for get grn by supplier
+	//[/report/reportgrn/findbysupplier/9]
+	//get mapping for get grn by supplier
 	@GetMapping(value = "/reportgrn/findbysupplier/{supplierId}", produces = "application/json")
 	public List<Grn> getGrnBySupplier(@PathVariable("supplierId") int supplierId) {
 		return reportRepository.grnBySupplierId(supplierId);
@@ -63,17 +82,17 @@ public class ReportDataController {
 	// get mapping for get grn summery report by monthly
 	@GetMapping(value = "/reportgrn/findgrnsummarybymonthly", produces = "application/json")
 	public List<ReportGrn> getGrnSummarybyMonthly() {
-		String[][] queryDataList =  reportRepository.grnSummaryByMonthly();
+		String[][] queryDataList = reportRepository.grnSummaryByMonthly();
 		List<ReportGrn> reportGrns = new ArrayList<>();
-		
-		for(String[] queryData : queryDataList) {
+
+		for (String[] queryData : queryDataList) {
 			ReportGrn reportGrn = new ReportGrn();
 			reportGrn.setAddedMonth(queryData[0]);
 			reportGrn.setGrnGrandTotal(queryData[1]);
-			
+
 			reportGrns.add(reportGrn);
 		}
-		
+
 		return reportGrns;
 	}
 }

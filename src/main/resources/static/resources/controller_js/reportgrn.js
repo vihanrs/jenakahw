@@ -210,17 +210,6 @@ const refreshChart = (grns) => {
       },
     },
   });
-
-  const printChart = () => {
-    viewChart.src = myChartView.toBase64Image();
-
-    let newWindow = window.open();
-
-    newWindow.document.write(
-      viewChart.outerHTML +
-        "<script>viewChart.style.removeProperty('display');<//script>"
-    );
-  };
 };
 
 const getMonth = (rowObject) => {
@@ -270,6 +259,16 @@ const getStatus = (rowObject) => {
   }
 };
 
+const printChart = () => {
+  viewChart.src = myChartView.toBase64Image();
+
+  let newWindow = window.open();
+
+  newWindow.document.write(
+    viewChart.outerHTML +
+      "<script>viewChart.style.removeProperty('display');<//script>"
+  );
+};
 // // ********* PRINT OPERATIONS *********
 
 // //print function

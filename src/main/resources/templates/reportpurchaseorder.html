@@ -36,7 +36,74 @@
         <!-- title area end  -->
 
         <!-- content area start -->
+        <!-- summary area -->
         <div class="card card-body p-2">
+          <div class="row">
+            <h4
+              style="
+                font-weight: bold;
+                font-style: italic;
+                font-size: 20px;
+                color: #235ebd;
+                padding-bottom: 5px;
+              "
+            >
+              Purchase Order Summary
+              <span
+                style="
+                  font-style: italic;
+                  color: #81818194;
+                  font-size: 14px;
+                  padding-left: 5px;
+                "
+                >Requested Status</span
+              >
+            </h4>
+            <div class="col-md-5 ms-2">
+              <table class="table table-hover pt-3 mb-3" id="poSummaryTable">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Supplier</th>
+                    <th>Count</th>
+                    <th>Total Amount</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider"></tbody>
+              </table>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5 me-4">
+              <div>
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <button
+              type="button"
+              id="printSummary"
+              class="btn btn-info col-md-2 ml-auto me-2"
+            >
+              <i class="fa-solid fa-print"></i>
+              Print Summary
+            </button>
+          </div>
+        </div>
+
+        <!-- table area -->
+        <div class="card card-body p-2">
+          <h4
+            style="
+              font-weight: bold;
+              font-style: italic;
+              font-size: 20px;
+              color: #235ebd;
+              padding-bottom: 5px;
+            "
+          >
+            Supplier/Status Wise Purchase Orders
+          </h4>
           <!-- supplier/status -->
           <div class="row mt-2 mb-4 ms-2">
             <!-- supplier -->
@@ -134,9 +201,6 @@
           <button class="btn btn-info col-2 me-4 ml-auto" id="printAllData">
             <i class="fa-solid fa-print"></i> Print Table
           </button>
-        </div>
-        <div>
-          <canvas id="myChart"></canvas>
         </div>
 
         <img id="viewChart" style="display: none 150px; height: auto" />

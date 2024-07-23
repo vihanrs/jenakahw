@@ -275,11 +275,11 @@ const calLineAmount = () => {
 const calculatePOTotal = () => {
   let poTotal = 0;
   purchaseOrder.poHasProducts.forEach((product) => {
-    poTotal += parseFloat(product.lineAmount).toFixed(2);
+    poTotal += parseFloat(product.lineAmount);
   });
 
   //bind value to totalAmount
-  purchaseOrder.totalAmount = parseFloat(poTotal).toFixed(2);
+  purchaseOrder.totalAmount = poTotal.toFixed(2);
 
   textTotalAmount.value = purchaseOrder.totalAmount;
 };
