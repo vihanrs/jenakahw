@@ -79,7 +79,7 @@ const addEventListeners = () => {
   selectSupplier.addEventListener("change", () => {});
 
   btnSearch.addEventListener("click", () => {
-    searchByFilters();
+    search();
   });
   btnReset.addEventListener("click", () => {
     resetFilters();
@@ -122,16 +122,16 @@ const resetFilters = () => {
     "company"
   );
   fillDataIntoSelect(selectPOStatus, "Select Status", poStatuses, "name");
+  search();
 };
 
-const searchByFilters = () => {
+const search = () => {
   let selectedSupplier =
     selectSupplier.value != "" ? JSON.parse(selectSupplier.value) : "";
   let selectedStatus =
     selectPOStatus.value != "" ? JSON.parse(selectPOStatus.value) : "";
 
   if (selectedSupplier != "" && selectedStatus != "") {
-    console.log("T1");
     //array for store data list
     purchaseOrders = ajaxGetRequest(
       "report/reportpurchaseorder/findbystatusandsupplier/" +
@@ -140,13 +140,11 @@ const searchByFilters = () => {
         selectedSupplier.id
     );
   } else if (selectedSupplier != "") {
-    console.log("T2");
     //array for store data list
     purchaseOrders = ajaxGetRequest(
       "report/reportpurchaseorder/findbysupplier/" + selectedSupplier.id
     );
   } else if (selectedStatus != "") {
-    console.log("T3");
     //array for store data list
     purchaseOrders = ajaxGetRequest(
       "report/reportpurchaseorder/findbystatus/" + selectedStatus.id
@@ -167,6 +165,7 @@ const refreshTable = () => {
   //currency - RS
   const displayProperties = [
     { property: "poCode", datatype: "String" },
+    { property: getAddedDate, datatype: "function" },
     { property: getSupplier, datatype: "function" },
     { property: "requiredDate", datatype: "String" },
     { property: getItemCount, datatype: "function" },
@@ -185,6 +184,8 @@ const refreshTable = () => {
     false,
     userPrivilages
   );
+
+  getTotalamount(purchaseOrders);
 };
 
 const viewRecord = () => {};
@@ -201,8 +202,22 @@ const getSupplier = (rowObject) => {
   );
 };
 
+// function for get added date
+const getAddedDate = (rowObject) => {
+  return rowObject.addedDateTime.split("T")[0];
+};
+// function  for get po item count
 const getItemCount = (rowObject) => {
   return rowObject.poHasProducts.length;
+};
+
+const getTotalamount = (purchaseOrders) => {
+  let total = 0;
+  purchaseOrders.forEach((po) => {
+    total += po.totalAmount;
+  });
+
+  textTotalAmount.value = "Rs." + parseFloat(total).toFixed(2);
 };
 
 // function for get Status

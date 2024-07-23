@@ -346,7 +346,10 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert("success", "Save sucessfully..! " + serverResponse);
+          showAlert(
+            "success",
+            "Product Save successfully..! " + serverResponse
+          );
           //need to refresh table and form
           refreshAll();
         } else {

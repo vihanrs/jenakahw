@@ -142,7 +142,7 @@
 }
 .notifications-card {
   padding: 0;
-  height: 80vh; /* view height */
+  height: 85vh; /* view height */
   background: linear-gradient(45deg, #fcffee9a, #eeff8bc4);
 }
 .notifications-card .card-title {

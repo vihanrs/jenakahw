@@ -25,7 +25,7 @@ public class ReportUIController {
 	private UserController userController;
 	
 	@GetMapping("/reportpurchaseorderui")
-	public ModelAndView ReportUI() {
+	public ModelAndView POReportUI() {
 		// get logged user authentication object
     	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
     	
@@ -37,6 +37,22 @@ public class ReportUIController {
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title","Report | Jenaka Hardware");
 		dashboardView.setViewName("reportpurchaseorder.html");
+		return dashboardView;
+	}
+	
+	@GetMapping("/reportgrnui")
+	public ModelAndView SampleUI() {
+		// get logged user authentication object
+    	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
+    	
+    	User loggedUser = userController.getLoggedUser();
+    	
+		ModelAndView dashboardView = new ModelAndView();
+		
+		dashboardView.addObject("logusername",auth.getName());
+		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
+		dashboardView.addObject("title","Report | Jenaka Hardware");
+		dashboardView.setViewName("reportgrn.html");
 		return dashboardView;
 	}
 }

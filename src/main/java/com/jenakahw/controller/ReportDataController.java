@@ -1,5 +1,6 @@
 package com.jenakahw.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.PurchaseOrder;
+import com.jenakahw.domain.ReportGrn;
 import com.jenakahw.repository.ReportRepository;
 
 @RestController
@@ -23,9 +26,8 @@ public class ReportDataController {
 	@Autowired
 	private ReportRepository reportRepository;
 
-	
 	// Purchase Order Reports
-	
+
 	// [/report/reportpurchaseorder/findbystatus//2]
 	// get mapping for get purchase order report by status
 	@GetMapping(value = "/reportpurchaseorder/findbystatus/{statusId}", produces = "application/json")
@@ -47,6 +49,31 @@ public class ReportDataController {
 			@PathVariable("supplierId") int supplierId) {
 		return reportRepository.purchaseOrderByStatusAndSupplier(statusId, supplierId);
 	}
-	
-	
+
+	// GRN Reports
+
+	// [/report/reportgrn/findbysupplier/9]
+	// get mapping for get grn by supplier
+	@GetMapping(value = "/reportgrn/findbysupplier/{supplierId}", produces = "application/json")
+	public List<Grn> getGrnBySupplier(@PathVariable("supplierId") int supplierId) {
+		return reportRepository.grnBySupplierId(supplierId);
+	}
+
+	// [/report/reportgrn/findgrnsummerybymonthly]
+	// get mapping for get grn summery report by monthly
+	@GetMapping(value = "/reportgrn/findgrnsummarybymonthly", produces = "application/json")
+	public List<ReportGrn> getGrnSummarybyMonthly() {
+		String[][] queryDataList =  reportRepository.grnSummaryByMonthly();
+		List<ReportGrn> reportGrns = new ArrayList<>();
+		
+		for(String[] queryData : queryDataList) {
+			ReportGrn reportGrn = new ReportGrn();
+			reportGrn.setAddedMonth(queryData[0]);
+			reportGrn.setGrnGrandTotal(queryData[1]);
+			
+			reportGrns.add(reportGrn);
+		}
+		
+		return reportGrns;
+	}
 }

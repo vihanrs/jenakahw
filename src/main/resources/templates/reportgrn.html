@@ -7,7 +7,7 @@
     <!-- common heading file -->
     <head th:replace="~{head :: headFragment}"> </head>
 
-    <script src="resources/controller_js/reportpurchaseorder.js"></script>
+    <script src="resources/controller_js/reportgrn.js"></script>
   </head>
   <body class="sidebar-mini layout-fixed">
     <div class="container-fluid wrapper ps-2">
@@ -29,15 +29,69 @@
                 alt="porder-icon"
                 class="me-3"
                 style="height: 40px; width: 40px"
-              />Purchase Orders Reports
+              />GRN Reports
             </h2>
           </div>
         </div>
         <!-- title area end  -->
-
         <!-- content area start -->
         <div class="card card-body p-2">
-          <!-- supplier/status -->
+          <div class="row">
+            <h4
+              style="
+                font-weight: bold;
+                font-style: italic;
+                font-size: 20px;
+                color: #235ebd;
+                padding-bottom: 5px;
+              "
+            >
+              Monthly GRN Summary
+            </h4>
+            <div class="col-md-5 ms-2">
+              <table class="table table-hover pt-3 mb-3" id="grnSummaryTable">
+                <thead class="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Month</th>
+                    <th>Grand Total</th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider"></tbody>
+              </table>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-5 me-4">
+              <div>
+                <canvas id="myChart"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <button
+              type="button"
+              id="printSummary"
+              class="btn btn-info col-md-2 ml-auto me-2"
+            >
+              <i class="fa-solid fa-print"></i>
+              Print Summary
+            </button>
+          </div>
+        </div>
+
+        <div class="card card-body p-2">
+          <h4
+            style="
+              font-weight: bold;
+              font-style: italic;
+              font-size: 20px;
+              color: #235ebd;
+              padding-bottom: 5px;
+            "
+          >
+            Supplier Wise GRN
+          </h4>
+          <!-- supplier-->
           <div class="row mt-2 mb-4 ms-2">
             <!-- supplier -->
             <div class="col-md-3">
@@ -46,15 +100,6 @@
               </label>
               <select id="selectSupplier" class="form-select me-2">
                 <option value="" selected disabled>Select Supplier</option>
-              </select>
-            </div>
-            <!-- status -->
-            <div class="col-md-3">
-              <label for="selectPOStatus" class="form-label fw-bold">
-                Status
-              </label>
-              <select id="selectPOStatus" class="form-select me-2">
-                <option value="" selected disabled>Select Status</option>
               </select>
             </div>
 
@@ -94,19 +139,16 @@
           </div>
 
           <!-- data table -->
-          <table
-            class="table table-hover pt-3 mb-3"
-            id="purchaseOrdersReportTable"
-          >
+          <table class="table table-hover pt-3 mb-3" id="grnTable">
             <thead class="table-dark">
               <tr>
                 <th>#</th>
-                <th>PO Code</th>
+                <th>GRN Code</th>
                 <th>Date</th>
                 <th>Supplier</th>
-                <th>Required Date</th>
+                <th>PO ID</th>
                 <th>Item Count</th>
-                <th>Total Amount</th>
+                <th>Grand Total</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -114,7 +156,6 @@
           </table>
         </div>
 
-        <!-- total amount -->
         <div class="row">
           <div class="col-md-2 ml-auto" style="padding: 0 30px 0 40px">
             <label for="textTotalAmount" class="form-label fw-bold">
@@ -134,9 +175,6 @@
           <button class="btn btn-info col-2 me-4 ml-auto" id="printAllData">
             <i class="fa-solid fa-print"></i> Print Table
           </button>
-        </div>
-        <div>
-          <canvas id="myChart"></canvas>
         </div>
 
         <img id="viewChart" style="display: none 150px; height: auto" />

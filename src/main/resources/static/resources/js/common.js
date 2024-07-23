@@ -172,3 +172,29 @@ const manageFormButtons = (opetation, privilegeObj) => {
     }
   }
 };
+
+// function for get month name by month number
+const getMonthName = (monthNumber) => {
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  // Ensure the month number is between 1 and 12
+  if (monthNumber < 1 || monthNumber > 12) {
+    return "Invalid month number";
+  }
+
+  // Subtract 1 from the month number to get the correct index
+  return monthNames[monthNumber - 1];
+};
