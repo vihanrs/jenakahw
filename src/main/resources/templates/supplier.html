@@ -258,7 +258,7 @@
                         <!-- search button -->
                         <div class="col-md-1">
                           <label
-                            for="btnSearch"
+                            for="btnProductSearch"
                             class="form-label fw-bold"
                             style="color: #d8d8d834"
                           >
@@ -268,7 +268,7 @@
                           <button
                             class="btn btn-plus"
                             type="button"
-                            id="btnSearch"
+                            id="btnProductSearch"
                           >
                             <i class="fa-solid fa-magnifying-glass"></i>
                           </button>
@@ -277,7 +277,7 @@
                         <!-- reset button -->
                         <div class="col-md-1">
                           <label
-                            for="btnReset"
+                            for="btnProductReset"
                             class="form-label fw-bold"
                             style="color: #d8d8d834"
                           >
@@ -287,7 +287,7 @@
                           <button
                             class="btn btn-outline-danger"
                             type="button"
-                            id="btnReset"
+                            id="btnProductReset"
                           >
                             <i class="fa-solid fa-xmark"></i>
                           </button>
@@ -301,9 +301,7 @@
                           class="form-select"
                           multiple
                           id="selectAllProducts"
-                        >
-                          <option value="1">One</option>
-                        </select>
+                        ></select>
                       </div>
                       <!-- operating buttons -->
                       <div class="col-md-4 text-center">
@@ -540,6 +538,17 @@
                   </table>
                 </div>
               </div>
+              <!-- print full table button -->
+              <div class="row mt-2">
+                <button
+                  type="button"
+                  id="btnPrintFullTable"
+                  class="btn btn-info col-md-2 ml-auto me-2"
+                >
+                  <i class="fa-solid fa-print"></i>
+                  Print All
+                </button>
+              </div>
             </div>
           </div>
           <!-- view all table area end -->
@@ -551,26 +560,46 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h2>View # Details</h2>
+              <h2 class="fw-bold">View Supplier Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <table id="printTable" class="table">
+              <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>FullName</th>
-                  <td id="tdFullName"></td>
+                  <th>First Name</th>
+                  <td id="tdFirstName"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdNIC"></td>
+                  <th>Last Name</th>
+                  <td id="tdLastName"></td>
                 </tr>
                 <tr>
-                  <th>Mobile</th>
-                  <td id="tdMobile"></td>
+                  <th>Contact</th>
+                  <td id="tdContact"></td>
+                </tr>
+                <tr>
+                  <th>Email</th>
+                  <td id="tdEmail"></td>
+                </tr>
+                <tr>
+                  <th>Company</th>
+                  <td id="tdCompany"></td>
+                </tr>
+                <tr>
+                  <th>Address</th>
+                  <td id="tdAddress"></td>
                 </tr>
                 <tr>
                   <th>Status</th>
                   <td id="tdStatus"></td>
+                </tr>
+                <tr>
+                  <th>Products</th>
+                  <td id="tdProducts"></td>
+                </tr>
+                <tr>
+                  <th>Bank Details</th>
+                  <td id="tdBankDetails"></td>
                 </tr>
               </table>
             </div>

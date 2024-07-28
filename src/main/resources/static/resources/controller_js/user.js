@@ -108,8 +108,9 @@ const addEventListeners = () => {
   btnViewPrint.addEventListener("click", () => {
     printViewRecord();
   });
+
   //record print function call
-  printAllData.addEventListener("click", () => {
+  btnPrintFullTable.addEventListener("click", () => {
     printFullTable();
   });
 };
@@ -700,10 +701,10 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Employee</title>" +
+    "<head><title>Print User</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style='font-weight=bold'>Employee Details</h2>" +
+      "<h2 style='font-weight=bold'>User Details</h2>" +
       tblUser.outerHTML +
       '<script>$("modifyButtons").css("display","none")</script>'
   );

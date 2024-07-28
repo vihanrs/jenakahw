@@ -31,7 +31,7 @@
         role="menu"
         data-accordion="false"
       >
-        <!-- Home -->
+        <!-- Dashboard -->
         <li class="nav-item user-panel">
           <a href="/dashboard" class="nav-link">
             <i class="nav-icon"
@@ -47,14 +47,36 @@
         <!-- Invoice -->
         <li class="nav-item user-panel">
           <a href="/product" class="nav-link">
-            <i class="nav-icon fas fa-user"></i>
+            <i class="nav-icon fas"
+              ><img
+                src="resources/icons/invoice-icon.png"
+                alt="invoice-icon"
+                style="height: 24px; width: 24px"
+            /></i>
             <p>Invoice</p>
+          </a>
+        </li>
+        <!-- customer -->
+        <li class="nav-item user-panel">
+          <a href="/product" class="nav-link">
+            <i class="nav-icon"
+              ><img
+                src="resources/icons/customer-icon.png"
+                alt="customer-icon"
+                style="height: 24px; width: 24px"
+            /></i>
+            <p>Customer</p>
           </a>
         </li>
         <!-- Product -->
         <li class="nav-item user-panel">
           <a href="/product" class="nav-link">
-            <i class="nav-icon fas fa-user"></i>
+            <i class="nav-icon"
+              ><img
+                src="resources/icons/product-icon.png"
+                alt="product-icon"
+                style="height: 24px; width: 24px"
+            /></i>
             <p>Product</p>
           </a>
         </li>
@@ -64,7 +86,7 @@
             <i class="nav-icon"
               ><img
                 src="resources/icons/supplier-icon.png"
-                alt="dashboard-icon"
+                alt="supplier-icon"
                 style="height: 24px; width: 24px"
             /></i>
             <p>Supplier</p>
@@ -87,8 +109,8 @@
           <a href="/grn" class="nav-link">
             <i class="nav-icon"
               ><img
-                src="resources/icons/porder-icon.png"
-                alt="porder-icon"
+                src="resources/icons/grn-icon.png"
+                alt="grn-icon"
                 style="height: 24px; width: 24px"
             /></i>
             <p>GRN</p>
@@ -100,7 +122,7 @@
             <i class="nav-icon"
               ><img
                 src="resources/icons/stock-icon.png"
-                alt="porder-icon"
+                alt="stock-icon"
                 style="height: 24px; width: 24px"
             /></i>
             <p>Stock</p>
@@ -110,9 +132,14 @@
         <!-- payments -->
         <li class="nav-item user-panel">
           <a href="#" class="nav-link"
-            ><i class="fa-solid fa-hand-holding-dollar"></i>
-            <p>Payments</p></a
-          >
+            ><i class="nav-icon fas"
+              ><img
+                src="resources/icons/payment-icon.png"
+                alt="payment-icon"
+                style="height: 24px; width: 24px; margin-right: 4px"
+            /></i>
+            <p>Payments<i class="right fas fa-angle-left"></i></p
+          ></a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
               <a href="" class="nav-link"
@@ -141,7 +168,12 @@
         <!-- Reports -->
         <li class="nav-item user-panel">
           <a href="#" class="nav-link"
-            ><i class="nav-icon fas fa-circle"></i>
+            ><i class="nav-icon fas"
+              ><img
+                src="resources/icons/report-icon.png"
+                alt="report-icon"
+                style="height: 24px; width: 24px"
+            /></i>
             <p>Reports<i class="right fas fa-angle-left"></i></p
           ></a>
           <ul class="nav nav-treeview">
@@ -154,7 +186,7 @@
                 ><i class="far fa-circle nav-icon"></i>
                 <p>GRN Reports</p></a
               >
-              <a href="" class="nav-link"
+              <a href="/reportsalesui" class="nav-link"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Sales Reports</p></a
               >

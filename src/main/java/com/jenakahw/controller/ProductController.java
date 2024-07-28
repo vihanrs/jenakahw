@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -35,7 +36,7 @@ public class ProductController {
 
 	@Autowired
 	private PrivilegeController privilegeController;
-	
+
 	@Autowired
 	private ProductStatusRepository productStatusRepository;
 
@@ -71,10 +72,10 @@ public class ProductController {
 
 	// get mapping for get available product list
 	@GetMapping(value = "/availablelist", produces = "application/json")
-	public List<Product> getAvilableProducts() {
+	public List<Product> getAvilableProducts(@RequestParam(value = "supplierid",required = false)Integer supplierId,@RequestParam(value = "brandname", required = false) String brandName,@RequestParam(value = "categoryname",required = false) String categoryName,@RequestParam(value = "subcategoryname",required = false)String subCategoryName) {
 		// check privileges
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return productRepository.getAvailableProducts();
+			return productRepository.getAvailableProducts(supplierId,brandName,categoryName,subCategoryName);
 		} else {
 			return null;
 		}
@@ -118,7 +119,7 @@ public class ProductController {
 
 		try {
 			// generate barcode
-			product.setBarcode("23000001");
+			product.setBarcode(productRepository.getNextBarcode());
 
 			// set added date time
 			product.setAddedDateTime(LocalDateTime.now());
@@ -153,7 +154,7 @@ public class ProductController {
 			product.setUpdatedUserId(userController.getLoggedUser().getId());
 
 			productRepository.save(product);
-			
+
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();
@@ -170,20 +171,20 @@ public class ProductController {
 
 		// check given product exist or not
 		Product extProduct = productRepository.getReferenceById(product.getId());
-		if(extProduct == null) {
+		if (extProduct == null) {
 			return "Product Delete Not Completed : Product Not Exist..!";
 		}
 
 		try {
-			//set deleted data and time
+			// set deleted data and time
 			product.setDeletedDateTime(LocalDateTime.now());
-			
-			//set deleted user id
+
+			// set deleted user id
 			product.setDeletedUserId(userController.getLoggedUser().getId());
-			
+
 			// set product statuts to 'Deleted'
 			product.setProductStatusId(productStatusRepository.getReferenceById(3));
-			
+
 			productRepository.save(product);
 			return "OK";
 		} catch (Exception e) {

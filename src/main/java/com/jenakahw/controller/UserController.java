@@ -77,22 +77,22 @@ public class UserController {
 		// check email
 		User extUserByEmail = userRepository.getUserByEmail(user.getEmail());
 		if (extUserByEmail != null) {
-			return "User Save Not Completed : Email " + user.getEmail() + " is already exist!";
+			return "Email " + user.getEmail() + " is already exist!";
 		}
 		// check contact
 		User extUserByContact = userRepository.getUserByContact(user.getContact());
 		if (extUserByContact != null) {
-			return "User Save Not Completed : Contact no " + user.getContact() + " is already exist!";
+			return "Contact no " + user.getContact() + " is already exist!";
 		}
 		// check NIC
 		User extUserByNIC = userRepository.getUserByNIC(user.getNic());
 		if (extUserByNIC != null) {
-			return "User Save Not Completed : NIC " + user.getNic() + " is already exist!";
+			return "NIC " + user.getNic() + " is already exist!";
 		}
 		// check username
 		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
 		if (extUserByUsername != null) {
-			return "User Save Not Completed : Username " + user.getUsername() + " is already exist!";
+			return "Username " + user.getUsername() + " is already exist!";
 		}
 
 		try {
@@ -107,7 +107,7 @@ public class UserController {
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "Save Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -122,32 +122,32 @@ public class UserController {
 		// check existing
 		User extUser = userRepository.getReferenceById(user.getId());
 		if (extUser == null) {
-			return "Update not completed : User not available";
+			return "User not available";
 		}
 
 		// check duplicates
 		// check email
 		User extUserByEmail = userRepository.getUserByEmail(user.getEmail());
 		if (extUserByEmail != null && user.getId() != extUserByEmail.getId()) {
-			return "Update not completed : Email " + extUserByEmail.getEmail() + " is already exist!";
+			return "Email " + extUserByEmail.getEmail() + " is already exist!";
 		}
 
 		// check contact
 		User extUserByContact = userRepository.getUserByContact(user.getContact());
 		if (extUserByContact != null && user.getId() != extUserByContact.getId()) {
-			return "Update not completed : Contact no " + user.getContact() + " is already exist!";
+			return "Contact no " + user.getContact() + " is already exist!";
 		}
 
 		// check NIC
 		User extUserByNIC = userRepository.getUserByNIC(user.getNic());
 		if (extUserByNIC != null && user.getId() != extUserByNIC.getId()) {
-			return "Update not completed : NIC " + user.getNic() + " is already exist!";
+			return "NIC " + user.getNic() + " is already exist!";
 		}
 
 		// check username
 		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
 		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {
-			return "Update not completed :  Username " + extUserByUsername.getUsername() + " is already exist!";
+			return "Username " + extUserByUsername.getUsername() + " is already exist!";
 		}
 
 		try {
@@ -156,7 +156,7 @@ public class UserController {
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "Update Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -171,7 +171,7 @@ public class UserController {
 		// need to check given user exist or not
 		User extUser = userRepository.getReferenceById(user.getId());
 		if (extUser == null) {
-			return "User Delete Not Completed : Given User Not Ext..!";
+			return "Given User Not Ext..!";
 		}
 
 		try {
@@ -179,7 +179,7 @@ public class UserController {
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
-			return "Delete Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 

@@ -91,13 +91,13 @@ public class SupplierController {
 		// check contact
 		Supplier extSupplierByContact = supplierRepository.getSupplierByContact(supplier.getContact());
 		if (extSupplierByContact != null) {
-			return "Supplier Save Not Completed : Contact No. " + supplier.getContact() + " is already exist!";
+			return "Contact No. " + supplier.getContact() + " is already exist!";
 		}
 
 		// check email
 		Supplier extSupplierByEmail = supplierRepository.getSupplierByEmail(supplier.getEmail());
 		if (extSupplierByEmail != null) {
-			return "Supplier Save Not Completed : Email " + supplier.getEmail() + " is already exist!";
+			return "Email " + supplier.getEmail() + " is already exist!";
 		}
 
 		try {
@@ -114,7 +114,7 @@ public class SupplierController {
 
 			return "OK";
 		} catch (Exception e) {
-			return "Supplier Save Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -130,20 +130,20 @@ public class SupplierController {
 		// check existing
 		Supplier extSupplier = supplierRepository.getReferenceById(supplier.getId());
 		if (extSupplier == null) {
-			return "Update not completed : Supplier not available";
+			return "Supplier not available";
 		}
 
 		// check duplicates...
 		// check contact
 		Supplier extSupplierByContact = supplierRepository.getSupplierByContact(supplier.getContact());
 		if (extSupplierByContact != null && supplier.getId() != extSupplierByContact.getId()) {
-			return "Supplier Update Not Completed : Contact No. " + supplier.getContact() + " is already exist!";
+			return "Contact No. " + supplier.getContact() + " is already exist!";
 		}
 
 		// check email
 		Supplier extSupplierByEmail = supplierRepository.getSupplierByEmail(supplier.getEmail());
-		if (extSupplierByEmail != null && supplier.getId() != extSupplierByContact.getId()) {
-			return "Supplier Update Not Completed : Email " + supplier.getEmail() + " is already exist!";
+		if (extSupplierByEmail != null && supplier.getId() != extSupplierByEmail.getId()) {
+			return "Email " + supplier.getEmail() + " is already exist!";
 		}
 
 		try {
@@ -161,7 +161,7 @@ public class SupplierController {
 
 			return "OK";
 		} catch (Exception e) {
-			return "Supplier Update Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -177,7 +177,7 @@ public class SupplierController {
 		// check existing
 		Supplier extSupplier = supplierRepository.getReferenceById(supplier.getId());
 		if (extSupplier == null) {
-			return "Delete not completed : Supplier Not Exist..!";
+			return "Supplier Not Exist..!";
 		}
 		
 		try {
@@ -198,7 +198,7 @@ public class SupplierController {
 			
 			return "OK";
 		} catch (Exception e) {
-			return "Supplier Delete Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 
 	}

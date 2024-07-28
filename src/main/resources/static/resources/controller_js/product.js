@@ -1,13 +1,3 @@
-// selectBrand;
-// selectCategory;
-// selectSubCategory;
-// textProductName;
-// selectUnitType;
-// textProductDescription;
-// textROL;
-// textLocation;
-// textProfitRate;
-// selectStatus;
 //Access Browser onload event
 window.addEventListener("load", () => {
   //get logged user privileges
@@ -43,7 +33,7 @@ const addEventListeners = () => {
   });
 
   textProductName.addEventListener("keyup", () => {
-    textFieldValidator(textProductName, "^.*$", "product", "name");
+    textFieldValidator(textProductName, "^.*$", "product", "name"); // ^(?!\s*$)(?!\s).*(?<!\s)$
   });
 
   selectUnitType.addEventListener("change", () => {
@@ -98,6 +88,11 @@ const addEventListeners = () => {
   //record print function call
   btnViewPrint.addEventListener("click", () => {
     printViewRecord();
+  });
+
+  //print full table function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
   });
 };
 
@@ -171,9 +166,11 @@ const refreshForm = () => {
   manageFormButtons("insert", userPrivilages);
 };
 
+// function for get sub caregory when select category
 const getSubCategoriesByCategory = (categoryId, selectedValue = null) => {
   selectSubCategory.disabled = false;
 
+  // selectedValue parameter used when refill saved data
   // if function call in category event listner - need to reset product.subCategory id
   if (selectedValue == null) {
     product.subCategoryId = null;
@@ -193,7 +190,7 @@ const getSubCategoriesByCategory = (categoryId, selectedValue = null) => {
 
 //function for check errors
 const checkErrors = () => {
-  //need to check all required prperty filds
+  //need to check all required property fields
   let error = "";
 
   if (product.brandId == null) {
@@ -212,6 +209,11 @@ const checkErrors = () => {
   if (product.name == null) {
     error = error + "Please Enter Product Name...!\n";
     textProductName.style.border = "1px solid red";
+  }
+
+  if (product.unitTypeId == null) {
+    error = error + "Please Select Unit Type...!\n";
+    selectUnitType.style.border = "1px solid red";
   }
 
   if (product.profitRate == null) {
@@ -274,7 +276,7 @@ const checkUpdates = () => {
   if (oldproduct.description != product.description) {
     updates +=
       "Description has changed " +
-      (oldproduct.description ?? "-") +
+      (oldproduct.description ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
       " into " +
       (product.description ?? "-") +
       " \n";
@@ -346,16 +348,14 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert(
-            "success",
-            "Product Save successfully..! " + serverResponse
-          );
+          showAlert("success", "Product Save successfully..!");
           //need to refresh table and form
           refreshAll();
         } else {
           showAlert(
             "error",
-            "Save not sucessfully..! have some errors \n" + serverResponse
+            "Product save not successfully..! have some errors \n" +
+              serverResponse
           );
         }
       }
@@ -377,14 +377,15 @@ const updateRecord = () => {
         if (userConfirm) {
           let serverResponse = ajaxRequestBody("/product", "PUT", product);
           if (serverResponse == "OK") {
-            showAlert("success", "Update sucessfully..!").then(() => {
+            showAlert("success", "Product Update successfully..!").then(() => {
               //need to refresh table and form
               refreshAll();
             });
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" + serverResponse
+              "Product update not successfully..! have some errors \n" +
+                serverResponse
             );
           }
         }
@@ -519,12 +520,11 @@ const refillRecord = (rowObject, rowId) => {
   textProfitRate.value = product.profitRate;
 
   //set optional fields
-  textProductDescription.value =
-    product.description != null ? product.description : "";
+  textProductDescription.value = product.description ?? "";
 
-  textROL.value = product.rol != null ? product.rol : "";
+  textROL.value = product.rol ?? "";
 
-  textLocation.value = product.location != null ? product.location : "";
+  textLocation.value = product.location ?? "";
 
   // ***if we have optional join column then need to check null
 
@@ -598,16 +598,15 @@ const deleteRecord = (rowObject, rowId) => {
       let serverResponse = ajaxRequestBody("/product", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Delete successfully..! \n" + serverResponse).then(
-          () => {
-            // Need to refresh table and form
-            refreshAll();
-          }
-        );
+        showAlert("success", "Product Delete successfully..!").then(() => {
+          // Need to refresh table and form
+          refreshAll();
+        });
       } else {
         showAlert(
           "error",
-          "Delete not successfully..! have some errors \n" + serverResponse
+          "Product delete not successfully..! have some errors \n" +
+            serverResponse
         );
       }
     }
@@ -621,13 +620,13 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>User Details</title>" +
+    "<head><title>Print Product</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Product Details</h2>" +
       printTable.outerHTML
   );
 
-  //triger print() after 1000 milsec time out
+  //triger print() after 1000 milsec time out - time to load content to the printing tab
   setTimeout(function () {
     newTab.print();
   }, 1000);
@@ -638,11 +637,11 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Employee</title>" +
+    "<head><title>Print Products</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Employee Details</h2>" +
-      tableId.outerHTML +
+      "<h2>Product Details</h2>" +
+      productTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'
   );
 

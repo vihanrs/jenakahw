@@ -52,7 +52,12 @@ const addEventListeners = () => {
     selectDFieldValidator(selectStatus, "supplier", "supplierStatusId");
   });
 
+  selectCategory.addEventListener("change", () => {
+    getSubCategoriesByCategory(JSON.parse(selectCategory.value).id);
+  });
+
   //bank details event listners
+
   textBankName.addEventListener("keyup", () => {
     textFieldValidator(
       textBankName,
@@ -99,6 +104,16 @@ const addEventListeners = () => {
     addRecord();
   });
 
+  //record print function call
+  btnViewPrint.addEventListener("click", () => {
+    printViewRecord();
+  });
+
+  //print full table function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
+  });
+
   // list trasform buttons
   btnSingleAdd.addEventListener("click", () => {
     addOneProduct();
@@ -119,6 +134,14 @@ const addEventListeners = () => {
   btnAddBankDetail.addEventListener("click", () => {
     addBankDetail();
   });
+
+  btnProductSearch.addEventListener("click", () => {
+    getAllAvailableProductsWithFiltering(supplier.id);
+  });
+
+  btnProductReset.addEventListener("click", () => {
+    clearFiltersAndList();
+  });
 };
 
 // ********* RESET *********
@@ -130,12 +153,23 @@ const refreshAll = () => {
   refreshTable();
 };
 
+// ********* FORM OPERATIONS *********
+
 //function for refresh form area
 const refreshForm = () => {
   //create empty object
   supplier = {};
   supplier.products = new Array();
   supplier.bankDetails = new Array();
+
+  //get data to filters
+  brands = ajaxGetRequest("/brand/findall");
+  fillDataIntoSelect(selectBrand, "Select Brand", brands, "name");
+
+  categories = ajaxGetRequest("/category/findall");
+  fillDataIntoSelect(selectCategory, "Select Category", categories, "name");
+
+  selectSubCategory.disabled = true;
 
   //get data list for select element
   supplierStatus = ajaxGetRequest("/supplierstatus/findall");
@@ -151,16 +185,6 @@ const refreshForm = () => {
   //bind default selected status in to supplier object and set valid color
   supplier.supplierStatusId = JSON.parse(selectStatus.value);
   selectStatus.style.border = "2px solid #00FF7F";
-
-  //get data list for select element (left side list)
-  availableProductList = ajaxGetRequest("/product/availablelist");
-  fillMoreDataIntoSelect(
-    selectAllProducts,
-    "",
-    availableProductList,
-    "barcode",
-    "name"
-  );
 
   //set selected product list empty (right side list)
   fillMoreDataIntoSelect(
@@ -191,274 +215,64 @@ const refreshForm = () => {
 
   setBorderStyle(elements);
 
+  clearFiltersAndList();
+
   refreshInnerFormAndTable();
 
   //manage buttons
   manageFormButtons("insert", userPrivilages);
 };
 
-//function for refresh inner product form/table area
-const refreshInnerFormAndTable = () => {
-  bankDetail = {};
+// function for get sub caregory when select category
+const getSubCategoriesByCategory = (categoryId) => {
+  selectSubCategory.disabled = false;
 
-  //empty all elements
-  textBankName.value = "";
-  textBranchName.value = "";
-  textAccNo.value = "";
-  textAccHolderName.value = "";
-
-  //set default border color
-  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
-  setBorderStyle(elements);
-
-  const displayProperties = [
-    { property: "bankName", datatype: "String" },
-    { property: "branchName", datatype: "String" },
-    { property: "accNo", datatype: "String" },
-    { property: "accHolderName", datatype: "String" },
-  ];
-
-  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
-  fillDataIntoInnerTable(
-    bankDetailsTable,
-    supplier.bankDetails,
-    displayProperties,
-    refillBankDetail,
-    deleteBankDetail
+  subCategories = ajaxGetRequest(
+    "/subcategory/findbycategory?categoryid=" + categoryId
   );
-};
-
-// ********* INNER FORM/TABLE OPERATIONS *********
-
-//function for refill selected bank detail
-const refillBankDetail = (rowObject) => {
-  //remove refilled bank detail from supplier.bankDetails
-  supplier.bankDetails = supplier.bankDetails.filter(
-    (bankdetail) => bankdetail.id != rowObject.id
-  );
-
-  // refresh inner table
-  refreshInnerFormAndTable();
-
-  //fill product data into relavent fields
-  bankDetail = JSON.parse(JSON.stringify(rowObject));
-  textBankName.value = bankDetail.bankName;
-  textBranchName.value = bankDetail.branchName;
-  textAccNo.value = bankDetail.accNo;
-  textAccHolderName.value = bankDetail.accHolderName;
-
-  //set valid border color
-  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
-  setBorderStyle(elements, "2px solid #00FF7F");
-};
-
-//function for delete selected bank detail
-const deleteBankDetail = (rowObject) => {
-  // get user confirmation
-  let title = "Are you sure you want to delete this bank detail...?";
-  let message = rowObject.bankName + " - " + rowObject.accNo;
-  showConfirm(title, message).then((userConfirm) => {
-    if (userConfirm) {
-      //remove deleted bank detail from supplier.bankDetails
-      supplier.bankDetails = supplier.bankDetails.filter(
-        (bankdetail) => bankdetail.id != rowObject.id
-      );
-
-      // refresh inner table
-      refreshInnerFormAndTable();
-    }
-  });
-};
-//function for refresh table records
-const refreshTable = () => {
-  //array for store data list
-  suppliers = ajaxGetRequest("/supplier/findall");
-
-  //object count = table column count
-  //String - number/string/date
-  //function - object/array/boolean
-  const displayProperties = [
-    { property: getSupplierFullName, datatype: "function" },
-    { property: "company", datatype: "String" },
-    { property: "contact", datatype: "String" },
-    { property: "email", datatype: "String" },
-    { property: getSupplierStatus, datatype: "function" },
-  ];
-
-  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys,user privileges)
-  fillDataIntoTable(
-    supplierTable,
-    suppliers,
-    displayProperties,
-    viewRecord,
-    refillRecord,
-    deleteRecord,
-    true,
-    userPrivilages
-  );
-
-  //hide delete button when status is 'resigned'
-  suppliers.forEach((supplier, index) => {
-    if (userPrivilages.delete && supplier.supplierStatusId.name == "Deleted") {
-      //catch the button
-      let targetElement =
-        supplierTable.children[1].children[index].children[6].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
-      //add changes
-      targetElement.style.pointerEvents = "none";
-      targetElement.style.visibility = "hidden";
-    }
-  });
-
-  $("#supplierTable").dataTable();
-};
-
-//function for check inner form errors
-const checkInnerFormErrors = () => {
-  let error = "";
-
-  if (bankDetail.bankName == null) {
-    error = error + "Please Enter Valid Bank Name...!\n";
-    textBankName.style.border = "1px solid red";
-  }
-
-  if (bankDetail.branchName == null) {
-    error = error + "Please Enter Valid Branch Name...!\n";
-    textBranchName.style.border = "1px solid red";
-  }
-
-  if (bankDetail.accNo == null) {
-    error = error + "Please Enter Valid Acc No...!\n";
-    textAccNo.style.border = "1px solid red";
-  }
-
-  if (bankDetail.accHolderName == null) {
-    error = error + "Please Enter Valid Acc Holder Name...!\n";
-    textAccHolderName.style.border = "1px solid red";
-  }
-
-  return error;
-};
-
-// fucntion for add product to inner table
-const addBankDetail = () => {
-  // check errors
-  let formErrors = checkInnerFormErrors();
-  if (formErrors == "") {
-    // get user confirmation
-    let title = "Are you sure to add following bank detail..?";
-    let message =
-      "Bank : " +
-      bankDetail.bankName +
-      " - " +
-      bankDetail.branchName +
-      "\nAcc No. : " +
-      bankDetail.accNo +
-      "\nAcc Holder Name : " +
-      bankDetail.accHolderName;
-
-    showConfirm(title, message).then((userConfirm) => {
-      if (userConfirm) {
-        //add object into array
-        supplier.bankDetails.push(bankDetail);
-        refreshInnerFormAndTable();
-      }
-    });
-  } else {
-    showAlert("error", "Error\n" + formErrors);
-  }
-};
-
-// ********* TABLE OPERATIONS *********
-
-//function for set stats column
-const getSupplierStatus = (rowOb) => {
-  if (rowOb.supplierStatusId.name == "Active") {
-    return (
-      '<p class = "status status-active">' +
-      rowOb.supplierStatusId.name +
-      "</p>"
-    );
-  } else if (rowOb.supplierStatusId.name == "Inactive") {
-    return (
-      '<p class = "status status-warning">' +
-      rowOb.supplierStatusId.name +
-      "</p>"
-    );
-  } else {
-    return (
-      '<p class = "status status-error">' + rowOb.supplierStatusId.name + "</p>"
-    );
-  }
-};
-
-// function for get supplier fullname
-const getSupplierFullName = (rowOb) => {
-  return rowOb.firstName + (rowOb.lastName != null ? " " + rowOb.lastName : "");
-};
-
-//function for view record
-const viewRecord = (ob, rowId) => {
-  //need to get full object
-
-  const printObj = ob;
-  /* EXAMPLES
-    tdFullName.innerText = printObj.fullName;
-    tdStatus.innerText = printObj.employeeStatusId.name;
-    */
-  //open model
-  $("#modelDetailedView").modal("show");
-};
-
-//function for refill record
-const refillRecord = (rowObject, rowId) => {
-  $("#addNewButton").click();
-
-  supplier = JSON.parse(JSON.stringify(rowObject));
-  oldSupplier = JSON.parse(JSON.stringify(rowObject));
-
-  //set data to fields
-  textFirstName.value = supplier.firstName;
-  textContact.value = supplier.contact;
-  textEmail.value = supplier.email;
-  textCompany.value = supplier.company;
-  textAddress.value = supplier.address;
-
-  //set optional fields
-  if (supplier.lastName != null) textLastName.value = supplier.lastName;
-  else textLastName.value = "";
-
-  if (supplier.email != null) textEmail.value = supplier.email;
-  else textEmail.value = "";
-
-  if (supplier.company != null) textCompany.value = supplier.company;
-  else textCompany.value = "";
-
-  if (supplier.address != null) textAddress.value = supplier.address;
-  else textAddress.value = "";
-
-  // set status
   fillDataIntoSelect(
-    selectStatus,
-    "Select Status",
-    supplierStatus,
-    "name",
-    supplier.supplierStatusId.name
-  );
-
-  // set supplier product list
-  fillMoreDataIntoSelect(
-    selectedProducts,
-    "",
-    supplier.products,
-    "barcode",
+    selectSubCategory,
+    "Select Sub-Category",
+    subCategories,
     "name"
   );
+};
 
-  availableProductList = ajaxGetRequest(
-    "/product/availablelistWithoutSupplier/" + supplier.id
-  );
+// function for load available products list with filtering
+const getAllAvailableProductsWithFiltering = (supplierId) => {
+  // get values form filters
+  let brand = selectBrand.value != "" ? JSON.parse(selectBrand.value).name : "";
+  let category =
+    selectCategory.value != "" ? JSON.parse(selectCategory.value).name : "";
+  let subcategory =
+    selectSubCategory.value != ""
+      ? JSON.parse(selectSubCategory.value).name
+      : "";
+
+  // create parameters string
+  let params = "";
+  if (brand != "") {
+    params = "?brandname=" + brand;
+  }
+  if (params == "" && category != "") {
+    params = "?categoryname=" + category;
+  } else if (params != "" && category != "") {
+    params += "&categoryname=" + category;
+  }
+
+  if (params == "" && subcategory != "") {
+    params = "?subcategoryname=" + subcategory;
+  } else if (params != "" && subcategory != "") {
+    params += "&subcategoryname=" + subcategory;
+  }
+
+  if (params == "" && supplierId != null) {
+    params = "?supplierid=" + supplierId;
+  } else if (params != "" && supplierId != null) {
+    params += "&supplierid=" + supplierId;
+  }
+
+  availableProductList = ajaxGetRequest("/product/availablelist" + params);
   fillMoreDataIntoSelect(
     selectAllProducts,
     "",
@@ -466,41 +280,16 @@ const refillRecord = (rowObject, rowId) => {
     "barcode",
     "name"
   );
-
-  //change status border color to default
-  setBorderStyle([selectStatus]);
-
-  refreshInnerFormAndTable();
-  //manage buttons
-  manageFormButtons("refill", userPrivilages);
 };
 
-//function for delete record
-const deleteRecord = (rowObject, rowId) => {
-  //get user confirmation
-  let title = "Are you sure to delete following record?";
-  let message = rowObject.firstName + " " + rowObject.lastName;
-  showConfirm(title, message).then((userConfirm) => {
-    if (userConfirm) {
-      //response from backend ...
-      let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
-      //check back end response
-      if (serverResponse == "OK") {
-        showAlert("success", "Delete sucessfully..! \n" + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        showAlert(
-          "error",
-          "Delete not successfully..! There were some errors \n" +
-            serverResponse
-        );
-      }
-    }
-  });
+// function for reset all product list
+const clearFiltersAndList = () => {
+  selectBrand.value = "";
+  selectCategory.value = "";
+  selectSubCategory.value = "";
+  selectSubCategory.disabled = true;
+  fillMoreDataIntoSelect(selectAllProducts, "", [], "barcode", "name");
 };
-
-// ********* FORM OPERATIONS *********
 
 //function for check errors
 const checkError = () => {
@@ -629,7 +418,8 @@ const addRecord = () => {
         } else {
           showAlert(
             "error",
-            "Save not sucessfully..! have some errors \n" + serverResponse
+            "Supplier save not sucessfully..! have some errors \n" +
+              serverResponse
           );
         }
       }
@@ -656,13 +446,13 @@ const updateRecord = () => {
             supplier
           );
           if (updateServiceResponse == "OK") {
-            showAlert("success", "Update sucessfully..! ");
+            showAlert("success", "Supplier Update successfully..! ");
             //need to refresh table and form
             refreshAll();
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" +
+              "Supplier update not sucessfully..! have some errors \n" +
                 updateServiceResponse
             );
           }
@@ -679,44 +469,136 @@ const updateRecord = () => {
   }
 };
 
-// ********* PRINT OPERATIONS *********
+// ********* INNER FORM/TABLE OPERATIONS *********
 
-//print function
-const printViewRecord = () => {
-  newTab = window.open();
-  newTab.document.write(
-    //  link bootstrap css
-    "<head><title>Print #</title>" +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2># Details</h2>" +
-      printTable.outerHTML
+//function for refresh inner product form/table area
+const refreshInnerFormAndTable = () => {
+  bankDetail = {};
+
+  //empty all elements
+  textBankName.value = "";
+  textBranchName.value = "";
+  textAccNo.value = "";
+  textAccHolderName.value = "";
+
+  //set default border color
+  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
+  setBorderStyle(elements);
+
+  const displayProperties = [
+    { property: "bankName", datatype: "String" },
+    { property: "branchName", datatype: "String" },
+    { property: "accNo", datatype: "String" },
+    { property: "accHolderName", datatype: "String" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    bankDetailsTable,
+    supplier.bankDetails,
+    displayProperties,
+    refillBankDetail,
+    deleteBankDetail
   );
-
-  //triger print() after 1000 milsec time out
-  setTimeout(function () {
-    newTab.print();
-  }, 1000);
 };
 
-//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
-const printFullTable = () => {
-  const newTab = window.open();
-  newTab.document.write(
-    //  link bootstrap css
-    "<head><title>Print Employee</title>" +
-      '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Employee Details</h2>" +
-      tableId.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+//function for refill selected bank detail
+const refillBankDetail = (rowObject) => {
+  //remove refilled bank detail from supplier.bankDetails
+  supplier.bankDetails = supplier.bankDetails.filter(
+    (bankdetail) => bankdetail.id != rowObject.id
   );
 
-  setTimeout(function () {
-    newTab.print();
-  }, 1000);
+  // refresh inner table
+  refreshInnerFormAndTable();
+
+  //fill product data into relavent fields
+  bankDetail = JSON.parse(JSON.stringify(rowObject));
+  textBankName.value = bankDetail.bankName;
+  textBranchName.value = bankDetail.branchName;
+  textAccNo.value = bankDetail.accNo;
+  textAccHolderName.value = bankDetail.accHolderName;
+
+  //set valid border color
+  let elements = [textBankName, textBranchName, textAccNo, textAccHolderName];
+  setBorderStyle(elements, "2px solid #00FF7F");
 };
 
-// ********* OTHER OPERATIONS *********
+//function for delete selected bank detail
+const deleteBankDetail = (rowObject) => {
+  // get user confirmation
+  let title = "Are you sure you want to delete this bank detail...?";
+  let message = rowObject.bankName + " - " + rowObject.accNo;
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //remove deleted bank detail from supplier.bankDetails
+      supplier.bankDetails = supplier.bankDetails.filter(
+        (bankdetail) => bankdetail.id != rowObject.id
+      );
+
+      // refresh inner table
+      refreshInnerFormAndTable();
+    }
+  });
+};
+
+//function for check inner form errors
+const checkInnerFormErrors = () => {
+  let error = "";
+
+  if (bankDetail.bankName == null) {
+    error = error + "Please Enter Valid Bank Name...!\n";
+    textBankName.style.border = "1px solid red";
+  }
+
+  if (bankDetail.branchName == null) {
+    error = error + "Please Enter Valid Branch Name...!\n";
+    textBranchName.style.border = "1px solid red";
+  }
+
+  if (bankDetail.accNo == null) {
+    error = error + "Please Enter Valid Acc No...!\n";
+    textAccNo.style.border = "1px solid red";
+  }
+
+  if (bankDetail.accHolderName == null) {
+    error = error + "Please Enter Valid Acc Holder Name...!\n";
+    textAccHolderName.style.border = "1px solid red";
+  }
+
+  return error;
+};
+
+// fucntion for add product to inner table
+const addBankDetail = () => {
+  // check errors
+  let formErrors = checkInnerFormErrors();
+  if (formErrors == "") {
+    // get user confirmation
+    let title = "Are you sure to add following bank detail..?";
+    let message =
+      "Bank : " +
+      bankDetail.bankName +
+      " - " +
+      bankDetail.branchName +
+      "\nAcc No. : " +
+      bankDetail.accNo +
+      "\nAcc Holder Name : " +
+      bankDetail.accHolderName;
+
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //add object into array
+        supplier.bankDetails.push(bankDetail);
+        refreshInnerFormAndTable();
+      }
+    });
+  } else {
+    showAlert("error", "Error\n" + formErrors);
+  }
+};
+
+// ********* List Transfer OPERATIONS *********
 
 // function for add selected product
 const addOneProduct = () => {
@@ -858,4 +740,239 @@ const removeAllProducts = () => {
 // function for get index of product by name
 const getProductIndexByName = (products, productName) => {
   return products.map((product) => product.name).indexOf(productName);
+};
+
+// ********* TABLE OPERATIONS *********
+
+//function for refresh table records
+const refreshTable = () => {
+  //array for store data list
+  suppliers = ajaxGetRequest("/supplier/findall");
+
+  //object count = table column count
+  //String - number/string/date
+  //function - object/array/boolean
+  const displayProperties = [
+    { property: getSupplierFullName, datatype: "function" },
+    { property: "company", datatype: "String" },
+    { property: "contact", datatype: "String" },
+    { property: "email", datatype: "String" },
+    { property: getSupplierStatus, datatype: "function" },
+  ];
+
+  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys,user privileges)
+  fillDataIntoTable(
+    supplierTable,
+    suppliers,
+    displayProperties,
+    viewRecord,
+    refillRecord,
+    deleteRecord,
+    true,
+    userPrivilages
+  );
+
+  //hide delete button when status is 'resigned'
+  suppliers.forEach((supplier, index) => {
+    if (userPrivilages.delete && supplier.supplierStatusId.name == "Deleted") {
+      //catch the button
+      let targetElement =
+        supplierTable.children[1].children[index].children[6].children[
+          userPrivilages.update && userPrivilages.insert ? 2 : 1
+        ];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.visibility = "hidden";
+    }
+  });
+
+  $("#supplierTable").dataTable();
+};
+
+//function for set stats column
+const getSupplierStatus = (rowOb) => {
+  if (rowOb.supplierStatusId.name == "Active") {
+    return (
+      '<p class = "status status-active">' +
+      rowOb.supplierStatusId.name +
+      "</p>"
+    );
+  } else if (rowOb.supplierStatusId.name == "Inactive") {
+    return (
+      '<p class = "status status-warning">' +
+      rowOb.supplierStatusId.name +
+      "</p>"
+    );
+  } else {
+    return (
+      '<p class = "status status-error">' + rowOb.supplierStatusId.name + "</p>"
+    );
+  }
+};
+
+// function for get supplier fullname
+const getSupplierFullName = (rowOb) => {
+  return rowOb.firstName + (rowOb.lastName != null ? " " + rowOb.lastName : "");
+};
+
+//function for refill record
+const refillRecord = (rowObject, rowId) => {
+  $("#addNewButton").click();
+
+  supplier = JSON.parse(JSON.stringify(rowObject));
+  oldSupplier = JSON.parse(JSON.stringify(rowObject));
+
+  //set data to fields
+  textFirstName.value = supplier.firstName;
+  textContact.value = supplier.contact;
+  textEmail.value = supplier.email;
+  textCompany.value = supplier.company;
+  textAddress.value = supplier.address;
+
+  //set optional fields
+  if (supplier.lastName != null) textLastName.value = supplier.lastName;
+  else textLastName.value = "";
+
+  if (supplier.email != null) textEmail.value = supplier.email;
+  else textEmail.value = "";
+
+  if (supplier.company != null) textCompany.value = supplier.company;
+  else textCompany.value = "";
+
+  if (supplier.address != null) textAddress.value = supplier.address;
+  else textAddress.value = "";
+
+  // set status
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    supplierStatus,
+    "name",
+    supplier.supplierStatusId.name
+  );
+
+  // set supplier product list
+  fillMoreDataIntoSelect(
+    selectedProducts,
+    "",
+    supplier.products,
+    "barcode",
+    "name"
+  );
+
+  clearFiltersAndList();
+
+  //change status border color to default
+  setBorderStyle([selectStatus]);
+
+  refreshInnerFormAndTable();
+  //manage buttons
+  manageFormButtons("refill", userPrivilages);
+};
+
+//function for delete record
+const deleteRecord = (rowObject, rowId) => {
+  //get user confirmation
+  let title = "Are you sure to delete following record?";
+  let message = rowObject.firstName + " " + rowObject.lastName;
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //response from backend ...
+      let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
+      //check back end response
+      if (serverResponse == "OK") {
+        showAlert("success", "Supplier Delete successfully..!");
+        //need to refresh table and form
+        refreshAll();
+      } else {
+        showAlert(
+          "error",
+          "Supplier Delete not successfully..! There were some errors \n" +
+            serverResponse
+        );
+      }
+    }
+  });
+};
+
+//function for view record
+const viewRecord = (ob, rowId) => {
+  //need to get full object
+  const printObj = ob;
+
+  tdFirstName.innerText = printObj.firstName;
+  tdLastName.innerText = printObj.lastName;
+  tdContact.innerText = printObj.contact;
+  tdEmail.innerText = printObj.email;
+  tdCompany.innerText = printObj.company;
+  tdAddress.innerText = printObj.address;
+  tdStatus.innerText = printObj.supplierStatusId.name;
+  tdProducts.innerText = getSupplierProductsForPrint(printObj);
+  tdBankDetails.innerText = getSupplierBankDetailsForPrint(printObj);
+
+  //open model
+  $("#modelView").modal("show");
+};
+
+// funtion for get supplier product list for print
+const getSupplierProductsForPrint = (printObj) => {
+  printableProductList = "";
+  printObj.products.forEach((product) => {
+    printableProductList += product.brandId.name + " - " + product.name + "\n";
+  });
+
+  return printableProductList;
+};
+
+// function for get supplier bank details to print
+const getSupplierBankDetailsForPrint = (printObj) => {
+  printableBankDetails = "";
+  printObj.bankDetails.forEach((bankDetail) => {
+    printableBankDetails +=
+      bankDetail.bankName +
+      "-" +
+      bankDetail.branchName +
+      " (" +
+      bankDetail.accNo +
+      ")\n";
+  });
+
+  return printableBankDetails;
+};
+
+// ********* PRINT OPERATIONS *********
+
+//print function
+const printViewRecord = () => {
+  newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Supplier</title>" +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2>Supplier Details</h2>" +
+      printTable.outerHTML
+  );
+
+  //triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};
+
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Suppliers</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2>Suppliers Details</h2>" +
+      supplierTable.outerHTML +
+      '<script>$(".modify-button").css("display","none")</script>'
+  );
+
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
 };
