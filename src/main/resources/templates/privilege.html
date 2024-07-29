@@ -272,6 +272,17 @@
                     <tbody class="table-group-divider"></tbody>
                   </table>
                 </div>
+                <!-- print full table button -->
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -280,30 +291,38 @@
         <!-- content area end -->
       </div>
       <!-- view record model start -->
-      <div class="modal" id="modelView">
+      <div class="modal" id="modelDetailedView">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h2>View # Details</h2>
+              <h2 class="fw-bold">View Privilege Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <table id="printTable" class="table">
+              <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>FullName</th>
-                  <td id="tdFullName"></td>
+                  <th>Role</th>
+                  <td id="tdRole"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdNIC"></td>
+                  <th>Module</th>
+                  <td id="tdModule"></td>
                 </tr>
                 <tr>
-                  <th>Mobile</th>
-                  <td id="tdMobile"></td>
+                  <th>Select</th>
+                  <td id="tdSelect"></td>
                 </tr>
                 <tr>
-                  <th>Status</th>
-                  <td id="tdStatus"></td>
+                  <th>Insert</th>
+                  <td id="tdInsert"></td>
+                </tr>
+                <tr>
+                  <th>Update</th>
+                  <td id="tdUpdate"></td>
+                </tr>
+                <tr>
+                  <th>Delete</th>
+                  <td id="tdDelete"></td>
                 </tr>
               </table>
             </div>
@@ -315,5 +334,7 @@
       </div>
       <!-- view record model end -->
     </div>
+    <!-- Alert Box -->
+    <div th:replace="~{alertbox :: alertFragment}"></div>
   </body>
 </html>

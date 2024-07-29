@@ -172,7 +172,7 @@ public class ProductController {
 		// check given product exist or not
 		Product extProduct = productRepository.getReferenceById(product.getId());
 		if (extProduct == null) {
-			return "Product Delete Not Completed : Product Not Exist..!";
+			return "Product Not Exist..!";
 		}
 
 		try {
@@ -188,7 +188,7 @@ public class ProductController {
 			productRepository.save(product);
 			return "OK";
 		} catch (Exception e) {
-			return "Delete not complete :" + e.getMessage();
+			return e.getMessage();
 		}
 	}
 

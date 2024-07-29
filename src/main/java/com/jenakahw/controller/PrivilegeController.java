@@ -67,14 +67,14 @@ public class PrivilegeController {
 		Privilege extPrivilege = privilegeRepository.getByRoleModule(privilege.getRole().getId(),
 				privilege.getModule().getId());
 		if (extPrivilege != null) {
-			return "Save not completed : Privilege already exist by given role and module";
+			return "Privilege already exist by given role and module";
 		}
 
 		try {
 			privilegeRepository.save(privilege);
 			return "OK";
 		} catch (Exception e) {
-			return "Save not completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -90,14 +90,14 @@ public class PrivilegeController {
 		// check existing
 		Privilege extPrivilege = privilegeRepository.getReferenceById(privilege.getId());
 		if (extPrivilege == null) {
-			return "Update not complete : Given privilege record not exist...!";
+			return "Given privilege record not exist...!";
 		}
 
 		try {
 			privilegeRepository.save(privilege);
 			return "OK";
 		} catch (Exception e) {
-			return "Update not complete :" + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -112,7 +112,7 @@ public class PrivilegeController {
 		// check existing
 		Privilege extPrivilege = privilegeRepository.getReferenceById(privilege.getId());
 		if (extPrivilege == null) {
-			return "Delete not complete : Given privilege record not existe...!";
+			return "Given privilege record not exist...!";
 		}
 		try {
 			// set auto generated values
@@ -124,7 +124,7 @@ public class PrivilegeController {
 			return "OK";
 
 		} catch (Exception e) {
-			return "Delete not complete :" + e.getMessage();
+			return e.getMessage();
 		}
 	}
 

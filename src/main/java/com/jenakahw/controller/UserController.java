@@ -41,6 +41,8 @@ public class UserController {
 
 	@Autowired
 	private UserStatusRepository userStatusRepository;
+	
+	private static final String MODULE = "User";
 
 	// user UI service [/user -- return user UI]
 	@GetMapping
@@ -58,8 +60,8 @@ public class UserController {
 	// get mapping for get all user data -- [/user/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<User> findAll() {
-		if (privilegeController.hasPrivilege("User", "select")) {
-			return userRepository.findAll(Sort.by(Direction.DESC, "id"));
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return userRepository.findAll();
 		} else {
 			return null;
 		}
@@ -69,7 +71,7 @@ public class UserController {
 	@PostMapping
 	public String saveUser(@RequestBody User user) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("User", "insert")) {
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
@@ -115,7 +117,7 @@ public class UserController {
 	@PutMapping
 	public String updateUser(@RequestBody User user) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("User", "update")) {
+		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
 		}
 
@@ -164,14 +166,14 @@ public class UserController {
 	@DeleteMapping
 	public String deleteUser(@RequestBody User user) {
 		// check privileges
-		if (!privilegeController.hasPrivilege("User", "delete")) {
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 
 		// need to check given user exist or not
 		User extUser = userRepository.getReferenceById(user.getId());
 		if (extUser == null) {
-			return "Given User Not Ext..!";
+			return "Selected User Not Exist..!";
 		}
 
 		try {

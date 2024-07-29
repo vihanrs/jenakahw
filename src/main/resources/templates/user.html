@@ -193,7 +193,7 @@
                         for="fileUserPhoto"
                         class="col-md-4 form-label fw-bold"
                       >
-                        Photo :<span class="text-danger"> * </span>
+                        Photo :
                       </label>
                       <div class="col-md-8">
                         <img
@@ -311,8 +311,8 @@
                     <!-- user roles -->
                     <div class="row mt-2">
                       <label for="divRoles" class="col-md-4 form-label fw-bold"
-                        >User Roles</label
-                      >
+                        >User Roles :<span class="text-danger"> * </span>
+                      </label>
                       <div class="col-md-8" id="divRoles"></div>
                     </div>
                     <!-- buttons -->
@@ -377,7 +377,7 @@
                 <div class="card card-body p-2">
                   <div class="table-responsive">
                     <table class="table table-hover pt-3 mb-3" id="tblUser">
-                      <thead class="table-dark ">
+                      <thead class="table-dark">
                         <tr>
                           <th>#</th>
                           <th>Photo</th>
@@ -400,19 +400,20 @@
                   </div>
                 </div>
                 <!-- print full table button -->
-              <div class="row mt-2">
-                <button
-                  type="button"
-                  id="btnPrintFullTable"
-                  class="btn btn-info col-md-2 ml-auto me-2"
-                >
-                  <i class="fa-solid fa-print"></i>
-                  Print All
-                </button>
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
               </div>
             </div>
+            <!-- view all table area end -->
           </div>
-          <!-- view all table area end -->
         </div>
         <!-- content area end -->
 
@@ -421,48 +422,59 @@
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h2 class="fw-bold" >View User Details</h2>
+                <h2 class="fw-bold">View User Details</h2>
                 <button class="btn btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div class="modal-body">
-                <table id="printTable" class="table table-striped">
-                  <tr>
-                    <th>First Name</th>
-                    <td id="tdFirstName"></td>
-                  </tr>
-                  <tr>
-                    <th>Last Name</th>
-                    <td id="tdLastName"></td>
-                  </tr>
-                  <tr>
-                    <th>Contact</th>
-                    <td id="tdContact"></td>
-                  </tr>
-                  <tr>
-                    <th>NIC</th>
-                    <td id="tdNIC"></td>
-                  </tr>
-                  <tr>
-                    <th>Gender</th>
-                    <td id="tdGender"></td>
-                  </tr>
-                  <tr>
-                    <th>Email</th>
-                    <td id="tdEmail"></td>
-                  </tr>
-                  <tr>
-                    <th>Username</th>
-                    <td id="tdUsername"></td>
-                  </tr>
-                  <tr>
-                    <th>Role</th>
-                    <td id="tdRole"></td>
-                  </tr>
-                  <tr>
-                    <th>Status</th>
-                    <td id="tdStatus"></td>
-                  </tr>
-                </table>
+                <div id="printView">
+                  <div class="row justify-content-center">
+                    <img
+                      src=""
+                      alt="user-image"
+                      id="imgUserImage"
+                      style="width: 180px; height: auto"
+                    />
+                  </div>
+
+                  <table id="printTable" class="table table-striped">
+                    <tr>
+                      <th>First Name</th>
+                      <td id="tdFirstName"></td>
+                    </tr>
+                    <tr>
+                      <th>Last Name</th>
+                      <td id="tdLastName"></td>
+                    </tr>
+                    <tr>
+                      <th>Contact</th>
+                      <td id="tdContact"></td>
+                    </tr>
+                    <tr>
+                      <th>NIC</th>
+                      <td id="tdNIC"></td>
+                    </tr>
+                    <tr>
+                      <th>Gender</th>
+                      <td id="tdGender"></td>
+                    </tr>
+                    <tr>
+                      <th>Email</th>
+                      <td id="tdEmail"></td>
+                    </tr>
+                    <tr>
+                      <th>Username</th>
+                      <td id="tdUsername"></td>
+                    </tr>
+                    <tr>
+                      <th>Role</th>
+                      <td id="tdRole"></td>
+                    </tr>
+                    <tr>
+                      <th>Status</th>
+                      <td id="tdStatus"></td>
+                    </tr>
+                  </table>
+                </div>
               </div>
               <dv class="modal-footer">
                 <button id="btnViewPrint" class="btn btn-info">

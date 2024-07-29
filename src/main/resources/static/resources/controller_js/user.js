@@ -20,11 +20,11 @@ window.addEventListener("load", () => {
 // ********* LISTENERS *********
 
 const addEventListeners = () => {
-  let namePattern = "^[A-Z][a-z]{2,20}$";
+  let namePattern = "^[A-Z][A-Za-z ]{1,19}[A-Za-z]$";
   let contactPattern = "^[0][7][01245678][0-9]{7}$";
-  let nicPattern = "^(([0-9]{9}[VvXxSs])|([2][0][0-9]{2}[0-9]{8}))$";
+  let nicPattern = "^(([0-9]{9}[Vv])|([2][0][0-9]{2}[0-9]{8}))$";
   let emailPattern = "^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$";
-  let unameandpwPattern = "^^[a-zA-Z0-9]{5,16}$";
+  let unameandpwPattern = "^[a-zA-Z0-9]{5,16}$";
 
   textFirstName.addEventListener("keyup", () => {
     textFieldValidator(textFirstName, namePattern, "user", "firstName");
@@ -293,6 +293,7 @@ const viewRecord = (rowObject, rowId) => {
   tdGender.innerText = printObj.gender;
   tdEmail.innerText = printObj.email;
   tdUsername.innerText = printObj.username;
+  imgUserImage.src = atob(printObj.userPhoto);
 
   tdRole.innerText = printObj.roles.map((role) => role.name).join(", ");
 
@@ -387,6 +388,7 @@ const deleteRecord = (rowObject, rowId) => {
     "\n" +
     "Email : " +
     rowObject.email;
+  +"\n" + "Contact : " + rowObject.contact;
 
   showConfirm(title, message).then((userConfirm) => {
     if (userConfirm) {
@@ -394,16 +396,14 @@ const deleteRecord = (rowObject, rowId) => {
       let serverResponse = ajaxRequestBody("/user", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Delete sucessfully..! \n" + serverResponse).then(
-          () => {
-            //need to refresh table and form
-            refreshAll();
-          }
-        );
+        showAlert("success", "User Delete successfully..!").then(() => {
+          //need to refresh table and form
+          refreshAll();
+        });
       } else {
         showAlert(
           "error",
-          "Delete not sucessfully..! have some errors \n" + serverResponse
+          "User delete not successfully..! have some errors \n" + serverResponse
         );
       }
     }
@@ -561,7 +561,14 @@ const addRecord = () => {
     //get user confirmation
     let title = "Are you sure to add following record..?\n";
     let message =
-      "First Name : " + user.firstName + "\nUsername : " + user.username;
+      "First Name : " +
+      user.firstName +
+      "\nUsername : " +
+      user.username +
+      "\nNIC : " +
+      user.nic +
+      "\nContact : " +
+      user.contact;
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
@@ -576,7 +583,7 @@ const addRecord = () => {
         } else {
           showAlert(
             "error",
-            "Save not sucessfully..! have some errors \n" + serverResponse
+            "User save not successfully..! have some errors \n" + serverResponse
           );
         }
       }
@@ -598,15 +605,15 @@ const updateRecord = () => {
         if (userConfirm) {
           let updateServiceResponse = ajaxRequestBody("/user", "PUT", user);
           if (updateServiceResponse == "OK") {
-            showAlert("success", "Update sucessfully..!").then(() => {
+            showAlert("success", "User Update successfully..!").then(() => {
               //need to refresh table and form
               refreshAll();
             });
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" +
-                updateSeriveResponse
+              "User update not successfully..! have some errors \n" +
+                updateServiceResponse
             );
           }
         }
@@ -669,6 +676,7 @@ const setSelectedRoles = () => {
   });
 };
 
+// function for clear user photo and set default
 const clearUserPhoto = () => {
   user.userPhoto = null;
   user.photoName = null;
@@ -686,8 +694,8 @@ const printViewRecord = () => {
     //  link bootstrap css
     "<head><title>User Details</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style='font-weight=bold'>User Details</h2>" +
-      printTable.outerHTML
+      "<h2 style = 'font-weight:bold'>User Details</h2>" +
+      printView.outerHTML
   );
 
   //triger print() after 1000 milsec time out
@@ -704,7 +712,7 @@ const printFullTable = () => {
     "<head><title>Print User</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style='font-weight=bold'>User Details</h2>" +
+      "<h2 style = 'font-weight:bold'>User Details</h2>" +
       tblUser.outerHTML +
       '<script>$("modifyButtons").css("display","none")</script>'
   );

@@ -19,6 +19,8 @@ window.addEventListener("load", () => {
 
 // ********* LISTENERS *********
 const addEventListeners = () => {
+  let productNamePattern = "^[A-Z0-9][A-Za-z0-9. ]{1,125}[A-Za-z0-9]$";
+
   selectBrand.addEventListener("change", () => {
     selectDFieldValidator(selectBrand, "product", "brandId");
   });
@@ -33,7 +35,7 @@ const addEventListeners = () => {
   });
 
   textProductName.addEventListener("keyup", () => {
-    textFieldValidator(textProductName, "^.*$", "product", "name"); // ^(?!\s*$)(?!\s).*(?<!\s)$
+    textFieldValidator(textProductName, productNamePattern, "product", "name");
   });
 
   selectUnitType.addEventListener("change", () => {
@@ -45,12 +47,7 @@ const addEventListeners = () => {
   });
 
   textROL.addEventListener("keyup", () => {
-    textFieldValidator(
-      textROL,
-      "^(([1-9]{1}[0-9]{0,5})|([0-9]{0,5}[.][0-9]{1,2}))$",
-      "product",
-      "rol"
-    );
+    textFieldValidator(textROL, "^(([1-9]{1}[0-9]{0,5}))$", "product", "rol");
   });
 
   textLocation.addEventListener("keyup", () => {
@@ -186,6 +183,8 @@ const getSubCategoriesByCategory = (categoryId, selectedValue = null) => {
     "name",
     selectedValue != null ? selectedValue : ""
   );
+
+  setBorderStyle([selectSubCategory]);
 };
 
 //function for check errors
@@ -640,7 +639,7 @@ const printFullTable = () => {
     "<head><title>Print Products</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Product Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Product Details</h2>" +
       productTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'
   );

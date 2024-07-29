@@ -103,6 +103,11 @@ const addEventListeners = () => {
   btnViewPrint.addEventListener("click", () => {
     printViewRecord();
   });
+
+  //record print function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
+  });
 };
 
 //define function for filter module list by given role id
@@ -112,6 +117,7 @@ const generateModuleList = () => {
   );
   fillDataIntoSelect(cmbModule, "Select Module", modulesByRole, "name");
   cmbModule.disabled = false;
+  cmbModule.style.border = "1px solid #ced4da";
 };
 
 // ********* RESET *********
@@ -261,17 +267,13 @@ const viewRecord = (rowObject, rowId) => {
   //need to get full object
   let printObj = rowObject;
 
-  tdFirstName.innerText = printObj.firstName;
-  tdLastName.innerText = printObj.lastName;
-  tdContact.innerText = printObj.contact;
-  tdNIC.innerText = printObj.nic;
-  tdGender.innerText = printObj.gender;
-  tdEmail.innerText = printObj.email;
-  tdUsername.innerText = printObj.username;
+  tdRole.innerText = printObj.role.name;
+  tdModule.innerText = printObj.module.name;
+  tdSelect.innerText = printObj.sel;
+  tdInsert.innerText = printObj.inst;
+  tdUpdate.innerText = printObj.upd;
+  tdDelete.innerText = printObj.del;
 
-  tdRole.innerText = printObj.roles.map((role) => role.name).join(", ");
-
-  tdStatus.innerText = printObj.userStatusId.name;
   //open model
   $("#modelDetailedView").modal("show");
 };
@@ -336,27 +338,33 @@ const refillRecord = (rowObject, rowId) => {
 //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  const userConfirm = confirm(
-    "Are you sure!\nYou wants to delete following record? \n" +
-      "Role : " +
-      rowObject.role.name +
-      "\n" +
-      "Module : " +
-      rowObject.module.name
-  );
+  let title = "Are you sure!\nYou wants to delete following record?\n";
+  let message =
+    "Role : " +
+    rowObject.role.name +
+    "\n" +
+    "Module : " +
+    rowObject.module.name;
 
-  if (userConfirm) {
-    //response from backend ...
-    let serverResponse = ajaxRequestBody("/privilege", "DELETE", rowObject); // url,method,object
-    //check back end response
-    if (serverResponse == "OK") {
-      alert("Delete sucessfully..! \n" + serverResponse);
-      //need to refresh table and form
-      refreshAll();
-    } else {
-      alert("Delete not sucessfully..! have some errors \n" + serverResponse);
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //response from backend ...
+      let serverResponse = ajaxRequestBody("/privilege", "DELETE", rowObject); // url,method,object
+      //check back end response
+      if (serverResponse == "OK") {
+        showAlert("success", "Privilege Delete successfully..!").then(() => {
+          //need to refresh table and form
+          refreshAll();
+        });
+      } else {
+        showAlert(
+          "error",
+          "Privilege delete not successfully..! have some errors \n" +
+            serverResponse
+        );
+      }
     }
-  }
+  });
 };
 
 // ********* FORM OPERATIONS *********
@@ -394,7 +402,7 @@ const checkUpdates = () => {
   if (oldPrivilege.sel != privilege.sel) {
     updates =
       updates +
-      "Select Privilege has changed " +
+      "Select Privilege has changed : \n" +
       (oldPrivilege.sel ? "Granted" : "Not-Granted") +
       " into " +
       (privilege.sel ? "Granted" : "Not-Granted") +
@@ -404,7 +412,7 @@ const checkUpdates = () => {
   if (oldPrivilege.inst != privilege.inst) {
     updates =
       updates +
-      "Insert Privilege has changed " +
+      "Insert Privilege has changed : \n" +
       (oldPrivilege.inst ? "Granted" : "Not-Granted") +
       " into " +
       (privilege.inst ? "Granted" : "Not-Granted") +
@@ -414,7 +422,7 @@ const checkUpdates = () => {
   if (oldPrivilege.upd != privilege.upd) {
     updates =
       updates +
-      "Update Privilege has changed " +
+      "Update Privilege has changed : \n" +
       (oldPrivilege.upd ? "Granted" : "Not-Granted") +
       " into " +
       (privilege.upd ? "Granted" : "Not-Granted") +
@@ -424,7 +432,7 @@ const checkUpdates = () => {
   if (oldPrivilege.del != privilege.del) {
     updates =
       updates +
-      "Delete Privilege has changed " +
+      "Delete Privilege has changed : \n" +
       (oldPrivilege.del ? "Granted" : "Not-Granted") +
       " into " +
       (privilege.del ? "Granted" : "Not-Granted") +
@@ -439,39 +447,44 @@ const addRecord = () => {
   //check form errors -
   let formErrors = checkErrors();
   if (formErrors == "") {
-    console.log(privilege);
     //get user confirmation
-    let userConfirm = window.confirm(
-      "Are you sure to add following privileges..?\n" +
-        "\nRole : " +
-        privilege.role.name +
-        "\nModule : " +
-        privilege.module.name +
-        "\n\nSelect : " +
-        (privilege.sel ? "Granted" : "Not-Granted") +
-        " | Instert : " +
-        (privilege.inst ? "Granted" : "Not-Granted") +
-        "\nUpdate : " +
-        (privilege.upd ? "Granted" : "Not-Granted") +
-        " | Delete : " +
-        (privilege.del ? "Granted" : "Not-Granted")
-    );
+    let title = "Are you sure to add following record..?\n";
+    let message =
+      "\nRole : " +
+      privilege.role.name +
+      "\nModule : " +
+      privilege.module.name +
+      "\n\nSelect : " +
+      (privilege.sel ? "Granted" : "Not-Granted") +
+      " | Instert : " +
+      (privilege.inst ? "Granted" : "Not-Granted") +
+      "\nUpdate : " +
+      (privilege.upd ? "Granted" : "Not-Granted") +
+      " | Delete : " +
+      (privilege.del ? "Granted" : "Not-Granted");
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //pass data into back end
+        let serverResponse = ajaxRequestBody("/privilege", "POST", privilege); // url,method,object
 
-    if (userConfirm) {
-      //pass data into back end
-      let serverResponse = ajaxRequestBody("/privilege", "POST", privilege); // url,method,object
-
-      //check back end response
-      if (serverResponse == "OK") {
-        alert("Save sucessfully..! " + serverResponse);
-        //need to refresh table and form
-        refreshAll();
-      } else {
-        alert("Save not sucessfully..! have some errors \n" + serverResponse);
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Privilege Save successfully..!").then(() => {
+            //need to refresh table and form
+            refreshAll();
+          });
+        } else {
+          showAlert(
+            "error",
+            "Privilege save not successfully..! have some errors \n" +
+              serverResponse
+          );
+        }
       }
-    }
+    });
   } else {
-    alert("Error\n" + formErrors);
+    // showAlert("error", "Error\n" + formErrors);
+    showAlert("error", "Error\n" + formErrors);
   }
 };
 
@@ -481,31 +494,39 @@ const updateRecord = () => {
   if (errors == "") {
     let updates = checkUpdates();
     if (updates != "") {
-      let userConfirm = confirm(
-        "Are you sure you want to update following changes...?\n" + updates
-      );
-      if (userConfirm) {
-        let updateServiceResponse = ajaxRequestBody(
-          "/privilege",
-          "PUT",
-          privilege
-        );
-        if (updateServiceResponse == "OK") {
-          alert("Update sucessfully..! ");
-          //need to refresh table and form
-          refreshAll();
-        } else {
-          alert(
-            "Update not sucessfully..! have some errors \n" +
-              updateSeriveResponse
+      let title = "Are you sure you want to update following changes...?\n";
+      let message = updates;
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          let updateServiceResponse = ajaxRequestBody(
+            "/privilege",
+            "PUT",
+            privilege
           );
+          if (updateServiceResponse == "OK") {
+            showAlert("success", "Privilege Update successfully..!").then(
+              () => {
+                //need to refresh table and form
+                refreshAll();
+              }
+            );
+          } else {
+            showAlert(
+              "error",
+              "Privilege update not successfully..! have some errors \n" +
+                updateServiceResponse
+            );
+          }
         }
-      }
+      });
     } else {
-      alert("Nothing to Update...!");
+      showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    alert("Cannot update!!!\nForm has following errors \n" + errors);
+    showAlert(
+      "error",
+      "Cannot update!!!\nForm has following errors \n" + errors
+    );
   }
 };
 
@@ -516,9 +537,9 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>User Details</title>" +
+    "<head><title>Privilege Details</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>User Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Privilege Details</h2>" +
       printTable.outerHTML
   );
 
@@ -533,12 +554,12 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Employee</title>" +
+    "<head><title>Print Privileges</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Employee Details</h2>" +
-      tableId.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      "<h2 style = 'font-weight:bold'>Privilege Details</h2>" +
+      tblPrivilege.outerHTML +
+      '<script>$("modifyButtons").css("display","none")</script>'
   );
 
   setTimeout(function () {

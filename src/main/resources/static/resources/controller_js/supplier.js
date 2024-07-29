@@ -949,7 +949,7 @@ const printViewRecord = () => {
     //  link bootstrap css
     "<head><title>Print Supplier</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Supplier Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Supplier Details</h2>" +
       printTable.outerHTML
   );
 
@@ -967,7 +967,7 @@ const printFullTable = () => {
     "<head><title>Print Suppliers</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2>Suppliers Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Suppliers Details</h2>" +
       supplierTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'
   );
