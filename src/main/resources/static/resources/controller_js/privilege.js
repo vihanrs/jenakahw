@@ -483,7 +483,6 @@ const addRecord = () => {
       }
     });
   } else {
-    // showAlert("error", "Error\n" + formErrors);
     showAlert("error", "Error\n" + formErrors);
   }
 };

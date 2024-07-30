@@ -344,6 +344,17 @@
                     <tbody class="table-group-divider"></tbody>
                   </table>
                 </div>
+                <!-- print full table button -->
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -356,26 +367,43 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h2>View # Details</h2>
+              <h2 class="fw-bold">View Purchase Order Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <table id="printTable" class="table">
+              <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>FullName</th>
-                  <td id="tdFullName"></td>
+                  <th>PO Code</th>
+                  <td colspan="3" id="tdPOCode"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdNIC"></td>
+                  <th>Supplier</th>
+                  <td colspan="3" id="tdSupplier"></td>
                 </tr>
                 <tr>
-                  <th>Mobile</th>
-                  <td id="tdMobile"></td>
+                  <th>Required Date</th>
+                  <td colspan="3" id="tdRequiredDate"></td>
+                </tr>
+                <tr>
+                  <th>Total Amount</th>
+                  <td colspan="3" id="tdTotalAmount"></td>
                 </tr>
                 <tr>
                   <th>Status</th>
-                  <td id="tdStatus"></td>
+                  <td colspan="3" id="tdStatus"></td>
+                </tr>
+                <tr>
+                  <th>Created Date</th>
+                  <td colspan="3" id="tdCreatedDate"></td>
+                </tr>
+                <tr>
+                  <th colspan="4"><i>Product List</i></th>
+                </tr>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Purchase Price</th>
+                  <th>Qty</th>
+                  <th>Line Amount</th>
                 </tr>
               </table>
             </div>

@@ -19,10 +19,10 @@ window.addEventListener("load", () => {
 
 // ********* LISTENERS *********
 const addEventListeners = () => {
-  let namePattern = "^[a-zA-Z][a-z]{1,29}$"; //first letter can be capital or simple and other letters need to be simple
+  let namePattern = "^[A-Z][A-Za-z ]{1,19}[A-Za-z]$";
   let contactPattern = "^[0][7][01245678][0-9]{7}$";
   let emailPattern = "^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$";
-  let companyNamePattern = "^[a-zA-Z](?:[a-zA-Z() ]{1,28}[a-zA-Z)])?$"; //first/last letters can be capital or simple and middle can be accept spaces
+  let companyNamePattern = "^[A-Z][A-Za-z() ]{3,}[A-Za-z]$";
 
   textFirstName.addEventListener("keyup", () => {
     textFieldValidator(textFirstName, namePattern, "supplier", "firstName");
@@ -61,7 +61,7 @@ const addEventListeners = () => {
   textBankName.addEventListener("keyup", () => {
     textFieldValidator(
       textBankName,
-      "^[a-zA-Z' ]{2,}[a-zA-Z]$",
+      "^[A-Z][a-zA-Z' ]{2,}[a-zA-Z]$",
       "bankDetail",
       "bankName"
     );
@@ -70,7 +70,7 @@ const addEventListeners = () => {
   textBranchName.addEventListener("keyup", () => {
     textFieldValidator(
       textBranchName,
-      "^[a-zA-Z ]{2,}[a-zA-Z]$",
+      "^[A-Z][a-zA-Z ]{2,}[a-zA-Z]$",
       "bankDetail",
       "branchName"
     );
@@ -83,7 +83,7 @@ const addEventListeners = () => {
   textAccHolderName.addEventListener("keyup", () => {
     textFieldValidator(
       textAccHolderName,
-      "^[a-zA-Z ]{2,}[a-zA-Z]$",
+      "^[A-Z][a-zA-Z ]{2,}[a-zA-Z]$",
       "bankDetail",
       "accHolderName"
     );
@@ -409,16 +409,14 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert(
-            "success",
-            "Supplier Save successfully..! " + serverResponse
-          );
-          //need to refresh table and form
-          refreshAll();
+          showAlert("success", "Supplier Save successfully..! ").then(() => {
+            //need to refresh table and form
+            refreshAll();
+          });
         } else {
           showAlert(
             "error",
-            "Supplier save not sucessfully..! have some errors \n" +
+            "Supplier save not successfully..! have some errors \n" +
               serverResponse
           );
         }
@@ -446,13 +444,16 @@ const updateRecord = () => {
             supplier
           );
           if (updateServiceResponse == "OK") {
-            showAlert("success", "Supplier Update successfully..! ");
-            //need to refresh table and form
-            refreshAll();
+            showAlert("success", "Supplier Update successfully..! ").then(
+              () => {
+                //need to refresh table and form
+                refreshAll();
+              }
+            );
           } else {
             showAlert(
               "error",
-              "Supplier update not sucessfully..! have some errors \n" +
+              "Supplier update not successfully..! have some errors \n" +
                 updateServiceResponse
             );
           }
@@ -825,9 +826,6 @@ const refillRecord = (rowObject, rowId) => {
   //set data to fields
   textFirstName.value = supplier.firstName;
   textContact.value = supplier.contact;
-  textEmail.value = supplier.email;
-  textCompany.value = supplier.company;
-  textAddress.value = supplier.address;
 
   //set optional fields
   if (supplier.lastName != null) textLastName.value = supplier.lastName;
@@ -863,7 +861,18 @@ const refillRecord = (rowObject, rowId) => {
   clearFiltersAndList();
 
   //change status border color to default
-  setBorderStyle([selectStatus]);
+  //set default border color
+  let elements = [
+    textFirstName,
+    textLastName,
+    textContact,
+    textEmail,
+    textCompany,
+    textAddress,
+    selectStatus,
+  ];
+
+  setBorderStyle(elements);
 
   refreshInnerFormAndTable();
   //manage buttons
@@ -881,9 +890,10 @@ const deleteRecord = (rowObject, rowId) => {
       let serverResponse = ajaxRequestBody("/supplier", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Supplier Delete successfully..!");
-        //need to refresh table and form
-        refreshAll();
+        showAlert("success", "Supplier Delete successfully..!").then(() => {
+          //need to refresh table and form
+          refreshAll();
+        });
       } else {
         showAlert(
           "error",

@@ -106,7 +106,7 @@ public class PurchaseOrderController {
 
 			return "OK";
 		} catch (Exception e) {
-			return "Purchase Order Save Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -122,7 +122,7 @@ public class PurchaseOrderController {
 		// check for existens
 		PurchaseOrder extPurchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrder.getId());
 		if (extPurchaseOrder == null) {
-			return "Purchase Order UpdateNot Completed : Purchase Order Not Exist...!";
+			return "Purchase Order Not Exist...!";
 		}
 		
 		try {
@@ -139,7 +139,7 @@ public class PurchaseOrderController {
 
 			return "OK";
 		} catch (Exception e) {
-			return "Purchase Order Update Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -155,7 +155,7 @@ public class PurchaseOrderController {
 		// check existing
 		PurchaseOrder extPurchaseOrder = purchaseOrderRepository.getReferenceById(purchaseOrder.getId());
 		if (extPurchaseOrder == null) {
-			return "Delete not completed : Purchase Order Not Exist..!";
+			return "Purchase Order Not Exist..!";
 		}
 
 		try {
@@ -176,7 +176,7 @@ public class PurchaseOrderController {
 
 			return "OK";
 		} catch (Exception e) {
-			return "Purchase Order Delete Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 

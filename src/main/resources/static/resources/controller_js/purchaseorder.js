@@ -95,6 +95,11 @@ const addEventListeners = () => {
     printViewRecord();
   });
 
+  //record print function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
+  });
+
   btnAddProduct.addEventListener("click", () => {
     addProduct();
   });
@@ -260,8 +265,7 @@ const calLineAmount = () => {
   //calculate line amount
   poProduct.lineAmount =
     poProduct.purchasePrice != null && poProduct.qty != null
-      ? parseFloat(poProduct.purchasePrice).toFixed(2) *
-        parseFloat(poProduct.qty).toFixed(2)
+      ? parseFloat(poProduct.purchasePrice) * parseFloat(poProduct.qty)
       : 0;
 
   //display line amount
@@ -376,7 +380,7 @@ const addProduct = () => {
       }
     });
   } else {
-    showAlert("error", formErrors).then(() => {});
+    showAlert("error", formErrors);
   }
 };
 
@@ -501,16 +505,17 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert(
-            "success",
-            "Purchase Order Save successfully..! " + serverResponse
+          showAlert("success", "Purchase Order Save successfully..! ").then(
+            () => {
+              //need to refresh table and form
+              refreshAll();
+            }
           );
-          //need to refresh table and form
-          refreshAll();
         } else {
           showAlert(
             "error",
-            "Save not sucessfully..! have some errors \n" + serverResponse
+            "Purchase Order save not successfully..! have some errors \n" +
+              serverResponse
           );
         }
       }
@@ -526,7 +531,7 @@ const updateRecord = () => {
   if (errors == "") {
     let updates = checkUpdates();
     if (updates != "") {
-      let title = "Are you sure you want to update following changes...?";
+      let title = "Are you sure!\nYou want to update following changes...?";
       let message = updates;
       showConfirm(title, message).then((userConfirm) => {
         if (userConfirm) {
@@ -536,14 +541,17 @@ const updateRecord = () => {
             purchaseOrder
           );
           if (serverResponse == "OK") {
-            showAlert("success", "Update sucessfully..!").then(() => {
-              //need to refresh table and form
-              refreshAll();
-            });
+            showAlert("success", "Purchase Order Update successfully..!").then(
+              () => {
+                //need to refresh table and form
+                refreshAll();
+              }
+            );
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" + serverResponse
+              "Purchase Order update not successfully..! have some errors \n" +
+                serverResponse
             );
           }
         }
@@ -643,21 +651,44 @@ const getStatus = (rowObject) => {
   }
 };
 
-// //function for view record
-const viewRecord = (rowObject, rowId) => {
-  //   //need to get full object
-  //   let printObj = rowObject;
-  //   tdFirstName.innerText = printObj.firstName;
-  //   tdLastName.innerText = printObj.lastName;
-  //   tdContact.innerText = printObj.contact;
-  //   tdNIC.innerText = printObj.nic;
-  //   tdGender.innerText = printObj.gender;
-  //   tdEmail.innerText = printObj.email;
-  //   tdUsername.innerText = printObj.username;
-  //   tdRole.innerText = printObj.roles.map((role) => role.name).join(", ");
-  //   tdStatus.innerText = printObj.userStatusId.name;
-  //   //open model
-  //   $("#modelDetailedView").modal("show");
+//function for view record
+const viewRecord = (ob, rowId) => {
+  //need to get full object
+  const printObj = ob;
+
+  tdPOCode.innerText = printObj.poCode;
+  tdSupplier.innerText =
+    printObj.supplierId.firstName + " " + printObj.supplierId.company ?? "";
+  tdRequiredDate.innerText = printObj.requiredDate;
+  tdTotalAmount.innerText = "Rs." + printObj.totalAmount;
+  tdStatus.innerText = printObj.purchaseOrderStatusId.name;
+  tdCreatedDate.innerText = printObj.addedDateTime.split("T")[0];
+  getPOProductsForPrint(printObj);
+  //open model
+  $("#modelView").modal("show");
+};
+
+// funtion for get purchase order product list for print
+const getPOProductsForPrint = (printObj) => {
+  printObj.poHasProducts.forEach((ele) => {
+    const tr = document.createElement("tr");
+    const tdProductName = document.createElement("td");
+    const tdPurchasePrice = document.createElement("td");
+    const tdQty = document.createElement("td");
+    const tdLineAmount = document.createElement("td");
+
+    tdProductName.innerText =
+      ele.productId.brandId.name + " - " + ele.productId.name;
+    tdPurchasePrice.innerText = "Rs." + ele.purchasePrice;
+    tdQty.innerText = ele.qty + " (" + ele.productId.unitTypeId.name + ")";
+    tdLineAmount.innerText = "Rs." + ele.lineAmount;
+
+    tr.appendChild(tdProductName);
+    tr.appendChild(tdPurchasePrice);
+    tr.appendChild(tdQty);
+    tr.appendChild(tdLineAmount);
+    printTable.appendChild(tr);
+  });
 };
 
 //function for refill record
@@ -731,7 +762,7 @@ const deleteRecord = (rowObject, rowId) => {
       ); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Delete successfully..! \n" + serverResponse).then(
+        showAlert("success", "Purchase Order Delete successfully..!").then(
           () => {
             // Need to refresh table and form
             refreshAll();
@@ -740,7 +771,7 @@ const deleteRecord = (rowObject, rowId) => {
       } else {
         showAlert(
           "error",
-          "Delete not successfully..! There were some errors \n" +
+          "Purchase Order delete not successfully..! There were some errors \n" +
             serverResponse
         );
       }
@@ -748,39 +779,39 @@ const deleteRecord = (rowObject, rowId) => {
   });
 };
 
-// // ********* PRINT OPERATIONS *********
+// ********* PRINT OPERATIONS *********
 
-// //print function
-// const printViewRecord = () => {
-//   newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>User Details</title>" +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>User Details</h2>" +
-//       printTable.outerHTML
-//   );
+//print function
+const printViewRecord = () => {
+  newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Supplier</title>" +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2 style = 'font-weight:bold'>Supplier Details</h2>" +
+      printTable.outerHTML
+  );
 
-//   //triger print() after 1000 milsec time out
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };
+  //triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};
 
-// //print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
-// const printFullTable = () => {
-//   const newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>Print Employee</title>" +
-//       '<script src="resources/js/jquery.js"></script>' +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>Employee Details</h2>" +
-//       tableId.outerHTML +
-//       '<script>$(".modify-button").css("display","none")</script>'
-//   );
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Purchase Orders</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2 style = 'font-weight:bold'>Purchase Orders Details</h2>" +
+      purchaseOrdersTable.outerHTML +
+      '<script>$(".modify-button").css("display","none")</script>'
+  );
 
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};
