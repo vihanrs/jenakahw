@@ -20,15 +20,14 @@ window.addEventListener("load", () => {
 // ********* LISTENERS *********
 const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
+  let qtyPattern =
+    "^(([1-9]{1}[0-9]{0,7})|([0-9]{1}[.][0-9]{1,3})|([1-9]{1}[0-9]{0,7}[.][0-9]{1,3}))$";
 
-  textPOID.addEventListener("keyup", () => {
-    textFieldValidator(textPOID, "^[P][O][0-9]{9}$", "grn", "purchaseOrderId");
-  });
-
-  selectSupplier.addEventListener("change", () => {
-    selectDFieldValidator(selectSupplier, "grn", "supplierId"),
-      getProductListBySupplier(grn.supplierId.id),
-      clearPreviousProducts();
+  selectPOID.addEventListener("change", () => {
+    selectDFieldValidator(selectPOID, "grn", "purchaseOrderId"),
+      refreshInnerFormAndTable(),
+      getSupplierByPO(grn.purchaseOrderId.supplierId),
+      getProductListByPO(grn.purchaseOrderId.id);
   });
 
   textSupplierInvNo.addEventListener("keyup", () => {
@@ -45,7 +44,11 @@ const addEventListeners = () => {
 
   selectProduct.addEventListener("change", () => {
     selectDFieldValidator(selectProduct, "grnProduct", "productId"),
-      setUnitType(grnProduct.productId);
+      setUnitType(grnProduct.productId),
+      setPOValuesForSelectedProduct(
+        grn.purchaseOrderId.id,
+        grnProduct.productId.id
+      );
   });
 
   textCostPrice.addEventListener("keyup", () => {
@@ -55,17 +58,12 @@ const addEventListeners = () => {
       "grnProduct",
       "costPrice"
     ),
-      calLineAmount();
+      calLineAmountAndSellPrice();
   });
 
   textQty.addEventListener("keyup", () => {
-    textFieldValidator(
-      textQty,
-      "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{1,2}))$",
-      "grnProduct",
-      "qty"
-    ),
-      calLineAmount();
+    textFieldValidator(textQty, qtyPattern, "grnProduct", "qty"),
+      calLineAmountAndSellPrice();
   });
 
   textSellPrice.addEventListener("keyup", () => {
@@ -89,18 +87,26 @@ const addEventListeners = () => {
   textItemCount.addEventListener("keyup", () => {
     textFieldValidator(textItemCount, numberWithdecimals, "grn", "itemCount");
   });
+
   textTotalAmount.addEventListener("keyup", () => {
     textFieldValidator(textTotalAmount, numberWithdecimals, "grn", "total");
   });
+
   textDiscount.addEventListener("keyup", () => {
     textFieldValidator(textDiscount, numberWithdecimals, "grn", "discount"),
       calGrandTotal();
   });
+
   textGrandTotal.addEventListener("keyup", () => {
     textFieldValidator(textGrandTotal, numberWithdecimals, "grn", "grandTotal");
   });
+
   textPaid.addEventListener("keyup", () => {
     textFieldValidator(textPaid, numberWithdecimals, "grn", "paid");
+  });
+
+  btnAddProduct.addEventListener("click", () => {
+    addProduct();
   });
 
   //form reset button function call
@@ -120,11 +126,12 @@ const addEventListeners = () => {
 
   //record print function call
   btnViewPrint.addEventListener("click", () => {
-    // printViewRecord();
+    printViewRecord();
   });
 
-  btnAddProduct.addEventListener("click", () => {
-    addProduct();
+  //record print function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
   });
 };
 
@@ -148,16 +155,14 @@ const refreshForm = () => {
   //create new array for products
   grn.grnHasProducts = [];
 
-  //get data list from select element
-  suppliers = ajaxGetRequest("/supplier/findactivesuppliers");
-  fillMoreDataIntoSelect(
-    selectSupplier,
-    "Select Supplier",
-    suppliers,
-    "firstName",
-    "company"
+  //get data list of 'Requested' purchase orders
+  purchaseOrders = ajaxGetRequest("/purchaseorder/getpobystatus/1");
+  fillDataIntoSelect(
+    selectPOID,
+    "Select Purcahse Order ID",
+    purchaseOrders,
+    "poCode"
   );
-  selectSupplier.disabled = false;
 
   // get grn status
   grnStatuses = ajaxGetRequest("/grnstatus/findall");
@@ -174,7 +179,8 @@ const refreshForm = () => {
   selectGRNStatus.style.border = "2px solid #00FF7F";
 
   //empty all elements
-  textPOID.value = "";
+  selectPOID.value = "";
+  textSupplier.value = "";
   textSupplierInvNo.value = "";
   textNote.value = "";
   textItemCount.value = "";
@@ -185,7 +191,8 @@ const refreshForm = () => {
 
   // //set default border color
   let elements = [
-    textPOID,
+    selectPOID,
+    textSupplier,
     textSupplierInvNo,
     textNote,
     textItemCount,
@@ -193,7 +200,6 @@ const refreshForm = () => {
     textDiscount,
     textGrandTotal,
     textPaid,
-    selectSupplier,
   ];
   setBorderStyle(elements);
 
@@ -204,14 +210,41 @@ const refreshForm = () => {
   refreshInnerFormAndTable();
 
   //clear product list
-  getProductListBySupplier(0);
+  getProductListByPO(0);
 };
 
-// function for calculate grand total
-const calGrandTotal = () => {
-  let discount = grn.discount != null ? grn.discount : 0;
-  grn.grandTotal = parseFloat(grn.total - discount).toFixed(2);
-  textGrandTotal.value = grn.grandTotal;
+//function for get product list related to the selected supplier
+const getProductListByPO = (purchaseOrderId) => {
+  products = ajaxGetRequest(
+    "/purchaseorder/findpoproductsbypoid/" + purchaseOrderId
+  );
+
+  // add barcode and name as values in poHasProducts object
+  // poHasProducts = poHasProducts.map((poHasProduct) => ({
+  //   barcode: poHasProduct.productId.barcode,
+  //   name: poHasProduct.productId.name,
+  //   profitRate: poHasProduct.productId.profitRate,
+  //   ...poHasProduct,
+  // }));
+
+  fillMoreDataIntoSelect(
+    selectProduct,
+    "Select Product",
+    products,
+    "barcode",
+    "name"
+  );
+  textUnitType.innerText = "";
+};
+
+// function for fill supplier when selecting po id
+const getSupplierByPO = (supplier) => {
+  textSupplier.value =
+    supplier.firstName +
+    (supplier.company != null ? " - " + supplier.company : "");
+
+  grn.supplierId = supplier.id;
+  textSupplier.style.border = "2px solid #00FF7F";
 };
 
 //function for check errors
@@ -219,9 +252,9 @@ const checkErrors = () => {
   //need to check all required prperty filds
   let error = "";
 
-  if (grn.supplierId == null) {
-    error = error + "Please Select Valid Supplier...!\n";
-    selectSupplier.style.border = "1px solid red";
+  if (grn.purchaseOrderId == null) {
+    error = error + "Please Select Valid Purchase Order...!\n";
+    selectPOID.style.border = "1px solid red";
   }
 
   if (grn.grnStatusId == null) {
@@ -229,7 +262,7 @@ const checkErrors = () => {
     selectPOStatus.style.border = "1px solid red";
   }
 
-  if (parseFloat(grn.totalAmount).toFixed(2) == 0.0) {
+  if (grn.grnHasProducts.length == 0) {
     error = error + "Please Select Products...!\n";
   }
 
@@ -239,6 +272,15 @@ const checkErrors = () => {
 //function for check updates
 const checkUpdates = () => {
   let updates = "";
+
+  if (oldGrn.supplierInvId != grn.supplierInvId) {
+    updates +=
+      "Supplier Invoice No. has changed " +
+      (oldGrn.supplierInvId ?? "-") +
+      " into " +
+      (grn.supplierInvId ?? "-") +
+      " \n";
+  }
 
   if (oldGrn.grnStatusId.id != grn.grnStatusId.id) {
     updates +=
@@ -257,9 +299,10 @@ const checkUpdates = () => {
       (grn.note ?? "-") +
       " \n";
   }
+
   if (oldGrn.total != grn.total) {
     updates +=
-      "Products Updated...!\nTotal Amount has changed Rs." +
+      "Total Amount has changed Rs." +
       oldGrn.total +
       " into Rs." +
       grn.total +
@@ -269,9 +312,18 @@ const checkUpdates = () => {
   if (oldGrn.discount != grn.discount) {
     updates +=
       "Discount Amount has changed Rs." +
-      oldGrn.discount +
+      (oldGrn.discount ?? "-") +
       " into Rs." +
-      grn.discount +
+      (grn.discount ?? "-") +
+      " \n";
+  }
+
+  if (oldGrn.grandTotal != grn.grandTotal) {
+    updates +=
+      "Grand Total Amount has changed Rs." +
+      oldGrn.grandTotal +
+      " into Rs." +
+      grn.grandTotal +
       " \n";
   }
 
@@ -287,8 +339,12 @@ const addRecord = () => {
     let title = "Are you sure to add following record..?\n";
     let message =
       "Supplier : " +
-      grn.supplierId.firstName +
+      grn.purchaseOrderId.supplierId.firstName +
       (grn.supplierId.company != null ? " - " + grn.supplierId.company : "") +
+      "\nPO ID : " +
+      grn.purchaseOrderId.poCode +
+      "\nItem Count : " +
+      grn.itemCount +
       "\nTotal Amount (Rs.) : " +
       grn.total +
       "\nDiscount Amount (Rs.) : " +
@@ -302,13 +358,13 @@ const addRecord = () => {
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert("success", "Save sucessfully..! " + serverResponse);
+          showAlert("success", "GRN Save successfully..! ");
           //need to refresh table and form
           refreshAll();
         } else {
           showAlert(
             "error",
-            "Save not sucessfully..! have some errors \n" + serverResponse
+            "GRN save not successfully..! have some errors \n" + serverResponse
           );
         }
       }
@@ -328,22 +384,18 @@ const updateRecord = () => {
       let message = updates;
       showConfirm(title, message).then((userConfirm) => {
         if (userConfirm) {
-          let updateServiceResponse = ajaxRequestBody(
-            "/grn",
-            "PUT",
-            purchaseOrder
-          );
+          let updateServiceResponse = ajaxRequestBody("/grn", "PUT", grn);
           if (updateServiceResponse == "OK") {
-            showAlert("success", "Update sucessfully..!").then(() => {
+            showAlert("success", "GRN Update successfully..!").then(() => {
               //need to refresh table and form
               refreshAll();
             });
           } else {
             showAlert(
               "error",
-              "Update not sucessfully..! have some errors \n" +
-                updateSeriveResponse
-            ).then(() => {});
+              "GRN update not successfully..! have some errors \n" +
+                updateServiceResponse
+            );
           }
         }
       });
@@ -368,6 +420,8 @@ const refreshInnerFormAndTable = () => {
   textLineAmount.value = "";
   selectProduct.value = "";
   textUnitType.innerText = "";
+  lblCostPrice.innerText = "";
+  lblQty.innerText = "";
 
   //set default border color
   let elements = [
@@ -401,17 +455,36 @@ const refreshInnerFormAndTable = () => {
   calGrandTotal();
 };
 
-//function for get product list related to the selected supplier
-const getProductListBySupplier = (supplierId) => {
-  products = ajaxGetRequest("/product/availablelistWithSupplier/" + supplierId);
-  fillMoreDataIntoSelect(
-    selectProduct,
-    "Select Product",
-    products,
-    "barcode",
-    "name"
-  );
-  textUnitType.innerText = "";
+// function for get product name and barcode
+const getProductName = (rowObject) => {
+  return rowObject.productId.barcode + "-" + rowObject.productId.name;
+};
+
+//function for caluclate total amount
+const calculateGRNTotal = () => {
+  let grnTotal = 0;
+  grn.grnHasProducts.forEach((product) => {
+    grnTotal += parseFloat(product.lineAmount);
+  });
+
+  //bind value to totalAmount
+  grn.total = parseFloat(grnTotal).toFixed(2);
+
+  textTotalAmount.value = grn.total;
+};
+
+// function for get total item count
+const getItemCount = () => {
+  let count = grn.grnHasProducts.length;
+  textItemCount.value = count;
+  grn.itemCount = count;
+};
+
+// function for calculate grand total
+const calGrandTotal = () => {
+  let discount = grn.discount != null ? grn.discount : 0;
+  grn.grandTotal = parseFloat(grn.total - discount).toFixed(2);
+  textGrandTotal.value = grn.grandTotal;
 };
 
 // function for get unit type for selected product
@@ -419,19 +492,25 @@ const setUnitType = (product) => {
   textUnitType.innerText = "(" + product.unitTypeId.name + ")";
 };
 
-//clear previously tabel added products and refresh when selecting another supplier
-const clearPreviousProducts = () => {
-  grn.grnHasProducts = [];
-  refreshInnerFormAndTable();
+// function for set purchase order values as hints
+const setPOValuesForSelectedProduct = (purchaseOrderId, productId) => {
+  poValues = ajaxGetRequest(
+    "/purchaseorder/findpohasproductbypoidandproductid/" +
+      purchaseOrderId +
+      "/" +
+      productId
+  );
+  lblCostPrice.innerText =
+    " Rs." + parseFloat(poValues.purchasePrice).toFixed(2);
+  lblQty.innerText = " " + poValues.qty;
 };
 
 // function for calculate line amount
-const calLineAmount = () => {
+const calLineAmountAndSellPrice = () => {
   //calculate line amount
   grnProduct.lineAmount =
     grnProduct.costPrice != null && grnProduct.qty != null
-      ? parseFloat(grnProduct.costPrice).toFixed(2) *
-        parseFloat(grnProduct.qty).toFixed(2)
+      ? parseFloat(grnProduct.costPrice) * parseFloat(grnProduct.qty)
       : 0;
 
   //display line amount
@@ -439,11 +518,42 @@ const calLineAmount = () => {
     grnProduct.lineAmount != 0
       ? parseFloat(grnProduct.lineAmount).toFixed(2)
       : "";
+
+  //cal sell price by profit rate
+  grnProduct.sellPrice =
+    grnProduct.costPrice != null && grnProduct.qty != null
+      ? (parseFloat(grnProduct.costPrice) *
+          (100 + parseFloat(grnProduct.productId.profitRate))) /
+        100
+      : 0;
+
+  // display sell price
+  textSellPrice.value =
+    grnProduct.sellPrice != 0
+      ? parseFloat(grnProduct.sellPrice).toFixed(2)
+      : "";
 };
 
-// function for get product name and barcode
-const getProductName = (rowObject) => {
-  return rowObject.productId.barcode + "-" + rowObject.productId.name;
+//function for check inner form errors
+const checkInnerFormErrors = () => {
+  let error = "";
+
+  if (grnProduct.productId == null) {
+    error = error + "Please Select Product...!\n";
+    selectProduct.style.border = "1px solid red";
+  }
+
+  if (grnProduct.costPrice == null) {
+    error = error + "Please Enter Valid Cost Price...!\n";
+    textCostPrice.style.border = "1px solid red";
+  }
+
+  if (grnProduct.qty == null) {
+    error = error + "Please Enter Valid Qty...!\n";
+    textQty.style.border = "1px solid red";
+  }
+
+  return error;
 };
 
 // fucntion for add product to inner table
@@ -497,33 +607,7 @@ const refreshRemainProductList = (selectedProduct) => {
   );
 };
 
-//function for check inner form errors
-const checkInnerFormErrors = () => {
-  let error = "";
-
-  if (grnProduct.productId == null) {
-    error = error + "Please Select Product...!\n";
-    selectProduct.style.border = "1px solid red";
-  }
-
-  if (grnProduct.costPrice == null) {
-    error = error + "Please Enter Valid Cost Price...!\n";
-    textCostPrice.style.border = "1px solid red";
-  }
-
-  if (grnProduct.sellPrice == null) {
-    error = error + "Please Enter Valid Sell Price...!\n";
-    textSellPrice.style.border = "1px solid red";
-  }
-
-  if (grnProduct.qty == null) {
-    error = error + "Please Enter Valid Qty...!\n";
-    textQty.style.border = "1px solid red";
-  }
-
-  return error;
-};
-
+// function for refill grn
 const refillProduct = (rowObject, rowId) => {
   //remove refilled product from grn.grnHasProducts
   grn.grnHasProducts = grn.grnHasProducts.filter(
@@ -548,7 +632,7 @@ const refillProduct = (rowObject, rowId) => {
   refreshRemainProductList(grnProduct.productId.barcode);
 };
 
-//function for delete selected product
+//function for delete selected grn
 const deleteProduct = (rowObject, rowId) => {
   // get user confirmation
   let title = "Are you sure you want to delete this product...?\n";
@@ -568,26 +652,6 @@ const deleteProduct = (rowObject, rowId) => {
       refreshRemainProductList();
     }
   });
-};
-
-//function for caluclate total amount
-const calculateGRNTotal = () => {
-  let grnTotal = 0;
-  grn.grnHasProducts.forEach((product) => {
-    grnTotal += parseFloat(product.lineAmount);
-  });
-
-  //bind value to totalAmount
-  grn.total = parseFloat(grnTotal).toFixed(2);
-
-  textTotalAmount.value = grn.total;
-};
-
-// function for get total item count
-const getItemCount = () => {
-  let count = grn.grnHasProducts.length;
-  textItemCount.value = count;
-  grn.itemCount = count;
 };
 
 // ********* TABLE OPERATIONS *********
@@ -628,7 +692,7 @@ const refreshTable = () => {
     if (userPrivilages.delete && po.grnStatusId.name == "Deleted") {
       //catch the button
       let targetElement =
-        grnTable.children[1].children[index].children[6].children[
+        grnTable.children[1].children[index].children[8].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
       //add changes
@@ -640,23 +704,27 @@ const refreshTable = () => {
   $("#grnTable").dataTable();
 };
 
+// function for get supplier
 const getSupplier = (rowObject) => {
   return (
-    rowObject.supplierId.firstName +
-    (rowObject.supplierId.company != null
-      ? " - " + rowObject.supplierId.company
+    rowObject.purchaseOrderId.supplierId.firstName +
+    (rowObject.purchaseOrderId.supplierId.company != null
+      ? " - " + rowObject.purchaseOrderId.supplierId.company
       : "")
   );
 };
 
+// function for get purchase order code
 const getPurchaseOrderId = (rowObject) => {
   return rowObject.purchaseOrderId.poCode;
 };
 
+// function for get grn added date
 const getAddedDate = (rowObject) => {
   return rowObject.addedDateTime.substring(0, 10);
 };
 
+// function for get status
 const getStatus = (rowObject) => {
   if (rowObject.grnStatusId.name == "Received") {
     return (
@@ -669,29 +737,27 @@ const getStatus = (rowObject) => {
   }
 };
 
+// function for refill grn data
 const refillRecord = (rowObject, rowId) => {
   $("#addNewButton").click();
   //get selected grn data
   grn = ajaxGetRequest("/grn/findbyid/" + rowObject.id);
   oldGrn = JSON.parse(JSON.stringify(grn));
 
-  textPOID.value = grn.purchaseOrderId.poCode;
+  // selectPOID.value = grn.purchaseOrderId.poCode;
   textSupplierInvNo.value = grn.supplierInvId != null ? grn.supplierInvId : "";
   textNote.value = grn.note != null ? grn.note : "";
-  textDiscount.value = grn.discount != null ? grn.discount : "";
+  textDiscount.value =
+    grn.discount != null ? parseFloat(grn.discount).toFixed(2) : "";
   textPaid.value = grn.paid;
-
-  fillMoreDataIntoSelect(
-    selectSupplier,
-    "Select Supplier",
-    suppliers,
-    "firstName",
-    "company",
-    grn.supplierId.firstName
-  );
+  textSupplier.value =
+    grn.purchaseOrderId.supplierId.firstName +
+    (grn.purchaseOrderId.supplierId.company != null
+      ? " - " + grn.purchaseOrderId.supplierId.company
+      : "");
 
   // disable changing supplier
-  selectSupplier.disabled = true;
+  selectPOID.disabled = true;
 
   fillDataIntoSelect(
     selectGRNStatus,
@@ -704,21 +770,21 @@ const refillRecord = (rowObject, rowId) => {
   //refresh inner form and table to get saved products from purchaseOrder.poHasProducts
   refreshInnerFormAndTable();
 
-  //get suppliers product list and then remove alrady added products
-  getProductListBySupplier(grn.supplierId.id);
+  //get purchase order product list and then remove alrady added products
+  getProductListByPO(grn.purchaseOrderId.id);
   refreshRemainProductList();
 
   setBorderStyle([
-    textPOID,
-    selectSupplier,
+    selectPOID,
+    textSupplier,
     textSupplierInvNo,
     textNote,
-    selectGRNStatus,
     textItemCount,
     textTotalAmount,
     textDiscount,
     textGrandTotal,
     textPaid,
+    selectGRNStatus,
   ]);
 
   //manage buttons
@@ -734,7 +800,7 @@ const deleteRecord = (rowObject, rowId) => {
     rowObject.grnCode +
     "\n" +
     "Supplier : " +
-    rowObject.supplierId.firstName +
+    rowObject.purchaseOrderId.supplierId.firstName +
     "\n" +
     "Item Count : " +
     rowObject.itemCount +
@@ -748,12 +814,10 @@ const deleteRecord = (rowObject, rowId) => {
       let serverResponse = ajaxRequestBody("/grn", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Delete successfully..! \n" + serverResponse).then(
-          () => {
-            // Need to refresh table and form
-            refreshAll();
-          }
-        );
+        showAlert("success", "Delete successfully..!").then(() => {
+          // Need to refresh table and form
+          refreshAll();
+        });
       } else {
         showAlert(
           "error",
@@ -765,4 +829,87 @@ const deleteRecord = (rowObject, rowId) => {
   });
 };
 
-const viewRecord = (rowObject, rowId) => {};
+//function for view record
+const viewRecord = (rowObject, rowId) => {
+  //need to get full object
+  let printObj = rowObject;
+
+  tdGRNID.innerText = printObj.grnCode;
+  tdPOID.innerText = printObj.purchaseOrderId.poCode;
+  tdSupplier.innerText =
+    printObj.purchaseOrderId.supplierId.firstName +
+      " " +
+      printObj.purchaseOrderId.supplierId.company ?? "";
+  tdItemCount.innerText = printObj.itemCount;
+  tdTotal.innerText = "Rs." + parseFloat(printObj.total).toFixed(2);
+  tdDiscount.innerText = "Rs." + parseFloat(printObj.discount).toFixed(2);
+  tdGrandTotal.innerText = "Rs." + parseFloat(printObj.grandTotal).toFixed(2);
+  tdStatus.innerText = printObj.grnStatusId.name;
+  tdCreatedDate.innerText = printObj.addedDateTime.split("T")[0];
+  getGRNProductsForPrint(printObj);
+  //open model
+  $("#modelDetailedView").modal("show");
+};
+
+// funtion for get purchase order product list for print
+const getGRNProductsForPrint = (printObj) => {
+  printObj.grnHasProducts.forEach((ele) => {
+    const tr = document.createElement("tr");
+    const tdProductName = document.createElement("td");
+    const tdPurchasePrice = document.createElement("td");
+    const tdQty = document.createElement("td");
+    const tdSellPrice = document.createElement("td");
+    const tdLineAmount = document.createElement("td");
+
+    tdProductName.innerText =
+      ele.productId.brandId.name + " - " + ele.productId.name;
+    tdPurchasePrice.innerText = "Rs." + parseFloat(ele.costPrice).toFixed(2);
+    tdQty.innerText = ele.qty + " (" + ele.productId.unitTypeId.name + ")";
+    tdSellPrice.innerText = "Rs." + parseFloat(ele.sellPrice).toFixed(2);
+    tdLineAmount.innerText = "Rs." + parseFloat(ele.lineAmount).toFixed(2);
+
+    tr.appendChild(tdProductName);
+    tr.appendChild(tdPurchasePrice);
+    tr.appendChild(tdQty);
+    tr.appendChild(tdSellPrice);
+    tr.appendChild(tdLineAmount);
+    printTable.appendChild(tr);
+  });
+};
+
+// ********* PRINT OPERATIONS *********
+
+//print function
+const printViewRecord = () => {
+  newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>GRN Details</title>" +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2 style = 'font-weight:bold'>GRN Details</h2>" +
+      printView.outerHTML
+  );
+
+  //triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};
+
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print GRNs</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2 style = 'font-weight:bold'>GRNs Details</h2>" +
+      grnTable.outerHTML +
+      '<script>$("modifyButtons").css("display","none")</script>'
+  );
+
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};

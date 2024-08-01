@@ -26,7 +26,7 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	@Query(value = "Select p from PurchaseOrder p where p.supplierId.id = ?1 ")
 	public List<PurchaseOrder> purchaseOrderBySupplier(int supplierId);
 
-	// query for get purchase order by status and supplier
+	// query for get purchaseorder by status and supplier
 	@Query(value = "Select p from PurchaseOrder p where p.purchaseOrderStatusId.id = ?1 and supplierId.id=?2")
 	public List<PurchaseOrder> purchaseOrderByStatusAndSupplier(int statusId, int supplierId);
 
@@ -41,7 +41,7 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	// GRN reports queries
 
 	// query for get grns by supplier
-	@Query(value = "Select g from Grn g where g.supplierId.id =?1")
+	@Query(value = "Select g from Grn g where g.supplierId =?1")
 	public List<Grn> grnBySupplierId(int supplierId);
 
 	// query for get grn summary monthly

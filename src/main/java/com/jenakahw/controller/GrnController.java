@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,10 +23,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.GrnHasProduct;
 import com.jenakahw.domain.Product;
+import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.domain.Stock;
 import com.jenakahw.repository.GrnRepository;
 import com.jenakahw.repository.GrnStatusRepository;
 import com.jenakahw.repository.PurchaseOrderRepository;
+import com.jenakahw.repository.PurchaseOrderStatusRepository;
 import com.jenakahw.repository.StockRepository;
 import com.jenakahw.repository.StockStatusRepository;
 
@@ -57,6 +61,9 @@ public class GrnController {
 
 	@Autowired
 	private PurchaseOrderRepository purchaseOrderRepository;
+	
+	@Autowired
+	private PurchaseOrderStatusRepository purchaseOrderStatusRepository;
 
 	private static final String MODULE = "GRN";
 
@@ -77,7 +84,7 @@ public class GrnController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Grn> findAll() {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return grnRepository.findAll();
+			return grnRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
 		}
@@ -108,7 +115,10 @@ public class GrnController {
 			// set added date time
 			grn.setAddedDateTime(LocalDateTime.now());
 
-			grn.setPurchaseOrderId(purchaseOrderRepository.getReferenceById(10));
+			// set po status as 'Received'
+			PurchaseOrder currentPO = purchaseOrderRepository.getReferenceById(grn.getPurchaseOrderId().getId());
+			currentPO.setPurchaseOrderStatusId(purchaseOrderStatusRepository.getReferenceById(2));
+			purchaseOrderRepository.save(currentPO);
 
 			// set next grn code
 			String nextGrnCode = grnRepository.getNextGRNCode();
@@ -152,7 +162,7 @@ public class GrnController {
 			}
 			return "OK";
 		} catch (Exception e) {
-			return "GRN Save Not Completed : " + e.getMessage();
+			return e.getMessage();
 		}
 	}
 
@@ -168,7 +178,7 @@ public class GrnController {
 		// check for existens
 		Grn extGrn = grnRepository.getReferenceById(grn.getId());
 		if (extGrn == null) {
-			return "GRN Update Not Completed : GRN Not Exist...!";
+			return "GRN Not Exist...!";
 		}
 
 		try {
@@ -190,7 +200,7 @@ public class GrnController {
 	}
 
 	// delete mapping for delete a GRN
-	@Transactional
+//	@Transactional
 	@DeleteMapping
 	public String deleteGrn(@RequestBody Grn grn) {
 		// check privileges
@@ -201,7 +211,7 @@ public class GrnController {
 		// check for existens
 		Grn extGrn = grnRepository.getReferenceById(grn.getId());
 		if (extGrn == null) {
-			return "GRN Delete Not Completed : GRN Not Exist...!";
+			return "GRN Not Exist...!";
 		}
 
 		try {

@@ -61,7 +61,7 @@ const addEventListeners = () => {
   textBankName.addEventListener("keyup", () => {
     textFieldValidator(
       textBankName,
-      "^[A-Z][a-zA-Z' ]{2,}[a-zA-Z]$",
+      "^[A-Z][a-zA-Z' ]{1,}[a-zA-Z]$",
       "bankDetail",
       "bankName"
     );
@@ -83,7 +83,7 @@ const addEventListeners = () => {
   textAccHolderName.addEventListener("keyup", () => {
     textFieldValidator(
       textAccHolderName,
-      "^[A-Z][a-zA-Z ]{2,}[a-zA-Z]$",
+      "^[A-Z][a-zA-Z ]{1,}[a-zA-Z]$",
       "bankDetail",
       "accHolderName"
     );

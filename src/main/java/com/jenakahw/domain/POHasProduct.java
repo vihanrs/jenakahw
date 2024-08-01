@@ -49,4 +49,10 @@ public class POHasProduct {
 	@ManyToOne // relationship format
 	@JoinColumn(name = "product_id", referencedColumnName = "id") // join column condition
 	private Product productId; 
+	
+	public POHasProduct(int id,BigDecimal purchasePrice,BigDecimal qty) {
+		this.id = id;
+		this.purchasePrice = purchasePrice;
+		this.qty = qty;
+	}
 }

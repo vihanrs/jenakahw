@@ -75,6 +75,7 @@ public class Product {
 	private LocalDateTime deletedDateTime;
 
 	@Column(name = "added_user_id")
+	@NotNull
 	private Integer addedUserId;
 
 	@Column(name = "updated_user_id")

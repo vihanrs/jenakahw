@@ -105,7 +105,7 @@ public class ProductController {
 
 	// post mapping for save new product
 	@PostMapping
-	public String savePrivilege(@RequestBody Product product) {
+	public String saveProduct(@RequestBody Product product) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
@@ -135,7 +135,7 @@ public class ProductController {
 
 	// put mapping for update product
 	@PutMapping
-	public String updateUser(@RequestBody Product product) {
+	public String updateProduct(@RequestBody Product product) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
@@ -161,9 +161,9 @@ public class ProductController {
 		}
 	}
 
-	// delete mapping for delete product [/user]
+	// delete mapping for delete product
 	@DeleteMapping
-	public String deleteUser(@RequestBody Product product) {
+	public String deleteProduct(@RequestBody Product product) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";

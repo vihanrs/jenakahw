@@ -69,36 +69,32 @@
                       </div>
                     </div>
 
-                    <!-- supplier/required date/ po status -->
+                    <!-- poid/supplier/required date/ po status -->
                     <div class="row mt-2">
                       <!-- po id -->
                       <div class="col-md-3">
-                        <label for="textPOID" class="form-label fw-bold">
-                          PO ID:
+                        <label for="selectPOID" class="form-label fw-bold">
+                          PO ID : <span class="text-danger"> * </span>
+                        </label>
+                        <select id="selectPOID" class="form-select" required>
+                          <option value="" selected disabled>
+                            Select Purchase Order ID
+                          </option>
+                        </select>
+                      </div>
+                      <div class="col-md-1"></div>
+
+                      <!-- supplier -->
+                      <div class="col-md-4">
+                        <label for="textSupplier" class="form-label fw-bold">
+                          Supplier:
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter Purchase Order ID"
                           class="form-control"
-                          id="textPOID"
+                          id="textSupplier"
+                          disabled
                         />
-                      </div>
-                      <div class="col-md-1"></div>
-                      <!-- supplier -->
-                      <div class="col-md-4">
-                        <label for="selectSupplier" class="form-label fw-bold">
-                          Supplier : <span class="text-danger"> * </span>
-                        </label>
-                        <select
-                          id="selectSupplier"
-                          class="form-select"
-                          required
-                        >
-                          <option value="" selected disabled>
-                            Select Supplier
-                          </option>
-                          <option value="Option1">Option 1</option>
-                        </select>
                       </div>
                       <div class="col-md-1"></div>
                       <!-- supplier inv code id -->
@@ -184,6 +180,11 @@
                           id="textCostPrice"
                           required
                         />
+                        <label
+                          id="lblCostPrice"
+                          class="ps-2"
+                          style="color: #9c9c9c"
+                        ></label>
                       </div>
                       <div class="col-md-1"></div>
                       <!-- qty -->
@@ -199,8 +200,14 @@
                           id="textQty"
                           required
                         />
+                        <label
+                          id="lblQty"
+                          class="ps-4"
+                          style="color: #9c9c9c"
+                        ></label>
                       </div>
                     </div>
+
                     <div class="row mt-2">
                       <!-- sell price -->
                       <div class="col-md-3">
@@ -210,10 +217,10 @@
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter Sell Price"
                           class="form-control"
                           id="textSellPrice"
                           required
+                          disabled
                         />
                       </div>
                       <div class="col-md-2"></div>
@@ -417,10 +424,10 @@
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
-                        <th>GRN Code</th>
+                        <th>GRN ID</th>
                         <th>Supplier</th>
                         <th>PO ID</th>
-                        <th>Added Date</th>
+                        <th>Created Date</th>
                         <th>Item Count</th>
                         <th>Grand Total</th>
                         <th>Status</th>
@@ -430,6 +437,17 @@
                     <tbody class="table-group-divider"></tbody>
                   </table>
                 </div>
+                <!-- print full table button -->
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -438,35 +456,66 @@
         <!-- content area end -->
       </div>
       <!-- view record model start -->
-      <div class="modal" id="modelView">
+      <div class="modal" id="modelDetailedView">
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header">
-              <h2>View # Details</h2>
+              <h2 class="fw-bold">View GRN Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-              <table id="printTable" class="table">
-                <tr>
-                  <th>FullName</th>
-                  <td id="tdFullName"></td>
-                </tr>
-                <tr>
-                  <th>NIC</th>
-                  <td id="tdNIC"></td>
-                </tr>
-                <tr>
-                  <th>Mobile</th>
-                  <td id="tdMobile"></td>
-                </tr>
-                <tr>
-                  <th>Status</th>
-                  <td id="tdStatus"></td>
-                </tr>
-              </table>
+              <div id="printView">
+                <table id="printTable" class="table table-striped">
+                  <tr>
+                    <th>GRN ID</th>
+                    <td id="tdGRNID" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Supplier</th>
+                    <td id="tdSupplier" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>PO ID</th>
+                    <td id="tdPOID" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Item Count</th>
+                    <td id="tdItemCount" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Total</th>
+                    <td id="tdTotal" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Discount</th>
+                    <td id="tdDiscount" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Grand Total</th>
+                    <td id="tdGrandTotal" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Status</th>
+                    <td id="tdStatus" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Created Date</th>
+                    <td id="tdCreatedDate" colspan="4"></td>
+                  </tr>
+                  <tr>
+                    <th>Product Name</th>
+                    <th>Purchase Price</th>
+                    <th>Qty</th>
+                    <th>Sell Price</th>
+                    <th>Line Amount</th>
+                  </tr>
+                </table>
+              </div>
             </div>
             <dv class="modal-footer">
-              <button class="btn btn-info" id="btnViewPrint">Print</button>
+              <button id="btnViewPrint" class="btn btn-info">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
             </dv>
           </div>
         </div>

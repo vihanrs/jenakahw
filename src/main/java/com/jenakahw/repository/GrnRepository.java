@@ -16,8 +16,7 @@ public interface GrnRepository extends JpaRepository<Grn, Integer> {
 			+ "FROM jenakahw.grn as grn where MONTH(DATE(grn.added_datetime)) = MONTH(CURRENT_DATE())", nativeQuery = true)
 	public String getNextGRNCode();
 	
-	// query for get selected data
-	@Query(value = "Select new Grn(g.id,g.grnCode,g.supplierId,g.purchaseOrderId,g.addedDateTime,g.grandTotal,g.itemCount,g.grnStatusId) from Grn g order by g.id desc")
+	// query for get all grns
 	public List<Grn> findAll();
 	
 	// query for get grn by id

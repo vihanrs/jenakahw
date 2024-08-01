@@ -44,12 +44,33 @@ const selectDFieldValidator = (fieldId, object, property) => {
 };
 
 //dynamic data list validation function
-const dataListValidator = (fieldId, object, property) => {
+const dataListValidator = (
+  fieldId,
+  dataListName,
+  object,
+  property,
+  displayProperty
+) => {
   const fieldValue = fieldId.value;
 
   if (fieldValue !== "") {
-    fieldId.style.border = "2px solid #00FF7F";
-    window[object][property] = JSON.parse(fieldValue); //convert to JS object
+    console.log(window[dataListName]);
+    let dataList = window[dataListName];
+    let extIndex = dataList
+      .map((data) => data[displayProperty])
+      .indexOf(fieldValue);
+
+    if (extIndex != -1) {
+      fieldId.style.border = "2px solid #00FF7F";
+      window[object][property] = dataList[extIndex];
+    } else {
+      window[object][property] = null;
+      if (fieldId.required) {
+        fieldId.style.border = "1px solid red";
+      } else {
+        fieldId.style.border = "1px solid #ced4da";
+      }
+    }
   } else {
     window[object][property] = null;
     if (fieldId.required) {

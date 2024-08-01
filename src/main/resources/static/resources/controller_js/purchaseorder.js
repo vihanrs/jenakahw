@@ -23,6 +23,8 @@ window.addEventListener("load", () => {
 
 const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
+  let qtyPattern =
+    "^(([1-9]{1}[0-9]{0,7})|([0-9]{1}[.][0-9]{1,3})|([1-9]{1}[0-9]{0,7}[.][0-9]{1,3}))$";
 
   selectSupplier.addEventListener("change", () => {
     selectDFieldValidator(selectSupplier, "purchaseOrder", "supplierId"),
@@ -66,12 +68,7 @@ const addEventListeners = () => {
   });
 
   textQty.addEventListener("keyup", () => {
-    textFieldValidator(
-      textQty,
-      "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{1,2}))$",
-      "poProduct",
-      "qty"
-    ),
+    textFieldValidator(textQty, qtyPattern, "poProduct", "qty"),
       calLineAmount();
   });
 
@@ -660,7 +657,7 @@ const viewRecord = (ob, rowId) => {
   tdSupplier.innerText =
     printObj.supplierId.firstName + " " + printObj.supplierId.company ?? "";
   tdRequiredDate.innerText = printObj.requiredDate;
-  tdTotalAmount.innerText = "Rs." + printObj.totalAmount;
+  tdTotalAmount.innerText = "Rs." + parseFloat(printObj.totalAmount).toFixed(2);
   tdStatus.innerText = printObj.purchaseOrderStatusId.name;
   tdCreatedDate.innerText = printObj.addedDateTime.split("T")[0];
   getPOProductsForPrint(printObj);
@@ -679,9 +676,10 @@ const getPOProductsForPrint = (printObj) => {
 
     tdProductName.innerText =
       ele.productId.brandId.name + " - " + ele.productId.name;
-    tdPurchasePrice.innerText = "Rs." + ele.purchasePrice;
+    tdPurchasePrice.innerText =
+      "Rs." + parseFloat(ele.purchasePrice).toFixed(2);
     tdQty.innerText = ele.qty + " (" + ele.productId.unitTypeId.name + ")";
-    tdLineAmount.innerText = "Rs." + ele.lineAmount;
+    tdLineAmount.innerText = "Rs." + parseFloat(ele.lineAmount).toFixed(2);
 
     tr.appendChild(tdProductName);
     tr.appendChild(tdPurchasePrice);

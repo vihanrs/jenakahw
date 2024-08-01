@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.POHasProduct;
+import com.jenakahw.domain.Product;
 import com.jenakahw.domain.PurchaseOrder;
+import com.jenakahw.repository.POHasProductRepository;
 import com.jenakahw.repository.PurchaseOrderRepository;
 import com.jenakahw.repository.PurchaseOrderStatusRepository;
 
@@ -44,7 +47,10 @@ public class PurchaseOrderController {
 
 	@Autowired
 	private UserController userController;
-	
+
+	@Autowired
+	private POHasProductRepository poHasProductRepository;
+
 	private static final String MODULE = "Purchase Order";
 
 	// GRN UI service [/purchaseorder -- return Purchase Order UI]
@@ -65,6 +71,39 @@ public class PurchaseOrderController {
 	public List<PurchaseOrder> findAll() {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return purchaseOrderRepository.findAll(Sort.by(Direction.DESC, "id"));
+		} else {
+			return null;
+		}
+	}
+
+	// get mapping for find purchaseorder products by poid
+	// --[/purchaseorder/findpoproductsbypoid/10]
+	@GetMapping(value = "/findpoproductsbypoid/{poid}", produces = "application/json")
+	public List<Product> findPOProductsByPOID(@PathVariable("poid") Integer poId) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return poHasProductRepository.findPOProductsByPOID(poId);
+		} else {
+			return null;
+		}
+	}
+	
+	// get mapping for find POHasProduct details by poid and product id
+	// --[/purchaseorder/findpoproductsbypoid/10]
+	@GetMapping(value = "/findpohasproductbypoidandproductid/{poid}/{productid}", produces = "application/json")
+	public POHasProduct findByPOIDAndProductId(@PathVariable("poid") Integer poId,@PathVariable("productid") Integer productId) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return poHasProductRepository.findByPOIDAndProductId(poId,productId);
+		} else {
+			return null;
+		}
+	}
+
+	// get mapping for find purchaseorder by status --
+	// [/purchaseorder/getpobystatus/1]
+	@GetMapping(value = "/getpobystatus/{poStatusId}", produces = "application/json")
+	public List<PurchaseOrder> findPOByStatus(@PathVariable("poStatusId") Integer poStatusId) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return purchaseOrderRepository.findPurchaseOrdersByStatus(poStatusId);
 		} else {
 			return null;
 		}
@@ -124,7 +163,7 @@ public class PurchaseOrderController {
 		if (extPurchaseOrder == null) {
 			return "Purchase Order Not Exist...!";
 		}
-		
+
 		try {
 			// set added user
 			purchaseOrder.setUpdatedUserId(userController.getLoggedUser().getId());

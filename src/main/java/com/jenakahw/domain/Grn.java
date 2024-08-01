@@ -38,12 +38,10 @@ public class Grn {
 	@Length(max = 12)
 	private String grnCode;
 
-	@ManyToOne // relationship format
-	@JoinColumn(name = "supplier_id", referencedColumnName = "id") // join column condition
-	private Supplier supplierId;
+	@Column(name = "supplier_id")
+	private Integer supplierId;
 
-	@Nullable
-	@ManyToOne(optional = true) // relationship format
+	@ManyToOne// relationship format
 	@JoinColumn(name = "purchase_order_id", referencedColumnName = "id") // join column condition
 	private PurchaseOrder purchaseOrderId;
 
@@ -97,28 +95,5 @@ public class Grn {
 
 	@OneToMany(mappedBy = "grnId", cascade = CascadeType.ALL, orphanRemoval = true) // map with grnId foreign key property in GrnHasProduct object,use cascade all to access alloperations in grn_has_product table
 	private List<GrnHasProduct> grnHasProducts;
-
-	public Grn(Integer id, String grnCode, Supplier supplierId, PurchaseOrder purchaseOrderId, LocalDateTime addedDateTime, BigDecimal grandTotal,
-			Integer itemCount, GrnStatus grnStatusId) {
-		this.id = id;
-		this.grnCode = grnCode;
-		this.supplierId = supplierId;
-		this.purchaseOrderId = purchaseOrderId;
-		this.grandTotal = grandTotal;
-		this.itemCount = itemCount;
-		this.grnStatusId = grnStatusId;
-		this.addedDateTime = addedDateTime;
-	}
-	
-	public Grn(Integer id, String grnCode, Supplier supplierId, LocalDateTime addedDateTime, BigDecimal grandTotal,
-			Integer itemCount, GrnStatus grnStatusId) {
-		this.id = id;
-		this.grnCode = grnCode;
-		this.supplierId = supplierId;
-		this.grandTotal = grandTotal;
-		this.itemCount = itemCount;
-		this.grnStatusId = grnStatusId;
-		this.addedDateTime = addedDateTime;
-	}
 
 }

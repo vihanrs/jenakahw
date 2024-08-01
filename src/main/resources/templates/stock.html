@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/stock.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2>
+              <img
+                src="resources/icons/stock-icon2.png"
+                alt="stock-icon"
+                class="me-3"
+                style="height: 40px; width: 40px"
+              />Stock Management
+            </h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="accordion" id="accordionSection">
+          <!-- view all table area start -->
+          <div class="accordion-item" id="viewAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View Stock
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <table class="table table-hover pt-3 mb-3" id="stockTable">
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Brand</th>
+                        <th>Total Qty</th>
+                        <th>Available Qty</th>
+                        <th>Cost Price</th>
+                        <th>Sell Price</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider"></tbody>
+                  </table>
+                </div>
+                <!-- print full table button -->
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
+        </div>
+        <!-- content area end -->
+      </div>
+    </div>
+    <div th:replace="~{alertbox :: alertFragment}"></div>
+  </body>
+</html>
