@@ -7,7 +7,7 @@
     <!-- common heading file -->
     <head th:replace="~{head :: headFragment}"> </head>
 
-    <script src="resources/controller_js/customer.js"></script>
+    <script src="resources/controller_js/dailyextraincome.js"></script>
   </head>
   <body class="sidebar-mini layout-fixed">
     <div class="container-fluid wrapper ps-2">
@@ -34,7 +34,7 @@
                     padding-bottom: 4px;
                     margin-right: 10px;
                   " /></i
-              >Customer Management
+              >Daily Extra Income Management
             </h2>
           </div>
         </div>
@@ -54,7 +54,7 @@
                 aria-controls="addNewSection"
                 id="addNewButton"
               >
-                Add New Customer
+                Add New Daily Extra Income
               </button>
             </h2>
             <div
@@ -74,75 +74,40 @@
                       </div>
                     </div>
 
-                    <!-- customer name -->
+                    <!-- Amount -->
                     <div class="row mt-2">
-                      <div class="col-md-12">
-                        <label for="textCustomerName" class="form-label fw-bold"
-                          >Customer Name :<span class="text-danger"> * </span>
+                      <div class="col-md-2"></div>
+                      <div class="col-md-8">
+                        <label for="textAmount" class="form-label fw-bold"
+                          >Amount (Rs.) :<span class="text-danger"> * </span>
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter Customer Name"
+                          placeholder="Enter Amount"
                           class="form-control"
-                          id="textCustomerName"
+                          id="textAmount"
                           required
                         />
                       </div>
                     </div>
-                    <div class="row mt-2">
-                      <!-- customer contact -->
-                      <div class="col-md-6">
-                        <label
-                          for="textCustomerContact"
-                          class="col-md-4 form-label fw-bold"
-                        >
-                          Contact No. :<span class="text-danger"> * </span>
-                        </label>
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Enter Contact No"
-                            class="form-control"
-                            id="textCustomerContact"
-                            required
-                          />
-                        </div>
-                      </div>
-                      <!-- nic -->
-                      <div class="col-md-6">
-                        <label
-                          for="textCustomerNIC"
-                          class="col-md-4 form-label fw-bold"
-                        >
-                          NIC :
-                        </label>
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Enter NIC"
-                            class="form-control"
-                            id="textCustomerNIC"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
 
-                    <!-- Address -->
+                    <!-- Reason -->
                     <div class="row mt-2">
-                      <div class="col-md-9">
-                        <label
-                          for="textCustomerAddress"
-                          class="form-label fw-bold"
-                          >Address :
+                      <div class="col-md-2"></div>
+                      <div class="col-md-8">
+                        <label for="textReason" class="form-label fw-bold"
+                          >Reason :
                         </label>
                         <textarea
-                          id="textCustomerAddress"
+                          id="textReason"
                           class="form-control"
-                          placeholder="Enter Address Here"
+                          placeholder="Enter Reason Here"
                         ></textarea>
                       </div>
-                      <!-- customer status  -->
+                    </div>
+                    <!-- status  -->
+                    <div class="row mt-2">
+                      <div class="col-md-2"></div>
                       <div class="col-md-3">
                         <label for="selectStatus" class="form-label fw-bold">
                           Status : <span class="text-danger"> * </span>
@@ -188,6 +153,7 @@
                           <i class="fa-solid fa-square-plus me-2"></i>Add
                         </button>
                       </div>
+                      <div class="col-md-2"></div>
                     </div>
                   </form>
                 </div>
@@ -208,7 +174,7 @@
                 aria-controls="viewAllSection"
                 id="viewAllButton"
               >
-                View All Customers
+                View All Daily Extra Incomes
               </button>
             </h2>
             <div
@@ -218,14 +184,16 @@
             >
               <div class="accordion-body">
                 <div class="card card-body p-2">
-                  <table class="table table-hover pt-3 mb-3" id="customerTable">
+                  <table
+                    class="table table-hover pt-3 mb-3"
+                    id="dailyExtraIncomeTable"
+                  >
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>NIC</th>
-                        <th>Address</th>
+                        <th>Amount</th>
+                        <th>Reason</th>
+                        <th>Added Date</th>
                         <th>Status</th>
                         <th style="width: 70px; text-align: right">Modify</th>
                       </tr>
@@ -262,20 +230,16 @@
             <div class="modal-body">
               <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>Customer Name</th>
-                  <td id="tdCustomerName"></td>
+                  <th>Amount</th>
+                  <td id="tdAmount"></td>
                 </tr>
                 <tr>
-                  <th>Contact</th>
-                  <td id="tdCustomerContact"></td>
+                  <th>Reason</th>
+                  <td id="tdReason"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdCustomerNIC"></td>
-                </tr>
-                <tr>
-                  <th>Address</th>
-                  <td id="tdCustomerAddress"></td>
+                  <th>Added Date</th>
+                  <td id="tdAddedDate"></td>
                 </tr>
                 <tr>
                   <th>Status</th>
