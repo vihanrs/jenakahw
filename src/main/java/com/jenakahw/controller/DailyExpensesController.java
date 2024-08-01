@@ -17,21 +17,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jenakahw.domain.DailyExtraIncome;
-import com.jenakahw.repository.DailyExtraIncomeRepository;
+import com.jenakahw.domain.DailyExpenses;
+import com.jenakahw.repository.DailyExpensesRepository;
 import com.jenakahw.repository.DailyIncomeExpensesStatusRepository;
 
 @RestController
-//add class level mapping /dailyextraincome
-@RequestMapping(value = "/dailyextraincome")
-public class DailyExtraIncomeController {
+//add class level mapping /dailyexpenses
+@RequestMapping(value = "/dailyexpenses")
+public class DailyExpensesController {
 	/*
 	 * Create Repository object -> Dependency injection:Repository is an interface
 	 * so it cannot create instance then use dependency injection
 	 */
 	@Autowired
-	private DailyExtraIncomeRepository dailyExtraIncomeRepository;
-	
+	private DailyExpensesRepository dailyExpensesRepository;
+
 	@Autowired
 	private DailyIncomeExpensesStatusRepository dailyIncomeExpensesStatusRepository;
 
@@ -41,36 +41,36 @@ public class DailyExtraIncomeController {
 	@Autowired
 	private UserController userController;
 
-	private static final String MODULE = "Daily Extra Income";
+	private static final String MODULE = "Daily Expenses";
 
-	// get mapping for generate daily extra income UI
+	// get mapping for generate daily expenses UI
 	@GetMapping
-	public ModelAndView getDailyExtraIncomeUI() {
+	public ModelAndView getDailyExpensesUI() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		ModelAndView dailyextraincomeView = new ModelAndView();
-		dailyextraincomeView.addObject("title", "Daily Extra Income  | Jenaka Hardware");
-		dailyextraincomeView.addObject("logusername", auth.getName());
-		dailyextraincomeView.setViewName("dailyextraincome.html");
-		return dailyextraincomeView;
+		ModelAndView dailyexpensesView = new ModelAndView();
+		dailyexpensesView.addObject("title", "Daily Expenses  | Jenaka Hardware");
+		dailyexpensesView.addObject("logusername", auth.getName());
+		dailyexpensesView.setViewName("dailyexpenses.html");
+		return dailyexpensesView;
 	}
 
-	// get service mapping for get all daily extra incomes
+	// get service mapping for get all daily expenses
 	@GetMapping(value = "/findall", produces = "application/json")
-	public List<DailyExtraIncome> findAll() {
+	public List<DailyExpenses> findAll() {
 		// check privileges
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return dailyExtraIncomeRepository.findAll(Sort.by(Direction.DESC, "id"));
+			return dailyExpensesRepository.findAll(Sort.by(Direction.DESC, "id"));
 		} else {
 			return null;
 		}
 
 	}
 
-	// post mapping for save new daily extra income
+	// post mapping for save new daily expense
 	@PostMapping
-	public String saveDailyExtraIncome(@RequestBody DailyExtraIncome dailyExtraIncome) {
+	public String saveDailyExtraIncome(@RequestBody DailyExpenses dailyExpenses) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
@@ -78,20 +78,20 @@ public class DailyExtraIncomeController {
 
 		try {
 			// set added date time
-			dailyExtraIncome.setAddedDateTime(LocalDateTime.now());
+			dailyExpenses.setAddedDateTime(LocalDateTime.now());
 			// set added user
-			dailyExtraIncome.setAddedUserId(userController.getLoggedUser().getId());
+			dailyExpenses.setAddedUserId(userController.getLoggedUser().getId());
 
-			dailyExtraIncomeRepository.save(dailyExtraIncome);
+			dailyExpensesRepository.save(dailyExpenses);
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();
 		}
 	}
 
-	// post mapping for update daily extra income
+	// post mapping for update daily expense
 	@PutMapping
-	public String updateCustomer(@RequestBody DailyExtraIncome dailyExtraIncome) {
+	public String updateCustomer(@RequestBody DailyExpenses dailyExpenses) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "update")) {
 			return "Access Denied !!!";
@@ -99,42 +99,42 @@ public class DailyExtraIncomeController {
 
 		try {
 			// set added date time
-			dailyExtraIncome.setLastUpdatedDateTime(LocalDateTime.now());
+			dailyExpenses.setLastUpdatedDateTime(LocalDateTime.now());
 			// set added user
-			dailyExtraIncome.setUpdatedUserId(userController.getLoggedUser().getId());
+			dailyExpenses.setUpdatedUserId(userController.getLoggedUser().getId());
 
-			dailyExtraIncomeRepository.save(dailyExtraIncome);
+			dailyExpensesRepository.save(dailyExpenses);
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();
 		}
 	}
 
-	// delete mapping for delete daily extra income
+	// delete mapping for delete daily expense
 	@DeleteMapping
-	public String deleteProduct(@RequestBody DailyExtraIncome dailyExtraIncome) {
+	public String deleteProduct(@RequestBody DailyExpenses dailyExpenses) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
 			return "Access Denied !!!";
 		}
 
-		// check given extra income exist or not
-		DailyExtraIncome extDailyExIncome = dailyExtraIncomeRepository.getReferenceById(dailyExtraIncome.getId());
-		if (extDailyExIncome == null) {
+		// check given expense exist or not
+		DailyExpenses extDailyExpenses = dailyExpensesRepository.getReferenceById(dailyExpenses.getId());
+		if (extDailyExpenses == null) {
 			return "Daily Extra Income Not Exist..!";
 		}
 
 		try {
 			// set deleted data and time
-			dailyExtraIncome.setDeletedDateTime(LocalDateTime.now());
+			dailyExpenses.setDeletedDateTime(LocalDateTime.now());
 
 			// set deleted user id
-			dailyExtraIncome.setDeletedUserId(userController.getLoggedUser().getId());
+			dailyExpenses.setDeletedUserId(userController.getLoggedUser().getId());
 
 			// set statuts to 'Deleted'
-			dailyExtraIncome.setDailyIncomeExpensesStatusId(dailyIncomeExpensesStatusRepository.getReferenceById(2));
+			dailyExpenses.setDailyIncomeExpensesStatusId(dailyIncomeExpensesStatusRepository.getReferenceById(2));
 
-			dailyExtraIncomeRepository.save(dailyExtraIncome);
+			dailyExpensesRepository.save(dailyExpenses);
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();
