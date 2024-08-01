@@ -22,7 +22,7 @@ import com.jenakahw.repository.CustomerRepository;
 import com.jenakahw.repository.CustomerStatusRepository;
 
 @RestController
-//add class level mapping /product
+//add class level mapping /customer
 @RequestMapping(value = "/customer")
 public class CustomerController {
 	/*

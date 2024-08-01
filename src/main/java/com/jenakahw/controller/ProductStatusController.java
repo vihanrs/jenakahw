@@ -20,7 +20,7 @@ public class ProductStatusController {
 	@Autowired  
 	private ProductStatusRepository productStatusRepository;
 	
-	//get mapping for get all brands -- [/productstatus/findall]
+	//get mapping for get all product status -- [/productstatus/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<ProductStatus> findAll() {
 		return productStatusRepository.findAll();
