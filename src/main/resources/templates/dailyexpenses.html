@@ -7,7 +7,7 @@
     <!-- common heading file -->
     <head th:replace="~{head :: headFragment}"> </head>
 
-    <script src="resources/controller_js/dailyextraincome.js"></script>
+    <script src="resources/controller_js/dailyexpenses.js"></script>
   </head>
   <body class="sidebar-mini layout-fixed">
     <div class="container-fluid wrapper ps-2">
@@ -34,7 +34,7 @@
                     padding-bottom: 4px;
                     margin-right: 10px;
                   " /></i
-              >Daily Extra Income Management
+              >Daily Expenses Management
             </h2>
           </div>
         </div>
@@ -54,7 +54,7 @@
                 aria-controls="addNewSection"
                 id="addNewButton"
               >
-                Add New Daily Extra Income
+                Add New Daily Expense
               </button>
             </h2>
             <div
@@ -174,7 +174,7 @@
                 aria-controls="viewAllSection"
                 id="viewAllButton"
               >
-                View All Daily Extra Incomes
+                View All Daily Expenses
               </button>
             </h2>
             <div
@@ -186,7 +186,7 @@
                 <div class="card card-body p-2">
                   <table
                     class="table table-hover pt-3 mb-3"
-                    id="dailyExtraIncomeTable"
+                    id="dailyexpensesTable"
                   >
                     <thead class="table-dark">
                       <tr>
@@ -224,7 +224,7 @@
         <div class="modal-dialog">
           <div class="modal-content" style="margin: 5px">
             <div class="modal-header">
-              <h2 class="fw-bold">View Daily Extra Incomes Details</h2>
+              <h2 class="fw-bold">View Daily Expenses Details</h2>
               <button class="btn btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">

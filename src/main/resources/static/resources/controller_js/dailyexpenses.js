@@ -24,22 +24,17 @@ const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
 
   textAmount.addEventListener("keyup", () => {
-    textFieldValidator(
-      textAmount,
-      numberWithdecimals,
-      "dailyexincome",
-      "total"
-    );
+    textFieldValidator(textAmount, numberWithdecimals, "dailyexpense", "total");
   });
 
   textReason.addEventListener("keyup", () => {
-    textFieldValidator(textReason, "", "dailyexincome", "reason");
+    textFieldValidator(textReason, "", "dailyexpense", "reason");
   });
 
   selectStatus.addEventListener("change", () => {
     selectDFieldValidator(
       selectStatus,
-      "dailyexincome",
+      "dailyexpense",
       "dailyIncomeExpensesStatusId"
     );
   });
@@ -84,14 +79,14 @@ const refreshAll = () => {
 //function for refresh form area
 const refreshForm = () => {
   //create empty object
-  dailyexincome = {};
+  dailyexpense = {};
 
   // get status
   statuses = ajaxGetRequest("/dailyincomeexpensesstatus/findall");
   fillDataIntoSelect(selectStatus, "Select Status", statuses, "name", "Saved");
 
   //bind default selected status in to supplier object and set valid color
-  dailyexincome.dailyIncomeExpensesStatusId = JSON.parse(selectStatus.value);
+  dailyexpense.dailyIncomeExpensesStatusId = JSON.parse(selectStatus.value);
   selectStatus.style.border = "2px solid #00FF7F";
 
   //empty all elements
@@ -111,16 +106,16 @@ const checkErrors = () => {
   //need to check all required property fields
   let error = "";
 
-  if (dailyexincome.total == null) {
+  if (dailyexpense.total == null) {
     error = error + "Please Enter Amount...!\n";
     textAmount.style.border = "1px solid red";
   }
-  if (dailyexincome.reason == null) {
+  if (dailyexpense.reason == null) {
     error = error + "Please Enter Reason...!\n";
     textReason.style.border = "1px solid red";
   }
 
-  if (dailyexincome.dailyIncomeExpensesStatusId == null) {
+  if (dailyexpense.dailyIncomeExpensesStatusId == null) {
     error = error + "Please Select Valid Status...!\n";
     selectStatus.style.border = "1px solid red";
   }
@@ -132,32 +127,32 @@ const checkErrors = () => {
 const checkUpdates = () => {
   let updates = "";
 
-  if (olddailyexincome.total != dailyexincome.total) {
+  if (olddailyexpense.total != dailyexpense.total) {
     updates +=
       "Amount has changed " +
-      olddailyexincome.total +
+      olddailyexpense.total +
       " into " +
-      dailyexincome.total +
+      dailyexpense.total +
       " \n";
   }
-  if (olddailyexincome.reason != dailyexincome.reason) {
+  if (olddailyexpense.reason != dailyexpense.reason) {
     updates +=
       "Reason No. has changed " +
-      olddailyexincome.reason +
+      olddailyexpense.reason +
       " into " +
-      dailyexincome.reason +
+      dailyexpense.reason +
       " \n";
   }
 
   if (
-    olddailyexincome.dailyIncomeExpensesStatusId.id !=
-    dailyexincome.dailyIncomeExpensesStatusId.id
+    olddailyexpense.dailyIncomeExpensesStatusId.id !=
+    dailyexpense.dailyIncomeExpensesStatusId.id
   ) {
     updates +=
       "Status has changed " +
-      olddailyexincome.dailyIncomeExpensesStatusId.name +
+      olddailyexpense.dailyIncomeExpensesStatusId.name +
       " into " +
-      dailyexincome.dailyIncomeExpensesStatusId.name +
+      dailyexpense.dailyIncomeExpensesStatusId.name +
       " \n";
   }
 
@@ -173,21 +168,21 @@ const addRecord = () => {
     let title = "Are you sure to add following record..?\n";
     let message =
       "Amount (Rs.): " +
-      dailyexincome.total +
+      dailyexpense.total +
       "\nReason : " +
-      dailyexincome.reason;
+      dailyexpense.reason;
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
         let serverResponse = ajaxRequestBody(
-          "/dailyextraincome",
+          "/dailyexpenses",
           "POST",
-          dailyexincome
+          dailyexpense
         ); // url,method,object
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert("success", "Daily Extra Income Save successfully..!").then(
+          showAlert("success", "Daily Expense Save successfully..!").then(
             () => {
               //need to refresh table and form
               refreshAll();
@@ -196,7 +191,7 @@ const addRecord = () => {
         } else {
           showAlert(
             "error",
-            "Daily Extra Income save not successfully..! have some errors \n" +
+            "Daily Expense save not successfully..! have some errors \n" +
               serverResponse
           );
         }
@@ -218,22 +213,21 @@ const updateRecord = () => {
       showConfirm(title, message).then((userConfirm) => {
         if (userConfirm) {
           let serverResponse = ajaxRequestBody(
-            "/dailyextraincome",
+            "/dailyexpenses",
             "PUT",
-            dailyexincome
+            dailyexpense
           );
           if (serverResponse == "OK") {
-            showAlert(
-              "success",
-              "Daily Extra Income Update successfully..!"
-            ).then(() => {
-              //need to refresh table and form
-              refreshAll();
-            });
+            showAlert("success", "Daily Expense Update successfully..!").then(
+              () => {
+                //need to refresh table and form
+                refreshAll();
+              }
+            );
           } else {
             showAlert(
               "error",
-              "Daily Extra Income update not successfully..! have some errors \n" +
+              "Daily Expense update not successfully..! have some errors \n" +
                 serverResponse
             );
           }
@@ -252,7 +246,7 @@ const updateRecord = () => {
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
-  dailyextraincomes = ajaxGetRequest("/dailyextraincome/findall");
+  dailyexpenses = ajaxGetRequest("/dailyexpenses/findall");
 
   //object count = table column count
   //String - number/string/date
@@ -267,8 +261,8 @@ const refreshTable = () => {
 
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
-    dailyExtraIncomeTable,
-    dailyextraincomes,
+    dailyexpensesTable,
+    dailyexpenses,
     displayProperties,
     viewRecord,
     refillRecord,
@@ -278,14 +272,14 @@ const refreshTable = () => {
   );
 
   //hide delete button when status is 'deleted'
-  dailyextraincomes.forEach((dailyExtraIncome, index) => {
+  dailyexpenses.forEach((dailyExpense, index) => {
     if (
       userPrivilages.delete &&
-      dailyExtraIncome.dailyIncomeExpensesStatusId.name == "Deleted"
+      dailyExpense.dailyIncomeExpensesStatusId.name == "Deleted"
     ) {
       //catch the button
       let targetElement =
-        dailyExtraIncomeTable.children[1].children[index].children[5].children[
+        dailyexpensesTable.children[1].children[index].children[5].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
       //add changes
@@ -294,7 +288,7 @@ const refreshTable = () => {
     }
   });
 
-  $("#dailyExtraIncomeTable").dataTable();
+  $("#dailyexpensesTable").dataTable();
 };
 
 // function for get status
@@ -336,11 +330,11 @@ const viewRecord = (rowObject, rowId) => {
 const refillRecord = (rowObject, rowId) => {
   $("#addNewButton").click();
 
-  dailyexincome = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
-  olddailyexincome = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
+  dailyexpense = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
+  olddailyexpense = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
 
-  textReason.value = dailyexincome.reason;
-  textAmount.value = dailyexincome.total;
+  textReason.value = dailyexpense.reason;
+  textAmount.value = dailyexpense.total;
 
   // set status
   fillDataIntoSelect(
@@ -348,7 +342,7 @@ const refillRecord = (rowObject, rowId) => {
     "Select Status",
     statuses,
     "name",
-    dailyexincome.dailyIncomeExpensesStatusId.name
+    dailyexpense.dailyIncomeExpensesStatusId.name
   );
 
   setBorderStyle([selectStatus, textAmount, textReason]);
@@ -368,13 +362,13 @@ const deleteRecord = (rowObject, rowId) => {
     if (userConfirm) {
       //response from backend ...
       let serverResponse = ajaxRequestBody(
-        "/dailyextraincome",
+        "/dailyexpenses",
         "DELETE",
         rowObject
       ); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Daily Extra Income Delete successfully..!").then(
+        showAlert("success", "Daily Expense Delete successfully..!").then(
           () => {
             // Need to refresh table and form
             refreshAll();
@@ -383,7 +377,7 @@ const deleteRecord = (rowObject, rowId) => {
       } else {
         showAlert(
           "error",
-          "Daily Extra Income delete not successfully..! have some errors \n" +
+          "Daily Expense delete not successfully..! have some errors \n" +
             serverResponse
         );
       }
@@ -398,9 +392,9 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Daily Extra Income</title>" +
+    "<head><title>Print Daily Expense</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Daily Extra Income Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Daily Expense Details</h2>" +
       printTable.outerHTML
   );
 
@@ -415,11 +409,11 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Daily Extra Incomes</title>" +
+    "<head><title>Print Daily Expenses</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Daily Extra Incomes Details</h2>" +
-      dailyExtraIncomeTable.outerHTML +
+      "<h2 style = 'font-weight:bold'>Daily Expenses Details</h2>" +
+      dailyexpensesTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'
   );
 
