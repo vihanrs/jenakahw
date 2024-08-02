@@ -74,30 +74,24 @@
                       </div>
                     </div>
 
-                    <!-- customer name -->
-                    <div class="row mt-2">
-                      <!-- customer name -->
-                      <div class="col-md-12">
-                        <label for="textCustomerName" class="form-label fw-bold"
-                          >Customer Name :<span class="text-danger"> * </span>
-                        </label>
-                        <input
-                          type="text"
-                          placeholder="Enter Customer Name"
-                          class="form-control"
-                          id="textCustomerName"
-                          required
-                        />
-                      </div>
-                    </div>
+                    <!-- start customer details area -->
+                    <p>
+                      <b><i>Customer Details</i></b>
+                    </p>
+                    <!-- customer contact/name -->
                     <div class="row mt-2">
                       <!-- customer contact -->
-                      <div class="col-md-6">
+                      <div class="col-md-4">
                         <label
                           for="textCustomerContact"
-                          class="col-md-4 form-label fw-bold"
+                          class="form-label fw-bold"
                         >
-                          Contact No. :<span class="text-danger"> * </span>
+                          Contact No. :<span class="text-danger"> * </span
+                          ><span
+                            class="text-danger d-none"
+                            id="contactRegisterCheck"
+                            ><i>not registerd</i></span
+                          >
                         </label>
                         <div>
                           <input
@@ -109,55 +103,183 @@
                           />
                         </div>
                       </div>
-                      <!-- nic -->
-                      <div class="col-md-6">
-                        <label
-                          for="textCustomerNIC"
-                          class="col-md-4 form-label fw-bold"
-                        >
-                          NIC :
+                      <!-- customer name -->
+                      <div class="col-md-4">
+                        <label for="textCustomerName" class="form-label fw-bold"
+                          >Customer Name :<span class="text-danger"> * </span>
                         </label>
-                        <div>
-                          <input
-                            type="text"
-                            placeholder="Enter NIC"
-                            class="form-control"
-                            id="textCustomerNIC"
-                            required
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Address -->
-                    <div class="row mt-2">
-                      <div class="col-md-9">
-                        <label
-                          for="textCustomerAddress"
-                          class="form-label fw-bold"
-                          >Address :
-                        </label>
-                        <textarea
-                          id="textCustomerAddress"
+                        <input
+                          type="text"
+                          placeholder="Enter Customer Name"
                           class="form-control"
-                          placeholder="Enter Address Here"
-                        ></textarea>
+                          id="textCustomerName"
+                          required
+                        />
                       </div>
-                      <!-- customer status  -->
+                      <div class="col-md-1"></div>
+                      <!-- invoice status  -->
                       <div class="col-md-3">
                         <label for="selectStatus" class="form-label fw-bold">
-                          Status : <span class="text-danger"> * </span>
+                          Invoice Status : <span class="text-danger"> * </span>
                         </label>
                         <select
                           id="selectStatus"
                           class="form-select me-2"
                           required
+                          disabled
                         >
                           <option value="" selected disabled>
                             Select Status
                           </option>
                         </select>
                       </div>
+                    </div>
+                    <!-- end customer details area -->
+                    <hr class="seperator" />
+                    <!-- start inner form for add products area -->
+                    <p>
+                      <b><i>Invoice Details</i></b>
+                    </p>
+                    <div class="row mt-2">
+                      <!-- required date -->
+                      <div class="col-md-3">
+                        <label
+                          for="dateRequiredDate"
+                          class="form-label fw-bold"
+                        >
+                          Invoice Date :
+                        </label>
+                        <input
+                          type="date"
+                          id="dateRequiredDate"
+                          class="form-control"
+                          required
+                          disabled
+                        />
+                      </div>
+                      <!-- total amount -->
+                      <div class="col-md-3 ml-auto">
+                        <label for="textTotalAmount" class="form-label fw-bold">
+                          Total Amount (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textTotalAmount"
+                          required
+                          disabled
+                        />
+                      </div>
+                    </div>
+                    <hr class="seperator" />
+
+                    <!-- inner form -->
+                    <div class="row mt-2">
+                      <!-- product name/ barcode -->
+                      <div class="col-md-5">
+                        <label for="textProduct" class="form-label fw-bold">
+                          Product:
+                          <span class="text-danger"> * </span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Product Name or Barcode"
+                          class="form-control"
+                          id="textProduct"
+                          list="dataListProducts"
+                          required
+                        />
+                        <datalist id="dataListProducts"></datalist>
+                      </div>
+
+                      <!-- sell price -->
+                      <div class="col-md-2">
+                        <label for="textSellPrice" class="form-label fw-bold">
+                          Sell Price (Rs.):
+                        </label>
+                        <input
+                          type="text"
+                          class="form-control"
+                          id="textSellPrice"
+                          required
+                          disabled
+                        />
+                      </div>
+
+                      <!-- qty -->
+                      <div class="col-md-2">
+                        <label for="textQty" class="form-label fw-bold">
+                          Qty : <span class="text-danger"> * </span>
+                          <span id="textUnitType"></span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Enter Qty"
+                          class="form-control"
+                          id="textQty"
+                          required
+                        />
+                      </div>
+
+                      <!-- line amount -->
+                      <div class="col-md-2">
+                        <label for="textLineAmount" class="form-label fw-bold">
+                          Total (Rs):
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textLineAmount"
+                          required
+                          disabled
+                          style="border: none"
+                        />
+                      </div>
+
+                      <!-- add product details button -->
+                      <div class="col-md-1">
+                        <label
+                          for="btnAddProduct"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddProduct"
+                          style="display: block"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- inner table -->
+                    <div class="row mt-4">
+                      <table
+                        class="table table-hover pt-3 mb-3"
+                        id="bankDetailsTable"
+                      >
+                        <thead class="table-dark">
+                          <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Sell Price</th>
+                            <th>Qty.</th>
+                            <th>Line Total</th>
+                            <th style="width: 100px; text-align: right">
+                              Modify
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-group-divider"></tbody>
+                      </table>
                     </div>
 
                     <!-- buttons -->

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,10 +25,10 @@ public class StockController {
 	 */
 	@Autowired
 	private StockRepository stockRepository;
-	
+
 	@Autowired
 	private PrivilegeController privilegeController;
-	
+
 	private static final String MODULE = "Stock";
 
 	// Stock UI service [/stock -- return Stock UI]
@@ -42,7 +43,7 @@ public class StockController {
 		modelAndView.setViewName("stock.html");
 		return modelAndView;
 	}
-	
+
 	// get mapping for get all stock data -- [/stock/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Stock> findAll() {
@@ -52,6 +53,15 @@ public class StockController {
 			return null;
 		}
 	}
-	
-	
+
+	// get mapping for get available products by name or barcode
+	@GetMapping(value = "/findstocksbyproductnamebarcode/{namebarcode}", produces = "application/json")
+	public List<Stock> getProductsByNameOrBarcode(@PathVariable("namebarcode") String nameBarcode) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return stockRepository.getStockProductListByNameBarcode(nameBarcode);
+		} else {
+			return null;
+		}
+	}
 }

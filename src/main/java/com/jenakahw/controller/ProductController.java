@@ -70,12 +70,26 @@ public class ProductController {
 
 	}
 
-	// get mapping for get available product list
-	@GetMapping(value = "/availablelist", produces = "application/json")
-	public List<Product> getAvilableProducts(@RequestParam(value = "supplierid",required = false)Integer supplierId,@RequestParam(value = "brandname", required = false) String brandName,@RequestParam(value = "categoryname",required = false) String categoryName,@RequestParam(value = "subcategoryname",required = false)String subCategoryName) {
+	// get mapping for get available products by name or barcode
+	@GetMapping(value = "/findproductlistbynamebarcode/{namebarcode}", produces = "application/json")
+	public List<Product> getProductsByNameOrBarcode(@PathVariable("namebarcode") String nameBarcode) {
 		// check privileges
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return productRepository.getAvailableProducts(supplierId,brandName,categoryName,subCategoryName);
+			return productRepository.getProductListByNameBarcode(nameBarcode);
+		} else {
+			return null;
+		}
+	}
+
+	// get mapping for get available product list
+	@GetMapping(value = "/availablelist", produces = "application/json")
+	public List<Product> getAvilableProducts(@RequestParam(value = "supplierid", required = false) Integer supplierId,
+			@RequestParam(value = "brandname", required = false) String brandName,
+			@RequestParam(value = "categoryname", required = false) String categoryName,
+			@RequestParam(value = "subcategoryname", required = false) String subCategoryName) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return productRepository.getAvailableProducts(supplierId, brandName, categoryName, subCategoryName);
 		} else {
 			return null;
 		}

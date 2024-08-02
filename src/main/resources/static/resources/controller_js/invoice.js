@@ -1,7 +1,7 @@
 //Access Browser onload event
 window.addEventListener("load", () => {
   //get logged user privileges
-  userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Customer");
+  userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Invoice");
 
   //refresh all
   refreshAll();
@@ -22,10 +22,8 @@ const addEventListeners = () => {
   let namePattern = "^[A-Z][A-Za-z ]{1,19}[A-Za-z]$";
   let contactPattern = "^[0][7][01245678][0-9]{7}$";
   let nicPattern = "^(([0-9]{9}[Vv])|([2][0][0-9]{2}[0-9]{8}))$";
-  // textCustomerName;
   // textCustomerContact;
-  // textCustomerNIC;
-  // textCustomerAddress;
+  // textCustomerName;
   // selectStatus;
   textCustomerName.addEventListener("keyup", () => {
     textFieldValidator(textCustomerName, namePattern, "customer", "fullName");
@@ -37,19 +35,22 @@ const addEventListeners = () => {
       contactPattern,
       "customer",
       "contact"
-    );
+    ),
+      getCustomerByContact(customer.contact);
   });
 
-  textCustomerNIC.addEventListener("keyup", () => {
-    textFieldValidator(textCustomerNIC, nicPattern, "customer", "nic");
-  });
-
-  textCustomerAddress.addEventListener("keyup", () => {
-    textFieldValidator(textCustomerAddress, "", "customer", "address");
+  textProduct.addEventListener("keyup", () => {
+    textFieldValidator(
+      textProduct,
+      "[A-Za-z0-9 ]{3,}",
+      "productSearch",
+      "searchValue"
+    ),
+      getProductList(productSearch.searchValue);
   });
 
   selectStatus.addEventListener("change", () => {
-    selectDFieldValidator(selectStatus, "customer", "customerStatusId");
+    selectDFieldValidator(selectStatus, "invoice", "invoiceStatusId");
   });
 
   //form reset button function call
@@ -84,7 +85,7 @@ const refreshAll = () => {
   //Call form refresh function
   refreshForm();
   //Call table refresh function
-  refreshTable();
+  // refreshTable();
 };
 
 // ********* FORM OPERATIONS *********
@@ -93,30 +94,83 @@ const refreshAll = () => {
 const refreshForm = () => {
   //create empty object
   customer = {};
+  invoice = {};
+  productSearch = {};
 
   // get status
-  statuses = ajaxGetRequest("/customerstatus/findall");
-  fillDataIntoSelect(selectStatus, "Select Status", statuses, "name");
+  statuses = ajaxGetRequest("/invoicestatus/findall");
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    statuses,
+    "name",
+    "Pending"
+  );
+
+  invoice.invoiceStatusId = JSON.parse(selectStatus.value);
+  selectStatus.style.border = "2px solid #00FF7F";
 
   //empty all elements
-  textCustomerName.value = "";
   textCustomerContact.value = "";
-  textCustomerNIC.value = "";
-  textCustomerAddress.value = "";
-  selectStatus.value = "";
+  textCustomerName.value = "";
 
   //set default border color
-  let elements = [
-    textCustomerName,
-    textCustomerContact,
-    textCustomerNIC,
-    textCustomerAddress,
-    selectStatus,
-  ];
+  let elements = [textCustomerName, textCustomerContact];
   setBorderStyle(elements);
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
+};
+
+// function for check customer by contact
+const getCustomerByContact = (contact) => {
+  if (contact != null) {
+    customer = ajaxGetRequest("/customer/getByContact/" + contact);
+
+    if (customer.contact != null) {
+      contactRegisterCheck.classList.add("d-none");
+      textCustomerName.value = customer.fullName;
+      // textCustomerName.disabled = true;
+    } else {
+      contactRegisterCheck.classList.remove("d-none");
+      textCustomerName.value = "";
+      setBorderStyle([textCustomerName]);
+      customer = {};
+      customer.contact = contact;
+    }
+  } else {
+    textCustomerName.value = "";
+    setBorderStyle([textCustomerName]);
+    customer = {};
+    contactRegisterCheck.classList.add("d-none");
+  }
+};
+
+const getProductList = (searchTerm) => {
+  if (searchTerm != null) {
+    stocks = ajaxGetRequest(
+      "/stock/findstocksbyproductnamebarcode/" + searchTerm
+    );
+
+    // add new attributes to access product details
+    stocks = stocks.map((stock) => ({
+      barcode: stock.productId.barcode,
+      name: stock.productId.name,
+      brand: stock.productId.brandId.name,
+      ...stock, // all original data
+    }));
+  } else {
+    stocks = [];
+  }
+  fillFullDataIntoDataList(
+    dataListProducts,
+    stocks,
+    "barcode",
+    "brand",
+    "name",
+    "sellPrice",
+    "availableQty"
+  );
 };
 
 //function for check errors

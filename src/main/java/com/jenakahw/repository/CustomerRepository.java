@@ -9,8 +9,8 @@ import com.jenakahw.domain.Customer;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
-	// query for get user by given user name
+	// query for get customer by given contact
 	@Query(value = "Select c from Customer c where c.contact = ?1")
-	public Customer getCustomerByContact(String contact);
+	public Customer findByContact(String contact);
 
 }

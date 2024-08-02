@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,6 +69,17 @@ public class CustomerController {
 
 	}
 
+	// get mapping for get customer by contact number
+	@GetMapping(value = "/getByContact/{contact}", produces = "application/json")
+	public Customer getByContact(@PathVariable("contact") String contact) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return customerRepository.findByContact(contact);
+		} else {
+			return null;
+		}
+	}
+
 	// post mapping for save new customer
 	@PostMapping
 	public String saveCustomer(@RequestBody Customer customer) {
@@ -77,8 +89,8 @@ public class CustomerController {
 		}
 
 		// check duplicates...
-		Customer extCustomerByContact = customerRepository.getCustomerByContact(customer.getContact());
-		if (extCustomerByContact != null ) {
+		Customer extCustomerByContact = customerRepository.findByContact(customer.getContact());
+		if (extCustomerByContact != null) {
 			return "Contact No Already Exist...!";
 		}
 
@@ -104,7 +116,7 @@ public class CustomerController {
 		}
 
 		// check duplicates...
-		Customer extCustomerByContact = customerRepository.getCustomerByContact(customer.getContact());
+		Customer extCustomerByContact = customerRepository.findByContact(customer.getContact());
 		if (extCustomerByContact != null && customer.getId() != extCustomerByContact.getId()) {
 			return "Contact No Already Exist...!";
 		}

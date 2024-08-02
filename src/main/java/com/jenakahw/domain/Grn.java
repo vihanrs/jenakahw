@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Length;
 
-import jakarta.annotation.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

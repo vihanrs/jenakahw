@@ -90,7 +90,7 @@ public class GrnController {
 		}
 	}
 
-	// get mapping for get all grn data by grnID -- [/grn/findall]
+	// get mapping for get all grn data by grnID -- [/grn/findbyid/5]
 	@GetMapping(value = "/findbyid/{grnId}", produces = "application/json")
 	public Grn findByGrnId(@PathVariable("grnId") Integer grnId) {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
@@ -200,7 +200,7 @@ public class GrnController {
 	}
 
 	// delete mapping for delete a GRN
-//	@Transactional
+	@Transactional
 	@DeleteMapping
 	public String deleteGrn(@RequestBody Grn grn) {
 		// check privileges
