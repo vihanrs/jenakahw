@@ -18,4 +18,5 @@ public interface StockRepository extends JpaRepository<Stock, Integer>{
 	// query for get product details
 	@Query(value = "Select s from Stock s where s.productId in (select p from Product p where p.name like ?1% or p.barcode like ?1 )")
 	public List<Stock> getStockProductListByNameBarcode(String nameBarcode);
+	
 }

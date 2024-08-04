@@ -123,7 +123,7 @@ const fillMoreDataIntoDataList = (fieldId, dataList, property, property2) => {
   for (const data of dataList) {
     let option = document.createElement("option");
     option.value =
-      data[property] + (data[property2] != null ? " - " + data[property2] : "");
+      data[property] + (data[property2] != null ? " " + data[property2] : "");
 
     fieldId.appendChild(option);
   }
@@ -133,6 +133,7 @@ const fillMoreDataIntoDataList = (fieldId, dataList, property, property2) => {
 const fillFullDataIntoDataList = (
   fieldId,
   dataList,
+  id,
   property,
   property2,
   property3,
@@ -144,6 +145,8 @@ const fillFullDataIntoDataList = (
   for (const data of dataList) {
     let option = document.createElement("option");
     option.value =
+      data[id] +
+      ") " +
       data[property] +
       " - " +
       data[property2] +

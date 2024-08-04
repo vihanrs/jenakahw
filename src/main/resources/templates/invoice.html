@@ -143,15 +143,12 @@
                     <div class="row mt-2">
                       <!-- required date -->
                       <div class="col-md-3">
-                        <label
-                          for="dateRequiredDate"
-                          class="form-label fw-bold"
-                        >
+                        <label for="dateInvoiceDate" class="form-label fw-bold">
                           Invoice Date :
                         </label>
                         <input
                           type="date"
-                          id="dateRequiredDate"
+                          id="dateInvoiceDate"
                           class="form-control"
                           required
                           disabled
@@ -179,7 +176,7 @@
                       <!-- product name/ barcode -->
                       <div class="col-md-5">
                         <label for="textProduct" class="form-label fw-bold">
-                          Product:
+                          Product Search:
                           <span class="text-danger"> * </span>
                         </label>
                         <input
@@ -208,18 +205,24 @@
                       </div>
 
                       <!-- qty -->
-                      <div class="col-md-2">
+                      <div class="col-md-1">
                         <label for="textQty" class="form-label fw-bold">
                           Qty : <span class="text-danger"> * </span>
-                          <span id="textUnitType"></span>
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter Qty"
                           class="form-control"
                           id="textQty"
                           required
                         />
+                        <span
+                          id="textUnitType"
+                          style="
+                            font-size: 14px;
+                            font-style: italic;
+                            font-weight: bold;
+                          "
+                        ></span>
                       </div>
 
                       <!-- line amount -->
@@ -258,13 +261,31 @@
                           ></i>
                         </button>
                       </div>
+                      <!-- reset button -->
+                      <div class="col-md-1">
+                        <label
+                          for="btnProductReset"
+                          class="form-label fw-bold"
+                          style="color: #d8d8d834"
+                        >
+                          .
+                        </label>
+                        <br />
+                        <button
+                          class="btn btn-outline-danger"
+                          type="button"
+                          id="btnProductReset"
+                        >
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
                     </div>
 
                     <!-- inner table -->
                     <div class="row mt-4">
                       <table
                         class="table table-hover pt-3 mb-3"
-                        id="bankDetailsTable"
+                        id="invoiceProductsTable"
                       >
                         <thead class="table-dark">
                           <tr>
@@ -272,7 +293,7 @@
                             <th>Product</th>
                             <th>Sell Price</th>
                             <th>Qty.</th>
-                            <th>Line Total</th>
+                            <th>Total</th>
                             <th style="width: 100px; text-align: right">
                               Modify
                             </th>
@@ -281,7 +302,22 @@
                         <tbody class="table-group-divider"></tbody>
                       </table>
                     </div>
-
+                    <!-- item count -->
+                    <div class="row mt-4">
+                      <div class="col-md-2 ms-auto">
+                        <label for="textItemCount" class="form-label fw-bold">
+                          Item Count:
+                        </label>
+                        <input
+                          type="text"
+                          placeholder=""
+                          class="form-control"
+                          id="textItemCount"
+                          required
+                          disabled
+                        />
+                      </div>
+                    </div>
                     <!-- buttons -->
                     <div class="row mt-4 justify-content-end">
                       <div class="col-auto text-center">
@@ -341,14 +377,16 @@
             >
               <div class="accordion-body">
                 <div class="card card-body p-2">
-                  <table class="table table-hover pt-3 mb-3" id="customerTable">
+                  <table class="table table-hover pt-3 mb-3" id="invoiceTable">
                     <thead class="table-dark">
                       <tr>
                         <th>#</th>
-                        <th>Name</th>
-                        <th>Contact</th>
-                        <th>NIC</th>
-                        <th>Address</th>
+                        <th>Invoice ID</th>
+                        <th>Customer</th>
+                        <th>Item Count</th>
+                        <th>Date</th>
+                        <th>Grand Total</th>
+                        <th>Paid</th>
                         <th>Status</th>
                         <th style="width: 70px; text-align: right">Modify</th>
                       </tr>
@@ -385,24 +423,57 @@
             <div class="modal-body">
               <table id="printTable" class="table table-striped">
                 <tr>
-                  <th>Customer Name</th>
-                  <td id="tdCustomerName"></td>
+                  <th>Invoice ID</th>
+                  <td colspan="3" id="tdInvoiceId"></td>
                 </tr>
                 <tr>
-                  <th>Contact</th>
-                  <td id="tdCustomerContact"></td>
+                  <th>Customer</th>
+                  <td colspan="3" id="tdCustomer"></td>
                 </tr>
                 <tr>
-                  <th>NIC</th>
-                  <td id="tdCustomerNIC"></td>
+                  <th>Item Count</th>
+                  <td colspan="3" id="tdItemCount"></td>
                 </tr>
                 <tr>
-                  <th>Address</th>
-                  <td id="tdCustomerAddress"></td>
+                  <th>Invoiced Date</th>
+                  <td colspan="3" id="tdInvoicedDate"></td>
+                </tr>
+                <tr>
+                  <th>Invoice Type</th>
+                  <td colspan="3" id="tdInvoiceType"></td>
+                </tr>
+                <tr>
+                  <th>Total</th>
+                  <td colspan="3" id="tdTotal"></td>
+                </tr>
+                <tr>
+                  <th>Discount</th>
+                  <td colspan="3" id="tdDiscount"></td>
+                </tr>
+                <tr>
+                  <th>Grand Total</th>
+                  <td colspan="3" id="tdGrandTotal"></td>
+                </tr>
+                <tr>
+                  <th>Paid Amount</th>
+                  <td colspan="3" id="tdPaid"></td>
+                </tr>
+                <tr>
+                  <th>Balance Amount</th>
+                  <td colspan="3" id="tdBalance"></td>
                 </tr>
                 <tr>
                   <th>Status</th>
-                  <td id="tdStatus"></td>
+                  <td colspan="3" id="tdStatus"></td>
+                </tr>
+                <tr>
+                  <th colspan="4"><i>Product List</i></th>
+                </tr>
+                <tr>
+                  <th>Product</th>
+                  <th>Sell Price</th>
+                  <th>Qty</th>
+                  <th>Line Amount</th>
                 </tr>
               </table>
             </div>

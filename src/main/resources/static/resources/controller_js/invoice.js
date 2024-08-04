@@ -21,7 +21,8 @@ window.addEventListener("load", () => {
 const addEventListeners = () => {
   let namePattern = "^[A-Z][A-Za-z ]{1,19}[A-Za-z]$";
   let contactPattern = "^[0][7][01245678][0-9]{7}$";
-  let nicPattern = "^(([0-9]{9}[Vv])|([2][0][0-9]{2}[0-9]{8}))$";
+  let qtyPattern =
+    "^(([1-9]{1}[0-9]{0,7})|([0-9]{1}[.][0-9]{1,3})|([1-9]{1}[0-9]{0,7}[.][0-9]{1,3}))$";
   // textCustomerContact;
   // textCustomerName;
   // selectStatus;
@@ -40,17 +41,36 @@ const addEventListeners = () => {
   });
 
   textProduct.addEventListener("keyup", () => {
-    textFieldValidator(
-      textProduct,
-      "[A-Za-z0-9 ]{3,}",
-      "productSearch",
-      "searchValue"
-    ),
-      getProductList(productSearch.searchValue);
+    getProductList(textProduct);
+  });
+
+  textProduct.addEventListener("input", () => {
+    invoiceDataListValidator(textProduct, "stocks", "invProduct", "allData"),
+      getProductValues();
   });
 
   selectStatus.addEventListener("change", () => {
     selectDFieldValidator(selectStatus, "invoice", "invoiceStatusId");
+  });
+
+  textQty.addEventListener("keyup", () => {
+    qtyFieldValidator(
+      textQty,
+      qtyPattern,
+      "invProduct",
+      "qty",
+      invProduct.stockId.availableQty
+    ),
+      calLineAmount();
+  });
+
+  textItemCount.addEventListener("keyup", () => {
+    textFieldValidator(
+      textItemCount,
+      numberWithdecimals,
+      "invoice",
+      "itemCount"
+    );
   });
 
   //form reset button function call
@@ -66,6 +86,16 @@ const addEventListeners = () => {
   //record save function call
   btnAdd.addEventListener("click", () => {
     addRecord();
+  });
+
+  //product add function call
+  btnAddProduct.addEventListener("click", () => {
+    addProduct();
+  });
+
+  //product selection reset function call
+  btnProductReset.addEventListener("click", () => {
+    resetProductSelection();
   });
 
   //record print function call
@@ -85,7 +115,7 @@ const refreshAll = () => {
   //Call form refresh function
   refreshForm();
   //Call table refresh function
-  // refreshTable();
+  refreshTable();
 };
 
 // ********* FORM OPERATIONS *********
@@ -95,7 +125,7 @@ const refreshForm = () => {
   //create empty object
   customer = {};
   invoice = {};
-  productSearch = {};
+  invoice.invoiceHasProducts = new Array();
 
   // get status
   statuses = ajaxGetRequest("/invoicestatus/findall");
@@ -113,10 +143,19 @@ const refreshForm = () => {
   //empty all elements
   textCustomerContact.value = "";
   textCustomerName.value = "";
+  dateInvoiceDate.value = new Date().toISOString().split("T")[0];
+  contactRegisterCheck.classList.add("d-none");
 
   //set default border color
-  let elements = [textCustomerName, textCustomerContact];
+  let elements = [
+    textCustomerName,
+    textCustomerContact,
+    textItemCount,
+    textTotalAmount,
+  ];
   setBorderStyle(elements);
+
+  refreshInnerFormAndTable();
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -146,50 +185,27 @@ const getCustomerByContact = (contact) => {
   }
 };
 
-const getProductList = (searchTerm) => {
-  if (searchTerm != null) {
-    stocks = ajaxGetRequest(
-      "/stock/findstocksbyproductnamebarcode/" + searchTerm
-    );
-
-    // add new attributes to access product details
-    stocks = stocks.map((stock) => ({
-      barcode: stock.productId.barcode,
-      name: stock.productId.name,
-      brand: stock.productId.brandId.name,
-      ...stock, // all original data
-    }));
-  } else {
-    stocks = [];
-  }
-  fillFullDataIntoDataList(
-    dataListProducts,
-    stocks,
-    "barcode",
-    "brand",
-    "name",
-    "sellPrice",
-    "availableQty"
-  );
-};
-
 //function for check errors
 const checkErrors = () => {
   //need to check all required property fields
   let error = "";
 
   if (customer.fullName == null) {
-    error = error + "Please Enter Customer Name...!\n";
+    error += "Please Enter Customer Name...!\n";
     textCustomerName.style.border = "1px solid red";
   }
   if (customer.contact == null) {
-    error = error + "Please Enter Customer Contact No...!\n";
+    error += "Please Enter Customer Contact No...!\n";
     textCustomerContact.style.border = "1px solid red";
   }
 
-  if (customer.customerStatusId == null) {
-    error = error + "Please Select Valid Status...!\n";
+  if (invoice.invoiceStatusId.id == null) {
+    error += "Please Select Valid Status...!\n";
     selectStatus.style.border = "1px solid red";
+  }
+
+  if (invoice.invoiceHasProducts.length == 0) {
+    error += "Please Select Products...!\n";
   }
 
   return error;
@@ -254,23 +270,28 @@ const addRecord = () => {
       customer.fullName +
       "\nContact : " +
       customer.contact +
-      "\nStatus : " +
-      customer.customerStatusId.name;
+      "\nItem Count : " +
+      invoice.itemCount +
+      "\nTotal : Rs." +
+      invoice.total;
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
+        invoice.customerId = customer;
+        console.log(invoice);
+
         //pass data into back end
-        let serverResponse = ajaxRequestBody("/customer", "POST", customer); // url,method,object
+        let serverResponse = ajaxRequestBody("/invoice", "POST", invoice); // url,method,object
 
         //check back end response
         if (serverResponse == "OK") {
-          showAlert("success", "Customer Save successfully..!").then(() => {
+          showAlert("success", "Invoice Created successfully..!").then(() => {
             //need to refresh table and form
             refreshAll();
           });
         } else {
           showAlert(
             "error",
-            "Customer save not successfully..! have some errors \n" +
+            "Invoice create not successfully..! have some errors \n" +
               serverResponse
           );
         }
@@ -314,29 +335,292 @@ const updateRecord = () => {
   }
 };
 
+//function for caluclate invoice total
+const calculateInvTotal = () => {
+  let invTotal = 0;
+  invoice.invoiceHasProducts.forEach((ele) => {
+    invTotal += parseFloat(ele.lineAmount);
+  });
+
+  //bind value to totalAmount
+  invoice.total = invTotal.toFixed(2);
+
+  textTotalAmount.value = invoice.total;
+};
+
+// ********* INNER FORM/TABLE OPERATIONS *********
+
+//function for refresh inner product form/table area
+const refreshInnerFormAndTable = () => {
+  invProduct = {};
+
+  //empty all elements
+  resetProductSelection();
+
+  const displayProperties = [
+    { property: getProduct, datatype: "function" },
+    { property: "sellPrice", datatype: "currency" },
+    { property: "qty", datatype: "String" },
+    { property: "lineAmount", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    invoiceProductsTable,
+    invoice.invoiceHasProducts,
+    displayProperties,
+    refillProductDetail,
+    deleteProductDetail
+  );
+
+  calculateInvTotal();
+  getItemCount();
+};
+
+// ********* INNER FORM OPERATIONS *********
+
+// function for get total item count
+const getItemCount = () => {
+  let count = invoice.invoiceHasProducts.length;
+  textItemCount.value = count;
+  invoice.itemCount = count;
+};
+
+// function for calculate line amount
+const calLineAmount = () => {
+  //calculate line amount
+  invProduct.lineAmount =
+    invProduct.sellPrice != null && invProduct.qty != null
+      ? parseFloat(invProduct.sellPrice) * parseFloat(invProduct.qty)
+      : 0;
+
+  //display line amount
+  textLineAmount.value =
+    invProduct.lineAmount != 0
+      ? parseFloat(invProduct.lineAmount).toFixed(2)
+      : "";
+};
+
+// function for load product list on search
+const getProductList = (fieldId) => {
+  const fieldValue = fieldId.value;
+  let regPattern = new RegExp("[A-Za-z0-9 ]{3,}");
+  stocks = [];
+
+  if (fieldValue !== "") {
+    if (regPattern.test(fieldValue)) {
+      stocks = ajaxGetRequest(
+        "/stock/findstocksbyproductnamebarcode/" + fieldValue
+      );
+      // add new properties to access stock details
+      stocks = stocks.map((stock) => ({
+        originalStock: stock, // keep copy of original
+        barcode: stock.productId.barcode,
+        name: stock.productId.name,
+        brand: stock.productId.brandId.name,
+        productId: stock.productId.id,
+        ...stock, // add all original data
+      }));
+    }
+  }
+  // fillMoreDataIntoDataList(dataListProducts, stocks, "barcode", "name");
+  fillFullDataIntoDataList(
+    dataListProducts,
+    stocks,
+    "id",
+    "barcode",
+    "brand",
+    "name",
+    "sellPrice",
+    "availableQty"
+  );
+};
+
+// function for get product values and bind them
+const getProductValues = () => {
+  if (invProduct.allData != null) {
+    textQty.disabled = false;
+    textQty.focus();
+
+    textSellPrice.value = parseFloat(invProduct.allData.sellPrice).toFixed(2);
+    textUnitType.innerText = invProduct.allData.productId.unitTypeId.name;
+    textUnitType.classList.remove("d-none");
+    textProduct.value =
+      invProduct.allData.productId.barcode +
+      " - " +
+      invProduct.allData.productId.name;
+    textProduct.disabled = true;
+
+    //bind values
+    invProduct.stockId = invProduct.allData.originalStock;
+    invProduct.sellPrice = invProduct.allData.sellPrice;
+    invProduct.productId = invProduct.allData.productId.id;
+
+    // remove unwanted properties
+    delete invProduct.allData;
+  }
+};
+
+// function for reset selected product
+const resetProductSelection = () => {
+  invProduct = {};
+  textProduct.value = "";
+  textProduct.disabled = false;
+  textQty.value = "";
+  textQty.disabled = true;
+  textSellPrice.value = "";
+  textSellPrice.value = "";
+  textLineAmount.value = "";
+  textUnitType.classList.add("d-none");
+
+  //set default border color
+  setBorderStyle([textProduct, textSellPrice, textQty, textLineAmount]);
+};
+
+//function for check inner form errors
+const checkInnerFormErrors = () => {
+  let error = "";
+
+  if (invProduct.productId == null) {
+    error = error + "Please Select Product...!\n";
+    textProduct.style.border = "1px solid red";
+  }
+
+  if (invProduct.qty == null) {
+    error = error + "Please Enter Valid Qty...!\n";
+    textQty.style.border = "1px solid red";
+  }
+
+  return error;
+};
+
+// function for check product in inner table
+const isAlreayAdded = () => {
+  return invoice.invoiceHasProducts.some(
+    (invoiceHasProduct) =>
+      // at least one element pass the condtion then immedialty retrun true
+      invoiceHasProduct.stockId.id === invProduct.stockId.id
+  );
+};
+
+// fucntion for add product to inner table
+const addProduct = () => {
+  // check errors
+  let formErrors = checkInnerFormErrors();
+  if (formErrors == "") {
+    if (!isAlreayAdded()) {
+      // get user confirmation
+      let title = "Are you sure to add following product..?";
+      let message =
+        "Product Name : " +
+        invProduct.stockId.productId.name +
+        "\nPurchase Price : " +
+        invProduct.sellPrice +
+        "\nQty : " +
+        invProduct.qty;
+
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          //add object into array
+          invoice.invoiceHasProducts.push(invProduct);
+          refreshInnerFormAndTable();
+        }
+      });
+    } else {
+      showAlert("error", "This Product Already Added!");
+    }
+  } else {
+    showAlert("error", formErrors);
+  }
+
+  console.log(invoice);
+};
+
+// ********* INNER TABLE OPERATIONS *********
+
+// function for get product
+const getProduct = (rowObject, rowId) => {
+  return (
+    rowObject.stockId.productId.barcode + " " + rowObject.stockId.productId.name
+  );
+};
+
+// function for refill product
+const refillProductDetail = (rowObject) => {
+  //remove refilled product from grn.grnHasProducts
+  invoice.invoiceHasProducts = invoice.invoiceHasProducts.filter(
+    (product) => product.stockId.productId.id != rowObject.stockId.productId.id
+  );
+
+  // refresh inner table
+  refreshInnerFormAndTable();
+
+  //fill product data into relavent fields
+  invProduct = JSON.parse(JSON.stringify(rowObject));
+  textProduct.value =
+    invProduct.stockId.productId.barcode +
+    " - " +
+    invProduct.stockId.productId.name;
+  textSellPrice.value = parseFloat(invProduct.sellPrice).toFixed(2);
+  textQty.value = parseFloat(invProduct.qty).toFixed(2);
+  textLineAmount.value = parseFloat(invProduct.lineAmount).toFixed(2);
+
+  textProduct.disabled = true;
+  textQty.disabled = false;
+
+  //set valid border color
+  let elements = [textProduct, textQty];
+  setBorderStyle(elements, "2px solid #00FF7F");
+};
+
+//function for delete selected product
+const deleteProductDetail = (rowObject) => {
+  // get user confirmation
+  let title = "Are you sure you want to delete this product...?\n";
+  let message =
+    rowObject.stockId.productId.barcode +
+    " - " +
+    rowObject.stockId.productId.name;
+
+  showConfirm(title, message).then((userConfirm) => {
+    if (userConfirm) {
+      //remove deleted product from invoice.invoiceHasProducts
+      invoice.invoiceHasProducts = invoice.invoiceHasProducts.filter(
+        (product) =>
+          product.stockId.productId.id != rowObject.stockId.productId.id
+      );
+
+      // refresh inner table
+      refreshInnerFormAndTable();
+    }
+  });
+};
+
 // ********* TABLE OPERATIONS *********
 
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
-  customers = ajaxGetRequest("/customer/findall");
+  invoices = ajaxGetRequest("/invoice/findall");
 
   //object count = table column count
   //String - number/string/date
   //function - object/array/boolean
   //currency - RS
   const displayProperties = [
-    { property: "fullName", datatype: "String" },
-    { property: "contact", datatype: "String" },
-    { property: "nic", datatype: "String" },
-    { property: "address", datatype: "String" },
+    { property: "invoiceId", datatype: "String" },
+    { property: getCustomer, datatype: "function" },
+    { property: "itemCount", datatype: "String" },
+    { property: getDate, datatype: "function" },
+    { property: "grandTotal", datatype: "currency" },
+    { property: "paidAmount", datatype: "currency" },
     { property: getStatus, datatype: "function" },
   ];
 
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
-    customerTable,
-    customers,
+    invoiceTable,
+    invoices,
     displayProperties,
     viewRecord,
     refillRecord,
@@ -346,11 +630,11 @@ const refreshTable = () => {
   );
 
   //hide delete button when status is 'deleted'
-  customers.forEach((customer, index) => {
-    if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
+  invoices.forEach((invoice, index) => {
+    if (userPrivilages.delete && invoice.invoiceStatusId.name == "Deleted") {
       //catch the button
       let targetElement =
-        customerTable.children[1].children[index].children[6].children[
+        customerTable.children[1].children[index].children[8].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
       //add changes
@@ -359,27 +643,37 @@ const refreshTable = () => {
     }
   });
 
-  $("#customerTable").dataTable();
+  $("#invoiceTable").dataTable();
+};
+
+// fucntion for get customer
+const getCustomer = (rowObject) => {
+  return rowObject.customerId.fullName;
+};
+
+// function for get added date
+const getDate = (rowObject) => {
+  return rowObject.addedDateTime.split("T")[0];
 };
 
 // function for get status
 const getStatus = (rowObject) => {
-  if (rowObject.customerStatusId.name == "Loyalty") {
+  if (rowObject.invoiceStatusId.name == "Completed") {
     return (
       '<p class = "status status-active">' +
-      rowObject.customerStatusId.name +
+      rowObject.invoiceStatusId.name +
       "</p>"
     );
-  } else if (rowObject.customerStatusId.name == "Normal") {
+  } else if (rowObject.invoiceStatusId.name == "Pending") {
     return (
       '<p class = "status status-warning">' +
-      rowObject.customerStatusId.name +
+      rowObject.invoiceStatusId.name +
       "</p>"
     );
-  } else if (rowObject.customerStatusId.name == "Deleted") {
+  } else if (rowObject.invoiceStatusId.name == "Deleted") {
     return (
       '<p class = "status status-error">' +
-      rowObject.customerStatusId.name +
+      rowObject.invoiceStatusId.name +
       "</p>"
     );
   }
@@ -390,29 +684,58 @@ const viewRecord = (rowObject, rowId) => {
   //need to get full object
   let printObj = rowObject;
 
-  tdCustomerName.innerText = printObj.fullName;
-  tdCustomerContact.innerText = printObj.contact;
-  tdCustomerNIC.innerText = printObj.nic;
-  tdCustomerAddress.innerText = printObj.address;
-  tdStatus.innerText = printObj.customerStatusId.name;
-
+  tdInvoiceId.innerText = printObj.invoiceId;
+  tdCustomer.innerText = printObj.customerId.fullName;
+  tdItemCount.innerText = printObj.itemCount;
+  tdInvoicedDate.innerText = printObj.addedDateTime.split("T")[0];
+  tdInvoiceType.innerText = printObj.isCredit != true ? "Normal" : "Credit";
+  tdTotal.innerText = "Rs." + parseFloat(printObj.total).toFixed(2);
+  tdDiscount.innerText =
+    "Rs." + parseFloat(printObj.discount ?? "0").toFixed(2);
+  tdGrandTotal.innerText = "Rs." + parseFloat(printObj.grandTotal).toFixed(2);
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paidAmount).toFixed(2);
+  tdBalance.innerText = "Rs." + parseFloat(printObj.balanceAmount).toFixed(2);
+  tdStatus.innerText = printObj.invoiceStatusId.name;
+  getINVProductsForPrint(printObj);
   //open model
   $("#modelDetailedView").modal("show");
 };
 
+// funtion for get invoice product list for print
+const getINVProductsForPrint = (printObj) => {
+  printObj.invoiceHasProducts.forEach((ele) => {
+    const tr = document.createElement("tr");
+    const tdProduct = document.createElement("td");
+    const tdSellPrice = document.createElement("td");
+    const tdQty = document.createElement("td");
+    const tdLineAmount = document.createElement("td");
+
+    tdProduct.innerText =
+      ele.stockId.productId.barcode + " - " + ele.stockId.productId.name;
+    tdSellPrice.innerText = "Rs." + parseFloat(ele.sellPrice).toFixed(2);
+    tdQty.innerText =
+      ele.qty + " (" + ele.stockId.productId.unitTypeId.name + ")";
+    tdLineAmount.innerText = "Rs." + parseFloat(ele.lineAmount).toFixed(2);
+
+    tr.appendChild(tdProduct);
+    tr.appendChild(tdSellPrice);
+    tr.appendChild(tdQty);
+    tr.appendChild(tdLineAmount);
+    printTable.appendChild(tr);
+  });
+};
+
 //function for refill record
 const refillRecord = (rowObject, rowId) => {
+  refreshForm();
   $("#addNewButton").click();
 
-  customer = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
-  oldcustomer = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
+  invoice = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
+  oldinvoice = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
 
-  textCustomerName.value = customer.fullName;
-  textCustomerContact.value = customer.contact;
-
-  //set optional fields
-  textCustomerNIC.value = customer.nic ?? "";
-  textCustomerAddress.value = customer.address ?? "";
+  textCustomerName.value = invoice.customerId.fullName;
+  textCustomerContact.value = invoice.customerId.contact;
+  dateInvoiceDate.value = invoice.addedDateTime.split("T")[0];
 
   // set status
   fillDataIntoSelect(
@@ -420,16 +743,13 @@ const refillRecord = (rowObject, rowId) => {
     "Select Status",
     statuses,
     "name",
-    customer.customerStatusId.name
+    invoice.invoiceStatusId.name
   );
 
-  setBorderStyle([
-    textCustomerName,
-    textCustomerContact,
-    textCustomerNIC,
-    textCustomerAddress,
-    selectStatus,
-  ]);
+  //refresh inner form and table to get saved products from invoice.invoiceHasProducts
+  refreshInnerFormAndTable();
+
+  setBorderStyle([textCustomerName, textCustomerContact]);
 
   //manage buttons
   manageFormButtons("refill", userPrivilages);
@@ -440,25 +760,29 @@ const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
   let title = "Are you sure!\nYou wants to delete following record? \n";
   let message =
-    "Customer Name : " +
-    rowObject.fullName +
-    "\nContact No. :" +
-    rowObject.contact;
+    "Invoice ID : " +
+    rowObject.invoiceId +
+    "\nCustomer :" +
+    rowObject.customerId.fullName +
+    "\nItem Count :" +
+    rowObject.itemCount +
+    "\nGrand Total :" +
+    rowObject.grandTotal;
 
   showConfirm(title, message).then((userConfirm) => {
     if (userConfirm) {
       //response from backend ...
-      let serverResponse = ajaxRequestBody("/customer", "DELETE", rowObject); // url,method,object
+      let serverResponse = ajaxRequestBody("/invoice", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
-        showAlert("success", "Customer Delete successfully..!").then(() => {
+        showAlert("success", "Invoice Delete successfully..!").then(() => {
           // Need to refresh table and form
           refreshAll();
         });
       } else {
         showAlert(
           "error",
-          "Customer delete not successfully..! have some errors \n" +
+          "Invoice delete not successfully..! have some errors \n" +
             serverResponse
         );
       }
@@ -490,11 +814,11 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customers</title>" +
+    "<head><title>Print Invoices</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customers Details</h2>" +
-      customerTable.outerHTML +
+      "<h2 style = 'font-weight:bold'>Invoices Details</h2>" +
+      invoiceTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'
   );
 

@@ -1,5 +1,9 @@
 package com.jenakahw.controller;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +12,21 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jenakahw.domain.Customer;
 import com.jenakahw.domain.Invoice;
+import com.jenakahw.domain.InvoiceHasProduct;
+import com.jenakahw.domain.Stock;
+import com.jenakahw.repository.CustomerRepository;
+import com.jenakahw.repository.CustomerStatusRepository;
 import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
+import com.jenakahw.repository.StockRepository;
 
 @RestController
 //add class level mapping /invoice
@@ -35,6 +47,15 @@ public class InvoiceController {
 
 	@Autowired
 	private UserController userController;
+
+	@Autowired
+	private CustomerRepository customerRepository;
+
+	@Autowired
+	private CustomerStatusRepository customerStatusRepository;
+
+	@Autowired
+	private StockRepository stockRepository;
 
 	private static final String MODULE = "Invoice";
 
@@ -62,4 +83,85 @@ public class InvoiceController {
 		}
 
 	}
+
+	@PostMapping
+	public String saveInvoice(@RequestBody Invoice invoice) {
+		// check privileges
+		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
+			return "Access Denied !!!";
+		}
+
+		// check stock availability
+		for (InvoiceHasProduct invoiceHasProduct : invoice.getInvoiceHasProducts()) {
+			Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
+			if (extStock.getAvailableQty().compareTo(invoiceHasProduct.getQty()) < 0) {
+				return "Insufficient Stock : " + invoiceHasProduct.getStockId().getProductId().getName() + " - "
+						+ invoiceHasProduct.getStockId().getProductId().getName();
+			}
+
+		}
+
+		try {
+			// check customer exsiting
+			Customer extCustomer = customerRepository.findByContact(invoice.getCustomerId().getContact());
+			if (extCustomer != null) {
+				invoice.setCustomerId(extCustomer);
+			} else {
+				// save new customer
+				Customer newCustomer = invoice.getCustomerId();
+				newCustomer.setAddedDateTime(LocalDateTime.now());
+				newCustomer.setAddedUserId(userController.getLoggedUser().getId());
+				newCustomer.setCustomerStatusId(customerStatusRepository.getReferenceById(1));
+				Customer SavedCustomer = customerRepository.save(newCustomer);
+
+				// add new saved customer to invoice
+				invoice.setCustomerId(SavedCustomer);
+			}
+
+			// set added user
+			invoice.setAddedUserId(userController.getLoggedUser().getId());
+
+			// set added date time
+			invoice.setAddedDateTime(LocalDateTime.now());
+
+			// set next invoice Id
+			String nextInvCode = invoiceRepository.getNextInvoiceID();
+			if (nextInvCode == null) {
+				// formate current date
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMMdd");
+				String formattedDate = LocalDate.now().format(formatter);
+
+				// create new invoice id for start new date
+				nextInvCode = "INV" + formattedDate + "001";
+			}
+			
+			invoice.setInvoiceId(nextInvCode);
+			invoice.setDiscount(new BigDecimal("0"));
+			invoice.setGrandTotal(invoice.getTotal());
+			invoice.setPaidAmount(new BigDecimal("0"));
+			invoice.setBalanceAmount(invoice.getTotal());
+			invoice.setIsCredit(false);
+
+			for (InvoiceHasProduct invoiceHasProduct : invoice.getInvoiceHasProducts()) {
+				// set invoice id in invoice has product
+				invoiceHasProduct.setInvoiceId(invoice);
+
+				// substract the stock
+				Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
+				extStock.setAvailableQty(extStock.getAvailableQty().subtract(invoiceHasProduct.getQty()));
+
+				stockRepository.save(extStock); // update stock
+			}
+
+			invoiceRepository.save(invoice);
+
+			// balance the stock
+
+			return "OK";
+		} catch (Exception e) {
+			return e.getMessage();
+		}
+
+	}
+
 }

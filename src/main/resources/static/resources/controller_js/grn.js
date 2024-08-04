@@ -607,7 +607,7 @@ const refreshRemainProductList = (selectedProduct) => {
   );
 };
 
-// function for refill grn
+// function for refill product
 const refillProduct = (rowObject, rowId) => {
   //remove refilled product from grn.grnHasProducts
   grn.grnHasProducts = grn.grnHasProducts.filter(
@@ -632,7 +632,7 @@ const refillProduct = (rowObject, rowId) => {
   refreshRemainProductList(grnProduct.productId.barcode);
 };
 
-//function for delete selected grn
+//function for delete selected product
 const deleteProduct = (rowObject, rowId) => {
   // get user confirmation
   let title = "Are you sure you want to delete this product...?\n";
