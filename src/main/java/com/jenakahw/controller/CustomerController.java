@@ -79,6 +79,17 @@ public class CustomerController {
 			return null;
 		}
 	}
+	
+	// get mapping for get customer by status
+	@GetMapping(value = "/findbystatus/{status}", produces = "application/json")
+	public List<Customer> getByStatus(@PathVariable("status") String status) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return customerRepository.findByStatus(status);
+		} else {
+			return null;
+		}
+	}
 
 	// post mapping for save new customer
 	@PostMapping

@@ -404,7 +404,7 @@ const calLineAmount = () => {
 // function for load product list on search
 const getProductList = (fieldId) => {
   const fieldValue = fieldId.value;
-  let regPattern = new RegExp("[A-Za-z0-9 ]{3,}");
+  let regPattern = new RegExp("^[A-Za-z0-9 ]{3,}$");
   stocks = [];
 
   if (fieldValue !== "") {

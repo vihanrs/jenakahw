@@ -63,6 +63,54 @@ const qtyFieldValidator = (
   }
 };
 
+const discountValidator = (
+  fieldId,
+  totalFieldId,
+  precentageFieldId,
+  object,
+  property
+) => {
+  let fieldValue = fieldId.value;
+  let discount = 0;
+  let enterValue = parseFloat(fieldValue);
+  let total = parseFloat(totalFieldId.value);
+
+  if (fieldValue != "") {
+    if (precentageFieldId.checked) {
+      if (
+        new RegExp(
+          "^(([0-9]{1,2})|([0-9]{1,2}[.][0-9]{1,2})|([1][0][0]))$"
+        ).test(fieldValue)
+      ) {
+        fieldId.style.border = "2px solid #00FF7F";
+        discount = (total * enterValue) / 100;
+        window[object][property] = discount;
+        console.log(window[object]);
+      } else {
+        fieldId.style.border = "1px solid red";
+        window[object][property] = null;
+      }
+    } else if (
+      // validate and calculate fixed discount
+      new RegExp("^(([0-9]{0,7})|([0-9]{0,7}[.][0-9]{1,2}))$").test(
+        fieldValue
+      ) &&
+      enterValue <= total
+    ) {
+      fieldId.style.border = "2px solid #00FF7F";
+      discount = enterValue;
+      window[object][property] = discount;
+      console.log(window[object]);
+    } else {
+      textDiscount.style.border = "1px solid red";
+      window[object][property] = null;
+    }
+  } else {
+    fieldId.style.border = "1px solid #ced4da";
+    window[object][property] = null;
+  }
+};
+
 //dynamic select field validation function
 const selectDFieldValidator = (fieldId, object, property) => {
   const fieldValue = fieldId.value;
@@ -81,6 +129,53 @@ const selectDFieldValidator = (fieldId, object, property) => {
 };
 
 //dynamic data list validation function
+const dataListValidator = (
+  fieldId,
+  dataListName,
+  object,
+  property,
+  displayProperty
+) => {
+  const fieldValue = fieldId.value;
+
+  if (fieldValue !== "") {
+    let dataList = window[dataListName];
+    //check null, undefined, 0, false, NaN, ""
+    if (Boolean(dataList)) {
+      let extIndex = dataList
+        .map((data) => data[displayProperty])
+        .indexOf(fieldValue);
+
+      if (extIndex != -1) {
+        fieldId.style.border = "2px solid #00FF7F";
+        window[object][property] = dataList[extIndex];
+      } else {
+        window[object][property] = null;
+        if (fieldId.required) {
+          fieldId.style.border = "1px solid red";
+        } else {
+          fieldId.style.border = "1px solid #ced4da";
+        }
+      }
+    } else {
+      window[object][property] = null;
+      if (fieldId.required) {
+        fieldId.style.border = "1px solid red";
+      } else {
+        fieldId.style.border = "1px solid #ced4da";
+      }
+    }
+  } else {
+    window[object][property] = null;
+    if (fieldId.required) {
+      fieldId.style.border = "1px solid red";
+    } else {
+      fieldId.style.border = "1px solid #ced4da";
+    }
+  }
+};
+
+//invoice list validation function
 const invoiceDataListValidator = (fieldId, dataListName, object, property) => {
   const fieldValue = fieldId.value;
 

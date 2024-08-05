@@ -117,7 +117,12 @@ const fillMoreDataIntoSelect = (
 };
 
 // define fuction for fill data into type and select dropdown with more than one value, ex- [barcode] product name
-const fillMoreDataIntoDataList = (fieldId, dataList, property, property2) => {
+const fillMoreDataIntoDataList = (
+  fieldId,
+  dataList,
+  property,
+  property2 = null
+) => {
   fieldId.innerHTML = "";
 
   for (const data of dataList) {

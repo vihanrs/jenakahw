@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -72,7 +73,7 @@ public class InvoiceController {
 		return invoiceView;
 	}
 
-	// get service mapping for get all customers
+	// get service mapping for get all invoices
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Invoice> findAll() {
 		// check privileges
@@ -82,6 +83,28 @@ public class InvoiceController {
 			return null;
 		}
 
+	}
+
+	// get mapping for find invoices by status
+	@GetMapping(value = "/findbystatus/{status}", produces = "application/json")
+	public List<Invoice> findByStatus(@PathVariable("status") String status) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return invoiceRepository.findByStatus(status);
+		} else {
+			return null;
+		}
+	}
+	
+	// get mapping for find invoices by invoice id
+	@GetMapping(value = "/findbyid/{invoiceid}", produces = "application/json")
+	public Invoice findByInvoiceId(@PathVariable("invoiceid") String invoiceId) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return invoiceRepository.findByInvoiceId(invoiceId);
+		} else {
+			return null;
+		}
 	}
 
 	@PostMapping
@@ -134,7 +157,7 @@ public class InvoiceController {
 				// create new invoice id for start new date
 				nextInvCode = "INV" + formattedDate + "001";
 			}
-			
+
 			invoice.setInvoiceId(nextInvCode);
 			invoice.setDiscount(new BigDecimal("0"));
 			invoice.setGrandTotal(invoice.getTotal());
