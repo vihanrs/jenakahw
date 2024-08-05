@@ -95,7 +95,18 @@ public class InvoiceController {
 			return null;
 		}
 	}
-	
+
+	// get mapping for find invoices by status
+	@GetMapping(value = "/findincompletebycustomer/{customerid}", produces = "application/json")
+	public List<Invoice> findByCustomerAndIncomplete(@PathVariable("customerid") int customerId) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return invoiceRepository.findByCustomerAndIncomplete(customerId);
+		} else {
+			return null;
+		}
+	}
+
 	// get mapping for find invoices by invoice id
 	@GetMapping(value = "/findbyid/{invoiceid}", produces = "application/json")
 	public Invoice findByInvoiceId(@PathVariable("invoiceid") String invoiceId) {

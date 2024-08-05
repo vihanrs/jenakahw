@@ -87,14 +87,14 @@ const addEventListeners = () => {
   });
 
   //record print function call
-  btnViewPrint.addEventListener("click", () => {
-    printViewRecord();
-  });
+  // btnViewPrint.addEventListener("click", () => {
+  //   printViewRecord();
+  // });
 
   //print full table function call
-  btnPrintFullTable.addEventListener("click", () => {
-    printFullTable();
-  });
+  // btnPrintFullTable.addEventListener("click", () => {
+  //   printFullTable();
+  // });
 };
 
 // ********* RESET *********

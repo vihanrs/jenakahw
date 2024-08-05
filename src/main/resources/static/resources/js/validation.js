@@ -134,7 +134,8 @@ const dataListValidator = (
   dataListName,
   object,
   property,
-  displayProperty
+  displayProperty,
+  isMultiValue = false
 ) => {
   const fieldValue = fieldId.value;
 
@@ -144,7 +145,7 @@ const dataListValidator = (
     if (Boolean(dataList)) {
       let extIndex = dataList
         .map((data) => data[displayProperty])
-        .indexOf(fieldValue);
+        .indexOf(isMultiValue ? fieldValue.split(" ")[0] : fieldValue);
 
       if (extIndex != -1) {
         fieldId.style.border = "2px solid #00FF7F";

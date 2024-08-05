@@ -84,7 +84,7 @@
                       <div class="col-md-4">
                         <input
                           type="text"
-                          placeholder="Enter Invoice ID"
+                          placeholder="Enter Customer Contact/Name"
                           class="form-control"
                           id="textCustomer"
                           list="dataListCustomers"
@@ -93,98 +93,48 @@
                         <datalist id="dataListCustomers"></datalist>
                       </div>
                     </div>
-
-                    <!-- customer name/contact -->
-                    <div class="row mt-3">
-                      <div class="col-md-2"></div>
-                      <div class="col-md-3">
-                        <label class="form-label fw-bold" for="textCustomer">
-                          Customer :
-                        </label>
-                      </div>
-                      <div class="col-md-4">
-                        <input
-                          type="text"
-                          placeholder=""
-                          class="form-control"
-                          id="textCustomer"
-                          required
-                          disabled
-                        />
-                      </div>
+                    <!-- invoice payment details table -->
+                    <div class="row mt-4">
+                      <table
+                        class="table table-hover pt-3 mb-3"
+                        id="incompleteInvoicesTable"
+                      >
+                        <thead class="table-dark">
+                          <tr>
+                            <th>#</th>
+                            <th>Invoice ID</th>
+                            <th>Grand Total</th>
+                            <th>Paid</th>
+                            <th>Balance</th>
+                          </tr>
+                        </thead>
+                        <tbody class="table-group-divider"></tbody>
+                      </table>
                     </div>
 
-                    <!-- total amount -->
+                    <!-- total balance -->
                     <div class="row mt-2">
                       <div class="col-md-2"></div>
                       <div class="col-md-3">
-                        <label for="textTotalAmount" class="form-label fw-bold">
-                          Total Amount (Rs.):
-                        </label>
-                      </div>
-                      <div class="col-md-2">
-                        <input
-                          type="text"
-                          placeholder=""
-                          class="form-control text-end"
-                          id="textTotalAmount"
-                          required
-                          disabled
-                        />
-                      </div>
-                    </div>
-
-                    <!-- discount amount -->
-                    <div class="row mt-2">
-                      <div class="col-md-2"></div>
-                      <div class="col-md-3">
-                        <label for="textDiscount" class="form-label fw-bold">
-                          Discount (Rs.):
+                        <label
+                          for="textTotalBalance"
+                          class="form-label fw-bold"
+                        >
+                          Total Balance (Rs.):
                         </label>
                       </div>
                       <div class="col-md-2">
                         <input
                           type="text"
                           class="form-control text-end"
-                          id="textDiscount"
-                        />
-                      </div>
-                      <div class="col-md-1">
-                        <div class="form-check form-check-inline pt-2">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="discountPrecentageCheck"
-                            style="border: 1px solid black"
-                          />
-                          <label
-                            for="discountPrecentageCheck"
-                            class="form-check-label fw-bold"
-                            >%</label
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- grand total -->
-                    <div class="row mt-2">
-                      <div class="col-md-2"></div>
-                      <div class="col-md-3">
-                        <label for="textGrandTotal" class="form-label fw-bold">
-                          Grand Total (Rs.):
-                        </label>
-                      </div>
-                      <div class="col-md-2">
-                        <input
-                          type="text"
-                          placeholder=""
-                          class="form-control text-end"
-                          id="textGrandTotal"
+                          id="textTotalBalance"
                           required
                           disabled
                         />
                       </div>
                     </div>
+
+                    <hr class="seperator" />
 
                     <!-- pay method -->
                     <div class="row mt-3">
@@ -217,21 +167,6 @@
                           class="form-control text-end"
                           id="textPayment"
                         />
-                      </div>
-                      <div class="col-md-3 d-none" id="divCreditSell">
-                        <div class="form-check form-check-inline pt-2">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            id="creditSellCheck"
-                            style="border: 1px solid black"
-                          />
-                          <label
-                            for="creditSellCheck"
-                            class="form-check-label fw-bold"
-                            >Credit Sell</label
-                          >
-                        </div>
                       </div>
                     </div>
 

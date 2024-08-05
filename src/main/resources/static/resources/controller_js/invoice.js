@@ -676,6 +676,12 @@ const getStatus = (rowObject) => {
       rowObject.invoiceStatusId.name +
       "</p>"
     );
+  } else if (rowObject.invoiceStatusId.name == "Incompelte") {
+    return (
+      '<p class = "status status-pending"}>' +
+      rowObject.invoiceStatusId.name +
+      "</p>"
+    );
   }
 };
 

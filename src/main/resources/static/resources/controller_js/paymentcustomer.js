@@ -25,19 +25,20 @@ const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
 
   textCustomer.addEventListener("keyup", () => {
-    getCustomerList(textCustomer);
+    getCustomerList();
   });
 
-  // textCustomer.addEventListener("input", () => {
-  //   dataListValidator(
-  //     textInvoiceId,
-  //     "pendingInvoices",
-  //     "invPayment",
-  //     "invoiceId",
-  //     "invoiceId"
-  //   ),
-  //     getInvoiceValues();
-  // });
+  textCustomer.addEventListener("input", () => {
+    dataListValidator(
+      textCustomer,
+      "loyaltyCustomers",
+      "invPayment",
+      "customer",
+      "contact",
+      true
+    ),
+      refreshIncompelteInvoiceTable();
+  });
 
   // textDiscount.addEventListener("keyup", () => {
   //   discountValidator(
@@ -87,21 +88,21 @@ const addEventListeners = () => {
   });
 
   //record print function call
-  btnViewPrint.addEventListener("click", () => {
-    printViewRecord();
-  });
+  // btnViewPrint.addEventListener("click", () => {
+  //   printViewRecord();
+  // });
 
   //print full table function call
-  btnPrintFullTable.addEventListener("click", () => {
-    printFullTable();
-  });
+  // btnPrintFullTable.addEventListener("click", () => {
+  //   printFullTable();
+  // });
 };
 
 // ********* RESET *********
 //function for refresh form and table
 const refreshAll = () => {
   //Call form refresh function
-  // refreshForm();
+  refreshForm();
   //Call table refresh function
   // refreshTable();
 };
@@ -114,12 +115,12 @@ const refreshForm = () => {
   invPayment = {};
 
   createViewPayMethodUI();
-  resetInvoiceDetails();
+  refreshIncompelteInvoiceTable();
 
   //empty all elements
-  textInvoiceId.value = "";
+  textCustomer.value = "";
 
-  setBorderStyle([textInvoiceId]);
+  setBorderStyle([textCustomer]);
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -158,9 +159,7 @@ const createViewPayMethodUI = () => {
 };
 
 // function for get pending invoice list
-const getCustomerList = (fieldId) => {
-  const fieldValue = fieldId.value;
-
+const getCustomerList = () => {
   loyaltyCustomers = ajaxGetRequest("/customer/findbystatus/loyalty");
 
   fillMoreDataIntoDataList(
@@ -171,6 +170,44 @@ const getCustomerList = (fieldId) => {
   );
 };
 
+const refreshIncompelteInvoiceTable = () => {
+  let customerid = 0;
+  if (invPayment.customer != null) {
+    customerid = invPayment.customer.id;
+  }
+  incompleteInvoicesByCustomer = ajaxGetRequest(
+    "/invoice/findincompletebycustomer/" + customerid
+  );
+  const displayProperties = [
+    { property: "invoiceId", datatype: "String" },
+    { property: "grandTotal", datatype: "currency" },
+    { property: "paidAmount", datatype: "currency" },
+    { property: "balanceAmount", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    incompleteInvoicesTable,
+    incompleteInvoicesByCustomer,
+    displayProperties,
+    refillInvoice,
+    deleteInvoice,
+    false
+  );
+
+  getTotalBalance();
+};
+
+const refillInvoice = () => {};
+const deleteInvoice = () => {};
+
+const getTotalBalance = () => {
+  let totBalance = 0;
+  incompleteInvoicesByCustomer.forEach((inv) => {
+    totBalance += parseFloat(inv.balanceAmount);
+  });
+  textTotalBalance.value = parseFloat(totBalance).toFixed(2);
+};
 // function for load invoice values
 const getInvoiceValues = () => {
   let inv = invPayment.invoiceId;

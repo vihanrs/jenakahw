@@ -170,6 +170,10 @@
   background-color: rgb(255, 20, 0);
 }
 
+.status-pending {
+  background-color: rgb(255, 171, 44);
+}
+
 /* css for seperator line */
 .seperator {
   height: 1px;
