@@ -133,6 +133,8 @@ const refreshForm = () => {
     "Available"
   );
 
+  statusDiv.classList.add("d-none");
+
   //bind default selected status in to supplier object and set valid color
   product.productStatusId = JSON.parse(selectStatus.value);
   selectStatus.style.border = "2px solid #00FF7F";
@@ -569,6 +571,8 @@ const refillRecord = (rowObject, rowId) => {
     product.productStatusId.name
   );
 
+  statusDiv.classList.remove("d-none");
+
   setBorderStyle([
     selectBrand,
     selectCategory,
@@ -640,9 +644,10 @@ const printFullTable = () => {
     "<head><title>Print Products</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Product Details</h2>" +
+      '<link rel="stylesheet" href="resources/css/common.css" />' +
+      "<h2 style = 'font-weight:bold'>Products Details</h2>" +
       productTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

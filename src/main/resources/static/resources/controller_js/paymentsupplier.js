@@ -2,7 +2,7 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest(
-    "/privilege/byloggeduserandmodule/Customer Payment"
+    "/privilege/byloggeduserandmodule/Invoice Payment"
   );
 
   //refresh all
@@ -12,7 +12,7 @@ window.addEventListener("load", () => {
   if (userPrivilages.insert) {
     showDefaultSection("addNewButton", "addNewSection");
   }
-  //  else {
+  // else {
   //   showDefaultSection("viewAllButton", "viewAllSection");
   //   addAccordion.style.display = "none";
   // }
@@ -24,62 +24,45 @@ window.addEventListener("load", () => {
 const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
 
-  textCustomer.addEventListener("keyup", () => {
-    getCustomerList();
+  selectSupplier.addEventListener("change", () => {
+    selectDFieldValidator(selectSupplier, "supplierPayment", "supplierId");
   });
 
-  textCustomer.addEventListener("input", () => {
-    dataListValidator(
-      textCustomer,
-      "loyaltyCustomers",
+  selectGrn.addEventListener("change", () => {
+    selectDFieldValidator(selectGrn, "supplierPayment", "GrnId");
+  });
+
+  textDiscount.addEventListener("keyup", () => {
+    discountValidator(
+      textDiscount,
+      textTotalAmount,
+      discountPrecentageCheck,
       "invPayment",
-      "customer",
-      "contact",
-      true
+      "discount"
     ),
-      refreshIncompelteInvoiceTable();
+      calDisount(),
+      calPayment();
   });
-  // textCustomer.addEventListener("input", () => {
-  //   dataListValidator(
-  //     textCustomer,
-  //     "loyaltyCustomers",
-  //     "invCusPayment",
-  //     "customerId",
-  //     "contact",
-  //     true
-  //   ),
 
-  // textDiscount.addEventListener("keyup", () => {
-  //   discountValidator(
-  //     textDiscount,
-  //     textTotalAmount,
-  //     discountPrecentageCheck,
-  //     "invPayment",
-  //     "discount"
-  //   ),
-  //     calDisount(),
-  //     calPayment();
-  // });
+  discountPrecentageCheck.addEventListener("change", () => {
+    discountValidator(
+      textDiscount,
+      textTotalAmount,
+      discountPrecentageCheck,
+      "invPayment",
+      "discount"
+    ),
+      calDisount(),
+      calPayment();
+  });
 
-  // discountPrecentageCheck.addEventListener("change", () => {
-  //   discountValidator(
-  //     textDiscount,
-  //     textTotalAmount,
-  //     discountPrecentageCheck,
-  //     "invPayment",
-  //     "discount"
-  //   ),
-  //     calDisount(),
-  //     calPayment();
-  // });
+  creditSellCheck.addEventListener("change", () => {
+    calPayment();
+  });
 
-  // creditSellCheck.addEventListener("change", () => {
-  //   calPayment();
-  // });
-
-  // textPayment.addEventListener("keyup", () => {
-  //   calPayment();
-  // });
+  textPayment.addEventListener("keyup", () => {
+    calPayment();
+  });
 
   //form reset button function call
   btnReset.addEventListener("click", () => {
@@ -121,16 +104,18 @@ const refreshAll = () => {
 //function for refresh form area
 const refreshForm = () => {
   //create empty object
-  invPayment = {};
-  invCusPayment = {};
+  supplierPayment = {};
+
+  suppliers = ajaxGetRequest("/supplier/findactivesuppliers");
+  fillMoreDataIntoSelect(
+    selectSupplier,
+    "Select Supplier",
+    suppliers,
+    "firstName",
+    "company"
+  );
 
   createViewPayMethodUI();
-  refreshIncompelteInvoiceTable();
-
-  //empty all elements
-  textCustomer.value = "";
-
-  setBorderStyle([textCustomer]);
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -157,6 +142,14 @@ const createViewPayMethodUI = () => {
           invPayment.paymethodId.name == "Card" ||
           invPayment.paymethodId.name == "Cheque"
         ) {
+          textPayment.value = parseFloat(
+            invPayment.invoiceId.grandTotal
+          ).toFixed(2);
+          textPayment.style.border = "1px solid #ced4da";
+          calPayment();
+        } else {
+          textPayment.value = "";
+          calPayment();
         }
       }
     };
@@ -171,93 +164,6 @@ const createViewPayMethodUI = () => {
 
     divPaymethods.appendChild(div);
   });
-};
-
-// function for get pending invoice list
-const getCustomerList = () => {
-  loyaltyCustomers = ajaxGetRequest("/customer/findbystatus/loyalty");
-
-  fillMoreDataIntoDataList(
-    dataListCustomers,
-    loyaltyCustomers,
-    "contact",
-    "fullName"
-  );
-};
-
-const refreshIncompelteInvoiceTable = () => {
-  let customerid = 0;
-  if (invPayment.customer != null) {
-    customerid = invPayment.customer.id;
-  }
-  incompleteInvoicesByCustomer = ajaxGetRequest(
-    "/invoice/findincompletebycustomer/" + customerid
-  );
-  const displayProperties = [
-    { property: "invoiceId", datatype: "String" },
-    { property: "grandTotal", datatype: "currency" },
-    { property: "paidAmount", datatype: "currency" },
-    { property: "balanceAmount", datatype: "currency" },
-  ];
-
-  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
-  fillDataIntoInnerTable(
-    incompleteInvoicesTable,
-    incompleteInvoicesByCustomer,
-    displayProperties,
-    refillInvoice,
-    deleteInvoice,
-    false
-  );
-
-  getTotalBalance();
-};
-
-const refillInvoice = () => {};
-const deleteInvoice = () => {};
-
-const getTotalBalance = () => {
-  let totBalance = 0;
-  incompleteInvoicesByCustomer.forEach((inv) => {
-    totBalance += parseFloat(inv.balanceAmount);
-  });
-  textTotalBalance.value = parseFloat(totBalance).toFixed(2);
-};
-// function for load invoice values
-const getInvoiceValues = () => {
-  let inv = invPayment.invoiceId;
-  if (inv != null && inv.length != 0) {
-    if (inv.invoiceStatusId.name == "Pending") {
-      textInvoiceId.value = inv.invoiceId;
-      textInvoiceId.style.border = "2px solid #00FF7F";
-
-      textCustomer.value =
-        inv.customerId.fullName + " - " + inv.customerId.contact;
-
-      textTotalAmount.value = parseFloat(inv.total).toFixed(2);
-      textGrandTotal.value = parseFloat(inv.grandTotal).toFixed(2);
-
-      if (inv.customerId.customerStatusId.name == "Loyalty") {
-        divCreditSell.classList.remove("d-none");
-      }
-
-      textDiscount.disabled = false;
-      discountPrecentageCheck.disabled = false;
-      textPayment.disabled = false;
-
-      let paymethods = divPaymethods.querySelectorAll("input");
-      paymethods.forEach((input) => {
-        input.disabled = false;
-      });
-    } else {
-      showAlert(
-        "warning",
-        "Invoice ID " + inv.invoiceId + " is not a pending invoice!"
-      );
-    }
-  } else {
-    resetInvoiceDetails();
-  }
 };
 
 // function for reset invoice values
@@ -341,7 +247,9 @@ const checkErrors = () => {
     error = error + "Please Enter Invoice to Make Payment...!\n";
     textInvoiceId.style.border = "1px solid red";
   }
-  if (invPayment.paymethodId == null) {
+  console.log(!invPayment.isCredit && invPayment.paymethodId == null + " T");
+
+  if (!invPayment.isCredit && invPayment.paymethodId == null) {
     error = error + "Please Select Payment Method...!\n";
   }
   if (invPayment.paidAmount == null) {

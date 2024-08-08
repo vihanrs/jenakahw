@@ -23,7 +23,7 @@ import com.jenakahw.repository.PrivilegeRepository;
 
 @RestController
 // add class level mapping /privilage
-@RequestMapping(value = "/privilege")
+//@RequestMapping(value = "/privilege")
 public class PrivilegeController {
 
 	/* Create Repository object ->
@@ -36,7 +36,7 @@ public class PrivilegeController {
 	private static final String MODULE = "Privilege";
 
 	// get mapping for generate privilege UI
-	@GetMapping()
+	@GetMapping(value = "/privileges")
 	public ModelAndView getPrivilegeUI() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -49,13 +49,13 @@ public class PrivilegeController {
 	}
 
 	// get service mapping for get all privileges
-	@GetMapping(value = "/findall", produces = "application/json")
+	@GetMapping(value = "/privileges/findall", produces = "application/json")
 	public List<Privilege> findAll() {
 		return privilegeRepository.findAll(Sort.by(Direction.DESC, "id"));
 	}
 
 	// post mapping for save new privilege
-	@PostMapping
+	@PostMapping(value = "/privileges")
 	public String savePrivilege(@RequestBody Privilege privilege) {
 
 		// check privileges
@@ -79,7 +79,7 @@ public class PrivilegeController {
 	}
 
 	// post mapping for update privilege record
-	@PutMapping
+	@PutMapping(value = "/privileges")
 	public String updatePrivilege(@RequestBody Privilege privilege) {
 
 		// check privileges
@@ -102,7 +102,7 @@ public class PrivilegeController {
 	}
 
 	// delete mapping for delete privilege record
-	@DeleteMapping
+	@DeleteMapping(value = "/privileges")
 	public String deletePrivilege(@RequestBody Privilege privilege) {
 		
 		// check privileges
@@ -129,7 +129,7 @@ public class PrivilegeController {
 	}
 
 	// get mapping for get privileges by logged user and module
-	@GetMapping(value = "/byloggeduserandmodule/{modulename}", produces = "application/json")
+	@GetMapping(value = "privilege/byloggeduserandmodule/{modulename}", produces = "application/json")
 	public HashMap<String, Boolean> getPrivilegeByLoggedUserAndModule(@PathVariable("modulename") String moduleName) {
 
 		return getPrivilegeByUserAndModule(moduleName);

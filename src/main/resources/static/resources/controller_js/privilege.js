@@ -2,9 +2,8 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Privilege");
-  //   userPrivilages.insert = false;
-  // userPrivilages.update = false;
-  // userPrivilages.delete = false;
+
+  console.log(userPrivilages);
 
   //refresh all
   refreshAll();
@@ -173,7 +172,7 @@ const refreshForm = () => {
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
-  privileges = ajaxGetRequest("/privilege/findall");
+  privileges = ajaxGetRequest("/privileges/findall");
 
   //object count = table column count
   //String - number/string/date
@@ -269,10 +268,10 @@ const viewRecord = (rowObject, rowId) => {
 
   tdRole.innerText = printObj.role.name;
   tdModule.innerText = printObj.module.name;
-  tdSelect.innerText = printObj.sel;
-  tdInsert.innerText = printObj.inst;
-  tdUpdate.innerText = printObj.upd;
-  tdDelete.innerText = printObj.del;
+  tdSelect.innerText = printObj.sel ? "Granted" : "Not-Granted";
+  tdInsert.innerText = printObj.inst ? "Granted" : "Not-Granted";
+  tdUpdate.innerText = printObj.upd ? "Granted" : "Not-Granted";
+  tdDelete.innerText = printObj.del ? "Granted" : "Not-Granted";
 
   //open model
   $("#modelDetailedView").modal("show");
@@ -349,7 +348,7 @@ const deleteRecord = (rowObject, rowId) => {
   showConfirm(title, message).then((userConfirm) => {
     if (userConfirm) {
       //response from backend ...
-      let serverResponse = ajaxRequestBody("/privilege", "DELETE", rowObject); // url,method,object
+      let serverResponse = ajaxRequestBody("/privileges", "DELETE", rowObject); // url,method,object
       //check back end response
       if (serverResponse == "OK") {
         showAlert("success", "Privilege Delete successfully..!").then(() => {
@@ -465,7 +464,7 @@ const addRecord = () => {
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
-        let serverResponse = ajaxRequestBody("/privilege", "POST", privilege); // url,method,object
+        let serverResponse = ajaxRequestBody("/privileges", "POST", privilege); // url,method,object
 
         //check back end response
         if (serverResponse == "OK") {
@@ -498,7 +497,7 @@ const updateRecord = () => {
       showConfirm(title, message).then((userConfirm) => {
         if (userConfirm) {
           let updateServiceResponse = ajaxRequestBody(
-            "/privilege",
+            "/privileges",
             "PUT",
             privilege
           );
@@ -555,10 +554,11 @@ const printFullTable = () => {
     //  link bootstrap css
     "<head><title>Print Privileges</title>" +
       '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      '<link rel="stylesheet" href="resources/fontawesome-6.4.2/css/all.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Privilege Details</h2>" +
       tblPrivilege.outerHTML +
-      '<script>$("modifyButtons").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

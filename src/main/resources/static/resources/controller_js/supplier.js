@@ -181,7 +181,7 @@ const refreshForm = () => {
     "name",
     "Active"
   );
-
+  statusDiv.classList.add("d-none");
   //bind default selected status in to supplier object and set valid color
   supplier.supplierStatusId = JSON.parse(selectStatus.value);
   selectStatus.style.border = "2px solid #00FF7F";
@@ -848,7 +848,7 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     supplier.supplierStatusId.name
   );
-
+  statusDiv.classList.remove("d-none");
   // set supplier product list
   fillMoreDataIntoSelect(
     selectedProducts,
@@ -976,10 +976,12 @@ const printFullTable = () => {
     //  link bootstrap css
     "<head><title>Print Suppliers</title>" +
       '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      '<link rel="stylesheet" href="resources/css/common.css" />' +
+      '<script src="resources/bootstrap/js/bootstrap.bundle.min.js"></script></head>' +
       "<h2 style = 'font-weight:bold'>Suppliers Details</h2>" +
       supplierTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

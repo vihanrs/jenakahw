@@ -62,7 +62,7 @@ const addEventListeners = () => {
   });
 
   textQty.addEventListener("keyup", () => {
-    textFieldValidator(textQty, qtyPattern, "grnProduct", "qty"),
+    qtyFieldValidator(textQty, qtyPattern, "grnProduct", "qty", maxQty),
       calLineAmountAndSellPrice();
   });
 
@@ -157,12 +157,7 @@ const refreshForm = () => {
 
   //get data list of 'Requested' purchase orders
   purchaseOrders = ajaxGetRequest("/purchaseorder/getpobystatus/1");
-  fillDataIntoSelect(
-    selectPOID,
-    "Select Purcahse Order ID",
-    purchaseOrders,
-    "poCode"
-  );
+  fillDataIntoSelect(selectPOID, "Select PO ID", purchaseOrders, "poCode");
 
   // get grn status
   grnStatuses = ajaxGetRequest("/grnstatus/findall");
@@ -173,6 +168,8 @@ const refreshForm = () => {
     "name",
     "Received"
   );
+  statusDiv.classList.add("d-none");
+  divPaidAmount.classList.add("d-none");
 
   //bind default selected status in to supplier object and set valid color
   grn.grnStatusId = JSON.parse(selectGRNStatus.value);
@@ -180,6 +177,7 @@ const refreshForm = () => {
 
   //empty all elements
   selectPOID.value = "";
+  selectPOID.disabled = false;
   textSupplier.value = "";
   textSupplierInvNo.value = "";
   textNote.value = "";
@@ -412,6 +410,7 @@ const updateRecord = () => {
 //function for refresh inner product form/table area
 const refreshInnerFormAndTable = () => {
   grnProduct = {};
+  maxQty = 0;
 
   //empty all elements
   textCostPrice.value = "";
@@ -500,9 +499,17 @@ const setPOValuesForSelectedProduct = (purchaseOrderId, productId) => {
       "/" +
       productId
   );
+
+  textCostPrice.value = poValues.purchasePrice;
+  textQty.value = poValues.qty;
   lblCostPrice.innerText =
     " Rs." + parseFloat(poValues.purchasePrice).toFixed(2);
   lblQty.innerText = " " + poValues.qty;
+  maxQty = poValues.qty;
+
+  grnProduct.qty = poValues.qty;
+  grnProduct.costPrice = poValues.purchasePrice;
+  calLineAmountAndSellPrice();
 };
 
 // function for calculate line amount
@@ -689,7 +696,10 @@ const refreshTable = () => {
 
   //hide delete button when status is 'deleted'
   grns.forEach((po, index) => {
-    if (userPrivilages.delete && po.grnStatusId.name == "Deleted") {
+    if (
+      (userPrivilages.delete && po.grnStatusId.name == "Deleted") ||
+      po.grnStatusId.name == "Received"
+    ) {
       //catch the button
       let targetElement =
         grnTable.children[1].children[index].children[8].children[
@@ -767,6 +777,19 @@ const refillRecord = (rowObject, rowId) => {
     grn.grnStatusId.name
   );
 
+  //add selected grn pocode to the dropdown
+  purchaseOrders.push(grn.purchaseOrderId);
+
+  fillDataIntoSelect(
+    selectPOID,
+    "Select Purcahse Order ID",
+    purchaseOrders,
+    "poCode",
+    grn.purchaseOrderId.poCode
+  );
+
+  statusDiv.classList.remove("d-none");
+  divPaidAmount.classList.remove("d-none");
   //refresh inner form and table to get saved products from purchaseOrder.poHasProducts
   refreshInnerFormAndTable();
 
@@ -903,10 +926,11 @@ const printFullTable = () => {
     //  link bootstrap css
     "<head><title>Print GRNs</title>" +
       '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      '<link rel="stylesheet" href="resources/css/common.css" /></head>' +
       "<h2 style = 'font-weight:bold'>GRNs Details</h2>" +
       grnTable.outerHTML +
-      '<script>$("modifyButtons").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

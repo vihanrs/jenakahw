@@ -105,7 +105,7 @@
                       </div>
                       <div class="col-md-1"></div>
                       <!-- PO status -->
-                      <div class="col-md-3">
+                      <div class="col-md-3" id="statusDiv">
                         <label for="selectPOStatus" class="form-label fw-bold">
                           Status : <span class="text-danger"> * </span>
                         </label>
@@ -113,6 +113,7 @@
                           id="selectPOStatus"
                           class="form-select"
                           required
+                          disabled
                         >
                           <option value="" selected disabled>
                             Select Status
@@ -145,7 +146,7 @@
                     <!-- inner form -->
                     <div class="row mt-2">
                       <!-- product -->
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <label for="selectProduct" class="form-label fw-bold">
                           Product : <span class="text-danger"> * </span>
                         </label>
@@ -177,14 +178,14 @@
                       <!-- qty -->
                       <div class="col-md-2">
                         <label for="textQty" class="form-label fw-bold">
-                          Qty : <span class="text-danger"> * </span>
-                          <span id="textUnitType"></span>
+                          Qty : <span class="text-danger"> * </span
+                          ><span id="textUnitType"></span>
                         </label>
                         <input
                           type="text"
-                          placeholder="Enter Qty"
                           class="form-control"
                           id="textQty"
+                          placeholder="Select Qty"
                           required
                         />
                       </div>
@@ -223,6 +224,25 @@
                             class="fa-solid fa-plus me-2"
                             style="margin-left: 8px"
                           ></i>
+                        </button>
+                      </div>
+
+                      <!-- reset button -->
+                      <div class="col-md-1">
+                        <label
+                          for="btnProductReset"
+                          class="form-label fw-bold"
+                          style="color: #d8d8d834"
+                        >
+                          .
+                        </label>
+                        <br />
+                        <button
+                          class="btn btn-outline-danger"
+                          type="button"
+                          id="btnProductReset"
+                        >
+                          <i class="fa-solid fa-xmark"></i>
                         </button>
                       </div>
                     </div>
@@ -338,7 +358,12 @@
                         <th>Required Date</th>
                         <th>Total Amount</th>
                         <th>Status</th>
-                        <th style="width: 50px; text-align: right">Modify</th>
+                        <th
+                          style="width: 50px; text-align: right"
+                          id="modifyButtons"
+                        >
+                          Modify
+                        </th>
                       </tr>
                     </thead>
                     <tbody class="table-group-divider"></tbody>

@@ -118,7 +118,8 @@ const printFullTable = () => {
     //  link bootstrap css
     "<head><title>Print Products</title>" +
       '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      '<link rel="stylesheet" href="resources/css/common.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Product Details</h2>" +
       stockTable.outerHTML +
       '<script>$(".modify-button").css("display","none")</script>'

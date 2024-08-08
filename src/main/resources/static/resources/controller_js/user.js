@@ -78,7 +78,8 @@ const addEventListeners = () => {
   });
 
   textPassword.addEventListener("keyup", () => {
-    textFieldValidator(textPassword, unameandpwPattern, "user", "password");
+    textFieldValidator(textPassword, unameandpwPattern, "user", "password"),
+      passwordRTValidator();
   });
 
   textRPassword.addEventListener("keyup", () => {
@@ -160,6 +161,8 @@ const refreshForm = () => {
     "name",
     "Working"
   );
+
+  statusDiv.classList.add("d-none");
 
   roles = ajaxGetRequest("/role/findall");
   createViewRolesUI();
@@ -354,6 +357,8 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     user.userStatusId.name
   );
+
+  statusDiv.classList.remove("d-none");
 
   setBorderStyle([
     selectStatus,
@@ -712,9 +717,10 @@ const printFullTable = () => {
     "<head><title>Print User</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/css/common.css" />' +
       "<h2 style = 'font-weight:bold'>User Details</h2>" +
       tblUser.outerHTML +
-      '<script>$("modifyButtons").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

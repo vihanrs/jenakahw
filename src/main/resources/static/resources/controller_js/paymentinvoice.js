@@ -142,6 +142,16 @@ const createViewPayMethodUI = () => {
       if (this.checked) {
         //if not exist add new role
         invPayment.paymethodId = paymethod;
+        if (
+          invPayment.paymethodId.name == "Card" ||
+          invPayment.paymethodId.name == "Cheque"
+        ) {
+          textPayment.value = parseFloat(
+            invPayment.invoiceId.grandTotal
+          ).toFixed(2);
+          textPayment.style.border = "1px solid #ced4da";
+          calPayment();
+        }
       }
     };
 
@@ -268,6 +278,7 @@ const calPayment = () => {
     textPayment.style.border = "2px solid #00FF7F";
     balance = parseFloat(fieldValue) - parseFloat(textGrandTotal.value);
   } else {
+    textPayment.value = "0";
     balance = -parseFloat(textGrandTotal.value).toFixed(2);
   }
 
@@ -280,7 +291,7 @@ const calPayment = () => {
     if (creditSellCheck.checked) {
       invPayment.invoiceId.isCredit = true;
       textBalance.style.border = "1px solid #ced4da";
-      invPayment.paidAmount = parseFloat(fieldValue);
+      invPayment.paidAmount = parseFloat(textPayment.value);
     } else {
       invPayment.invoiceId.isCredit = false;
       textBalance.style.border = "1px solid red";
@@ -300,7 +311,16 @@ const checkErrors = () => {
     error = error + "Please Enter Invoice to Make Payment...!\n";
     textInvoiceId.style.border = "1px solid red";
   }
-  if (invPayment.paymethodId == null) {
+
+  if (!invPayment.invoiceId.isCredit && invPayment.paymethodId == null) {
+    error = error + "Please Select Payment Method...!\n";
+  }
+
+  if (
+    invPayment.invoiceId.isCredit &&
+    invPayment.paidAmount != 0 &&
+    invPayment.paymethodId == null
+  ) {
     error = error + "Please Select Payment Method...!\n";
   }
   if (invPayment.paidAmount == null) {
@@ -311,53 +331,6 @@ const checkErrors = () => {
   return error;
 };
 
-//function for check updates
-// const checkUpdates = () => {
-//   let updates = "";
-
-//   if (oldcustomer.name != customer.name) {
-//     updates +=
-//       "Name has changed " + oldcustomer.name + " into " + customer.name + " \n";
-//   }
-//   if (oldcustomer.contact != customer.contact) {
-//     updates +=
-//       "Contact No. has changed " +
-//       oldcustomer.contact +
-//       " into " +
-//       customer.contact +
-//       " \n";
-//   }
-
-//   if (oldcustomer.nic != customer.nic) {
-//     updates +=
-//       "NIC has changed " +
-//       (oldcustomer.nic ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.nic ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.address != customer.address) {
-//     updates +=
-//       "Address has changed " +
-//       (oldcustomer.address ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.address ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.customerStatusId.id != customer.customerStatusId.id) {
-//     updates +=
-//       "Status has changed " +
-//       oldcustomer.customerStatusId.name +
-//       " into " +
-//       customer.customerStatusId.name +
-//       " \n";
-//   }
-
-//   return updates;
-// };
-
 //function for add record
 const addRecord = () => {
   //check form errors -
@@ -366,10 +339,7 @@ const addRecord = () => {
     //get user confirmation
     let title = "Are you sure to add following payment..?\n";
     let message =
-      "Payment Amount : Rs." +
-      parseFloat(invPayment.paidAmount).toFixed(2) +
-      "\nPayment Method : " +
-      invPayment.paymethodId.name;
+      "Payment Amount : Rs." + parseFloat(invPayment.paidAmount).toFixed(2);
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end

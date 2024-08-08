@@ -136,7 +136,7 @@ const refreshForm = () => {
     "name",
     "Pending"
   );
-
+  statusDiv.classList.add("d-none");
   invoice.invoiceStatusId = JSON.parse(selectStatus.value);
   selectStatus.style.border = "2px solid #00FF7F";
 
@@ -751,6 +751,7 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     invoice.invoiceStatusId.name
   );
+  statusDiv.classList.remove("d-none");
 
   //refresh inner form and table to get saved products from invoice.invoiceHasProducts
   refreshInnerFormAndTable();

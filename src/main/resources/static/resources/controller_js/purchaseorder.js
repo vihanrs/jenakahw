@@ -100,6 +100,10 @@ const addEventListeners = () => {
   btnAddProduct.addEventListener("click", () => {
     addProduct();
   });
+
+  btnProductReset.addEventListener("click", () => {
+    clearProductSelect();
+  });
 };
 
 // ********* RESET *********
@@ -138,6 +142,8 @@ const refreshForm = () => {
     "name",
     "Requested"
   );
+
+  statusDiv.classList.add("d-none");
 
   //bind default selected status in to supplier object and set valid color
   purchaseOrder.purchaseOrderStatusId = JSON.parse(selectPOStatus.value);
@@ -195,13 +201,14 @@ const refreshForm = () => {
 //function for refresh inner product form/table area
 const refreshInnerFormAndTable = () => {
   poProduct = {};
-
+  refillProductRowId = null;
   //empty all elements
   textPurchasePrice.value = "";
   textQty.value = "";
   textLineAmount.value = "";
   selectProduct.value = "";
-  textUnitType.value = "";
+  textUnitType.innerText = "";
+  selectProduct.disabled = false;
 
   //set default border color
   let elements = [selectProduct, textPurchasePrice, textQty];
@@ -288,12 +295,15 @@ const calculatePOTotal = () => {
 //function for refill selected product
 const refillProduct = (rowObject, rowId) => {
   //remove refilled product from purchaseOrder.poHasProducts
-  purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
-    (product) => product.productId.id != rowObject.productId.id
-  );
+  // purchaseOrder.poHasProducts = purchaseOrder.poHasProducts.filter(
+  //   (product) => product.productId.id != rowObject.productId.id
+  // );
 
   // refresh inner table
-  refreshInnerFormAndTable();
+  // refreshInnerFormAndTable();
+
+  refillProductRowId = rowId;
+  selectProduct.disabled = true;
 
   //fill product data into relavent fields
   poProduct = JSON.parse(JSON.stringify(rowObject));
@@ -306,7 +316,7 @@ const refillProduct = (rowObject, rowId) => {
   setBorderStyle(elements, "2px solid #00FF7F");
 
   //update product list to add refiled product again
-  refreshRemainProductList(poProduct.productId.barcode);
+  refreshRemainProductList(poProduct.productId.barcode, poProduct.productId);
 };
 
 //function for delete selected product
@@ -371,7 +381,11 @@ const addProduct = () => {
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //add object into array
-        purchaseOrder.poHasProducts.push(poProduct);
+        if (refillProductRowId != null) {
+          updateProduct(poProduct);
+        } else {
+          purchaseOrder.poHasProducts.push(poProduct);
+        }
         refreshInnerFormAndTable();
         refreshRemainProductList();
       }
@@ -381,10 +395,38 @@ const addProduct = () => {
   }
 };
 
+// function for reset product selection data
+const clearProductSelect = () => {
+  if (refillProductRowId != null) {
+    products = products.filter(
+      (product) =>
+        product.id !=
+        purchaseOrder.poHasProducts[refillProductRowId].productId.id
+    );
+  }
+
+  refreshInnerFormAndTable();
+  refreshRemainProductList();
+};
+
+// update refilled product
+const updateProduct = (updatedProduct) => {
+  console.log(updatedProduct);
+
+  purchaseOrder.poHasProducts[refillProductRowId].purchasePrice =
+    updatedProduct.purchasePrice;
+
+  purchaseOrder.poHasProducts[refillProductRowId].qty = updatedProduct.qty;
+  purchaseOrder.poHasProducts[refillProductRowId].lineAmount =
+    updatedProduct.lineAmount;
+
+  refreshInnerFormAndTable();
+};
+
 //refresh products to remove already added products from dropdown
-const refreshRemainProductList = (selectedProduct) => {
+const refreshRemainProductList = (selectedProduct, refillProduct = null) => {
   // filter products already in purchaseOrder.poHasProducts
-  const newProductList = products.filter(
+  products = products.filter(
     (product) =>
       !purchaseOrder.poHasProducts.some(
         (extProduct) => extProduct.productId.id == product.id
@@ -393,11 +435,14 @@ const refreshRemainProductList = (selectedProduct) => {
   //some Method: Checks if at least one element in purchaseOrder.poHasProducts has a productId.id that matches product.id.
   //If some returns true, it means the product is already selected (some returns false when no matches are found).
 
+  if (refillProduct != null) {
+    products.push(refillProduct);
+  }
   //update dropdown with new product list
   fillMoreDataIntoSelect(
     selectProduct,
     "Select Product",
-    newProductList,
+    products,
     "barcode",
     "name",
     selectedProduct
@@ -594,15 +639,23 @@ const refreshTable = () => {
 
   //hide delete button when status is 'deleted'
   purchaseOrders.forEach((po, index) => {
-    if (userPrivilages.delete && po.purchaseOrderStatusId.name == "Deleted") {
-      //catch the button
+    if (
+      (userPrivilages.delete && po.purchaseOrderStatusId.name == "Deleted") ||
+      po.purchaseOrderStatusId.name == "Received"
+    ) {
+      //catch the delete button
       let targetElement =
         purchaseOrdersTable.children[1].children[index].children[6].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
+      //catch the refill button
+      let targetElement1 =
+        purchaseOrdersTable.children[1].children[index].children[6].children[1];
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
+      targetElement1.style.pointerEvents = "none";
+      targetElement1.style.visibility = "hidden";
     }
   });
 
@@ -623,7 +676,7 @@ const getSupplier = (rowObject) => {
 const getStatus = (rowObject) => {
   if (rowObject.purchaseOrderStatusId.name == "Requested") {
     return (
-      '<p class = "status btn-info">' +
+      '<p class = "status btn-plus">' +
       rowObject.purchaseOrderStatusId.name +
       "</p>"
     );
@@ -709,8 +762,21 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     purchaseOrder.purchaseOrderStatusId.name
   );
+  statusDiv.classList.remove("d-none");
 
-  // set supplier
+  // if supplier not the currently not active when refill
+  let isActiveSupplier = false;
+  suppliers.forEach((supplier) => {
+    if (supplier.id == purchaseOrder.supplierId.id) {
+      isActiveSupplier = true;
+      return;
+    }
+  });
+
+  if (!isActiveSupplier) {
+    suppliers.push(purchaseOrder.supplierId);
+  }
+
   fillMoreDataIntoSelect(
     selectSupplier,
     "Select Supplier",
@@ -803,10 +869,11 @@ const printFullTable = () => {
     //  link bootstrap css
     "<head><title>Print Purchase Orders</title>" +
       '<script src="resources/js/jquery.js"></script>' +
-      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      '<link rel="stylesheet" href="resources/css/common.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Purchase Orders Details</h2>" +
       purchaseOrdersTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

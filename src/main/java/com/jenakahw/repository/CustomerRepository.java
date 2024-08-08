@@ -15,7 +15,8 @@ public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 	@Query(value = "Select c from Customer c where c.contact = ?1")
 	public Customer findByContact(String contact);
 	
+	// query for get customer by status
 	@Query(value = "Select c from Customer c where c.customerStatusId = (select cs from CustomerStatus cs where cs.name=?1)")
-	public List<Customer> findByStatus(String status);
+	public List<Customer> findByStatus(String status);	
 
 }
