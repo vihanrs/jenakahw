@@ -25,7 +25,7 @@ const addEventListeners = () => {
 
   selectPOID.addEventListener("change", () => {
     selectDFieldValidator(selectPOID, "grn", "purchaseOrderId"),
-      refreshInnerFormAndTable(),
+      clearPreviousProducts(),
       getSupplierByPO(grn.purchaseOrderId.supplierId),
       getProductListByPO(grn.purchaseOrderId.id);
   });
@@ -92,8 +92,25 @@ const addEventListeners = () => {
     textFieldValidator(textTotalAmount, numberWithdecimals, "grn", "total");
   });
 
+  discountPrecentageCheck.addEventListener("change", () => {
+    discountValidator(
+      textDiscount,
+      textTotalAmount,
+      discountPrecentageCheck,
+      "grn",
+      "discount"
+    ),
+      calGrandTotal();
+  });
+
   textDiscount.addEventListener("keyup", () => {
-    textFieldValidator(textDiscount, numberWithdecimals, "grn", "discount"),
+    discountValidator(
+      textDiscount,
+      textTotalAmount,
+      discountPrecentageCheck,
+      "grn",
+      "discount"
+    ),
       calGrandTotal();
   });
 
@@ -107,6 +124,10 @@ const addEventListeners = () => {
 
   btnAddProduct.addEventListener("click", () => {
     addProduct();
+  });
+
+  btnProductReset.addEventListener("click", () => {
+    clearProductSelect();
   });
 
   //form reset button function call
@@ -168,6 +189,7 @@ const refreshForm = () => {
     "name",
     "Received"
   );
+
   statusDiv.classList.add("d-none");
   divPaidAmount.classList.add("d-none");
 
@@ -186,6 +208,8 @@ const refreshForm = () => {
   textDiscount.value = "";
   textGrandTotal.value = "";
   textPaid.value = "";
+  dicountPrecentageView.innerText = "";
+  discountPrecentageCheck.checked = false;
 
   // //set default border color
   let elements = [
@@ -421,6 +445,8 @@ const refreshInnerFormAndTable = () => {
   textUnitType.innerText = "";
   lblCostPrice.innerText = "";
   lblQty.innerText = "";
+  refillProductRowId = null;
+  selectProduct.disabled = false;
 
   //set default border color
   let elements = [
@@ -454,6 +480,12 @@ const refreshInnerFormAndTable = () => {
   calGrandTotal();
 };
 
+//clear previously tabel added products and refresh when selecting another po id
+const clearPreviousProducts = () => {
+  grn.grnHasProducts = [];
+  refreshInnerFormAndTable();
+};
+
 // function for get product name and barcode
 const getProductName = (rowObject) => {
   return rowObject.productId.barcode + "-" + rowObject.productId.name;
@@ -482,8 +514,14 @@ const getItemCount = () => {
 // function for calculate grand total
 const calGrandTotal = () => {
   let discount = grn.discount != null ? grn.discount : 0;
+
   grn.grandTotal = parseFloat(grn.total - discount).toFixed(2);
   textGrandTotal.value = grn.grandTotal;
+
+  //set precentage label value
+  dicountPrecentageView.innerText = discountPrecentageCheck.checked
+    ? "Rs." + parseFloat(discount).toFixed(2)
+    : calDiscountPrecentage(grn.total, discount) + "%";
 };
 
 // function for get unit type for selected product
@@ -492,7 +530,11 @@ const setUnitType = (product) => {
 };
 
 // function for set purchase order values as hints
-const setPOValuesForSelectedProduct = (purchaseOrderId, productId) => {
+const setPOValuesForSelectedProduct = (
+  purchaseOrderId,
+  productId,
+  isRefill = false
+) => {
   poValues = ajaxGetRequest(
     "/purchaseorder/findpohasproductbypoidandproductid/" +
       purchaseOrderId +
@@ -500,15 +542,19 @@ const setPOValuesForSelectedProduct = (purchaseOrderId, productId) => {
       productId
   );
 
-  textCostPrice.value = poValues.purchasePrice;
-  textQty.value = poValues.qty;
+  if (!isRefill) {
+    textCostPrice.value = poValues.purchasePrice;
+    textQty.value = poValues.qty;
+    grnProduct.qty = poValues.qty;
+    grnProduct.costPrice = poValues.purchasePrice;
+  }
+  //set label values
   lblCostPrice.innerText =
     " Rs." + parseFloat(poValues.purchasePrice).toFixed(2);
   lblQty.innerText = " " + poValues.qty;
+  // set max qty limit
   maxQty = poValues.qty;
 
-  grnProduct.qty = poValues.qty;
-  grnProduct.costPrice = poValues.purchasePrice;
   calLineAmountAndSellPrice();
 };
 
@@ -580,8 +626,13 @@ const addProduct = () => {
 
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
-        //add object into array
-        grn.grnHasProducts.push(grnProduct);
+        if (refillProductRowId != null) {
+          // update object in array
+          updateProduct(grnProduct);
+        } else {
+          //add object into array
+          grn.grnHasProducts.push(grnProduct);
+        }
         refreshInnerFormAndTable();
         refreshRemainProductList();
       }
@@ -591,10 +642,34 @@ const addProduct = () => {
   }
 };
 
+// function for reset update refilled product
+const updateProduct = (updatedProduct) => {
+  grn.grnHasProducts[refillProductRowId].costPrice = updatedProduct.costPrice;
+
+  grn.grnHasProducts[refillProductRowId].qty = updatedProduct.qty;
+  grn.grnHasProducts[refillProductRowId].sellPrice = updatedProduct.sellPrice;
+  grn.grnHasProducts[refillProductRowId].lineAmount = updatedProduct.lineAmount;
+
+  refreshInnerFormAndTable();
+};
+
+// function for reset product selection data
+const clearProductSelect = () => {
+  if (refillProductRowId != null) {
+    products = products.filter(
+      (product) =>
+        product.id != grn.grnHasProducts[refillProductRowId].productId.id
+    );
+  }
+
+  refreshInnerFormAndTable();
+  refreshRemainProductList();
+};
+
 //refresh products to remove already added products from dropdown
-const refreshRemainProductList = (selectedProduct) => {
+const refreshRemainProductList = (selectedProduct, refillProduct = null) => {
   // filter products already in purchaseOrder.poHasProducts
-  const newProductList = products.filter(
+  products = products.filter(
     (product) =>
       !grn.grnHasProducts.some(
         (extProduct) => extProduct.productId.id == product.id
@@ -603,11 +678,15 @@ const refreshRemainProductList = (selectedProduct) => {
   //some Method: Checks if at least one element in purchaseOrder.poHasProducts has a productId.id that matches product.id.
   //If some returns true, it means the product is already selected (some returns false when no matches are found).
 
+  if (refillProduct != null) {
+    products.push(refillProduct);
+  }
+
   //update dropdown with new product list
   fillMoreDataIntoSelect(
     selectProduct,
     "Select Product",
-    newProductList,
+    products,
     "barcode",
     "name",
     selectedProduct
@@ -617,12 +696,15 @@ const refreshRemainProductList = (selectedProduct) => {
 // function for refill product
 const refillProduct = (rowObject, rowId) => {
   //remove refilled product from grn.grnHasProducts
-  grn.grnHasProducts = grn.grnHasProducts.filter(
-    (product) => product.productId.id != rowObject.productId.id
-  );
+  // grn.grnHasProducts = grn.grnHasProducts.filter(
+  //   (product) => product.productId.id != rowObject.productId.id
+  // );
 
   // refresh inner table
-  refreshInnerFormAndTable();
+  // refreshInnerFormAndTable();
+
+  refillProductRowId = rowId;
+  selectProduct.disabled = true;
 
   //fill product data into relavent fields
   grnProduct = JSON.parse(JSON.stringify(rowObject));
@@ -636,7 +718,12 @@ const refillProduct = (rowObject, rowId) => {
   setBorderStyle(elements, "2px solid #00FF7F");
 
   //update product list to add refiled product again
-  refreshRemainProductList(grnProduct.productId.barcode);
+  refreshRemainProductList(grnProduct.productId.barcode, grnProduct.productId);
+  setPOValuesForSelectedProduct(
+    grn.purchaseOrderId.id,
+    grnProduct.productId.id,
+    true
+  );
 };
 
 //function for delete selected product
@@ -695,10 +782,10 @@ const refreshTable = () => {
   );
 
   //hide delete button when status is 'deleted'
-  grns.forEach((po, index) => {
+  grns.forEach((grn, index) => {
     if (
-      (userPrivilages.delete && po.grnStatusId.name == "Deleted") ||
-      po.grnStatusId.name == "Received"
+      (userPrivilages.delete && grn.grnStatusId.name == "Deleted") ||
+      grn.grnStatusId.name == "Received"
     ) {
       //catch the button
       let targetElement =
@@ -759,6 +846,10 @@ const refillRecord = (rowObject, rowId) => {
   textNote.value = grn.note != null ? grn.note : "";
   textDiscount.value =
     grn.discount != null ? parseFloat(grn.discount).toFixed(2) : "";
+  dicountPrecentageView.innerText =
+    grn.discount != null
+      ? calDiscountPrecentage(grn.total, grn.discount) + "%"
+      : "";
   textPaid.value = grn.paid;
   textSupplier.value =
     grn.purchaseOrderId.supplierId.firstName +
@@ -814,6 +905,15 @@ const refillRecord = (rowObject, rowId) => {
   manageFormButtons("refill", userPrivilages);
 };
 
+// function for calculate discount percentage from discount amount
+const calDiscountPrecentage = (total, discount) => {
+  let percentage = 0;
+  if (total == 0) {
+    return percentage;
+  }
+  percentage = (discount / total) * 100;
+  return parseFloat(percentage).toFixed(2);
+};
 // //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation

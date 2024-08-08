@@ -380,10 +380,11 @@ const addProduct = () => {
 
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
-        //add object into array
         if (refillProductRowId != null) {
+          // update object in array
           updateProduct(poProduct);
         } else {
+          //add object into array
           purchaseOrder.poHasProducts.push(poProduct);
         }
         refreshInnerFormAndTable();
@@ -409,10 +410,8 @@ const clearProductSelect = () => {
   refreshRemainProductList();
 };
 
-// update refilled product
+// function for reset update refilled product
 const updateProduct = (updatedProduct) => {
-  console.log(updatedProduct);
-
   purchaseOrder.poHasProducts[refillProductRowId].purchasePrice =
     updatedProduct.purchasePrice;
 
@@ -509,6 +508,7 @@ const checkUpdates = () => {
   }
   if (oldPurchaseOrder.totalAmount != purchaseOrder.totalAmount) {
     updates +=
+      "Products Updated\n" +
       "Total Amount has changed Rs." +
       oldPurchaseOrder.totalAmount +
       " into Rs." +

@@ -235,7 +235,7 @@
                             for="textLineAmount"
                             class="form-label fw-bold"
                           >
-                            Total (Rs):
+                            Total Cost(Rs):
                           </label>
                           <input
                             type="text"
@@ -268,6 +268,24 @@
                             ></i>
                           </button>
                         </div>
+                        <!-- reset button -->
+                        <div class="col-md-1">
+                          <label
+                            for="btnProductReset"
+                            class="form-label fw-bold"
+                            style="color: #d8d8d834"
+                          >
+                            .
+                          </label>
+                          <br />
+                          <button
+                            class="btn btn-outline-danger"
+                            type="button"
+                            id="btnProductReset"
+                          >
+                            <i class="fa-solid fa-xmark"></i>
+                          </button>
+                        </div>
                       </div>
 
                       <!-- inner table -->
@@ -283,7 +301,7 @@
                               <th>Purchase Price (Rs.)</th>
                               <th>Quantity</th>
                               <th>Sell Price (Rs.)</th>
-                              <th>Total (Rs.)</th>
+                              <th>Total Cost(Rs.)</th>
                               <th style="width: 100px; text-align: right">
                                 Modify
                               </th>
@@ -335,12 +353,29 @@
                           Discount (Rs.):
                         </label>
                         <input
+                          type="checkbox"
+                          class="form-check-input ms-4"
+                          id="discountPrecentageCheck"
+                          style="border: 1px solid black"
+                        />
+                        <label
+                          for="discountPrecentageCheck"
+                          class="form-check-label fw-bold ms-5"
+                          >%</label
+                        >
+                        <input
                           type="text"
                           placeholder="Enter Discount"
                           class="form-control"
                           id="textDiscount"
                         />
+                        <span
+                          id="dicountPrecentageView"
+                          class="ps-2"
+                          style="color: #9c9c9c"
+                        ></span>
                       </div>
+
                       <!-- grand total amount -->
                       <div class="col-md-3">
                         <label for="textGrandTotal" class="form-label fw-bold">

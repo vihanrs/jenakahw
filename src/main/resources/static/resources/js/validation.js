@@ -63,6 +63,7 @@ const qtyFieldValidator = (
   }
 };
 
+// discount validation function
 const discountValidator = (
   fieldId,
   totalFieldId,
