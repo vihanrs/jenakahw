@@ -32,54 +32,23 @@ const addEventListeners = () => {
     dataListValidator(
       textCustomer,
       "loyaltyCustomers",
-      "invPayment",
+      "cusPayment",
       "customer",
       "contact",
       true
     ),
       refreshIncompelteInvoiceTable();
   });
-  // textCustomer.addEventListener("input", () => {
-  //   dataListValidator(
-  //     textCustomer,
-  //     "loyaltyCustomers",
-  //     "invCusPayment",
-  //     "customerId",
-  //     "contact",
-  //     true
-  //   ),
 
-  // textDiscount.addEventListener("keyup", () => {
-  //   discountValidator(
-  //     textDiscount,
-  //     textTotalAmount,
-  //     discountPrecentageCheck,
-  //     "invPayment",
-  //     "discount"
-  //   ),
-  //     calDisount(),
-  //     calPayment();
-  // });
-
-  // discountPrecentageCheck.addEventListener("change", () => {
-  //   discountValidator(
-  //     textDiscount,
-  //     textTotalAmount,
-  //     discountPrecentageCheck,
-  //     "invPayment",
-  //     "discount"
-  //   ),
-  //     calDisount(),
-  //     calPayment();
-  // });
-
-  // creditSellCheck.addEventListener("change", () => {
-  //   calPayment();
-  // });
-
-  // textPayment.addEventListener("keyup", () => {
-  //   calPayment();
-  // });
+  textPayment.addEventListener("keyup", () => {
+    textFieldValidator(
+      textPayment,
+      numberWithdecimals,
+      "cusPayment",
+      "paidAmount"
+    ),
+      calBalance();
+  });
 
   //form reset button function call
   btnReset.addEventListener("click", () => {
@@ -95,16 +64,6 @@ const addEventListeners = () => {
   btnAdd.addEventListener("click", () => {
     addRecord();
   });
-
-  //record print function call
-  // btnViewPrint.addEventListener("click", () => {
-  //   printViewRecord();
-  // });
-
-  //print full table function call
-  // btnPrintFullTable.addEventListener("click", () => {
-  //   printFullTable();
-  // });
 };
 
 // ********* RESET *********
@@ -121,16 +80,18 @@ const refreshAll = () => {
 //function for refresh form area
 const refreshForm = () => {
   //create empty object
-  invPayment = {};
-  invCusPayment = {};
+  cusPayment = {};
+  // invCusPayment = {};
 
   createViewPayMethodUI();
   refreshIncompelteInvoiceTable();
 
   //empty all elements
   textCustomer.value = "";
+  textBalance.value = "";
+  textPayment.value = "";
 
-  setBorderStyle([textCustomer]);
+  setBorderStyle([textCustomer, textPayment]);
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -152,11 +113,17 @@ const createViewPayMethodUI = () => {
     inputCHK.onchange = function () {
       if (this.checked) {
         //if not exist add new role
-        invPayment.paymethodId = paymethod;
+        cusPayment.paymethodId = paymethod;
         if (
-          invPayment.paymethodId.name == "Card" ||
-          invPayment.paymethodId.name == "Cheque"
+          cusPayment.paymethodId.name == "Card" ||
+          cusPayment.paymethodId.name == "Cheque"
         ) {
+          textPayment.value = parseFloat(textTotalBalance.value).toFixed(2);
+          textPayment.style.border = "1px solid #ced4da";
+          textPayment.disabled = true;
+          calBalance();
+        } else {
+          textPayment.disabled = false;
         }
       }
     };
@@ -187,8 +154,8 @@ const getCustomerList = () => {
 
 const refreshIncompelteInvoiceTable = () => {
   let customerid = 0;
-  if (invPayment.customer != null) {
-    customerid = invPayment.customer.id;
+  if (cusPayment.customer != null) {
+    customerid = cusPayment.customer.id;
   }
   incompleteInvoicesByCustomer = ajaxGetRequest(
     "/invoice/findincompletebycustomer/" + customerid
@@ -216,6 +183,7 @@ const refreshIncompelteInvoiceTable = () => {
 const refillInvoice = () => {};
 const deleteInvoice = () => {};
 
+// function for get total balance of loaded invoices
 const getTotalBalance = () => {
   let totBalance = 0;
   incompleteInvoicesByCustomer.forEach((inv) => {
@@ -223,113 +191,35 @@ const getTotalBalance = () => {
   });
   textTotalBalance.value = parseFloat(totBalance).toFixed(2);
 };
-// function for load invoice values
-const getInvoiceValues = () => {
-  let inv = invPayment.invoiceId;
-  if (inv != null && inv.length != 0) {
-    if (inv.invoiceStatusId.name == "Pending") {
-      textInvoiceId.value = inv.invoiceId;
-      textInvoiceId.style.border = "2px solid #00FF7F";
-
-      textCustomer.value =
-        inv.customerId.fullName + " - " + inv.customerId.contact;
-
-      textTotalAmount.value = parseFloat(inv.total).toFixed(2);
-      textGrandTotal.value = parseFloat(inv.grandTotal).toFixed(2);
-
-      if (inv.customerId.customerStatusId.name == "Loyalty") {
-        divCreditSell.classList.remove("d-none");
-      }
-
-      textDiscount.disabled = false;
-      discountPrecentageCheck.disabled = false;
-      textPayment.disabled = false;
-
-      let paymethods = divPaymethods.querySelectorAll("input");
-      paymethods.forEach((input) => {
-        input.disabled = false;
-      });
-    } else {
-      showAlert(
-        "warning",
-        "Invoice ID " + inv.invoiceId + " is not a pending invoice!"
-      );
-    }
-  } else {
-    resetInvoiceDetails();
-  }
-};
-
-// function for reset invoice values
-const resetInvoiceDetails = () => {
-  textCustomer.value = "";
-  textTotalAmount.value = "";
-  textGrandTotal.value = "";
-  creditSellCheck.checked = false;
-  divCreditSell.classList.add("d-none");
-  textDiscount.disabled = true;
-  discountPrecentageCheck.disabled = true;
-  textPayment.disabled = true;
-
-  textDiscount.value = "";
-  textPayment.value = "";
-  textBalance.value = "";
-
-  setBorderStyle([textDiscount, textPayment, textBalance]);
-
-  let paymethods = divPaymethods.querySelectorAll("input");
-  paymethods.forEach((input) => {
-    input.disabled = true;
-  });
-};
-
-// function for cal discount
-const calDisount = () => {
-  let discount = 0;
-  let total = invPayment.invoiceId.total;
-  if (invPayment.discount != null) {
-    discount = invPayment.discount;
-    textGrandTotal.value = parseFloat(total - discount).toFixed(2);
-  } else {
-    textGrandTotal.value = parseFloat(total).toFixed(2);
-  }
-
-  //bind values
-  invPayment.invoiceId.discount = discount;
-  invPayment.invoiceId.grandTotal = parseFloat(textGrandTotal.value);
-};
 
 // fucntion for cal payment and balance
-const calPayment = () => {
-  let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
-  let balance = "";
-  let fieldValue = textPayment.value;
+const calBalance = () => {
+  let paidAmount = textPayment.value;
+  let totalBalance = textTotalBalance.value;
+  let balance = 0;
 
-  if (fieldValue != "" && new RegExp(numberWithdecimals).test(fieldValue)) {
-    textPayment.style.border = "2px solid #00FF7F";
-    balance = parseFloat(fieldValue) - parseFloat(textGrandTotal.value);
-  } else {
-    balance = -parseFloat(textGrandTotal.value).toFixed(2);
-  }
+  if (paidAmount != "" && cusPayment.paidAmount != null) {
+    // cal balance amount
+    balance = parseFloat(paidAmount) - parseFloat(totalBalance);
 
-  if (balance >= 0) {
-    textBalance.style.border = "1px solid #ced4da";
-    invPayment.paidAmount = parseFloat(textGrandTotal.value);
-    creditSellCheck.checked = false;
-    invPayment.invoiceId.isCredit = false;
-  } else if (balance < 0) {
-    if (creditSellCheck.checked) {
-      invPayment.invoiceId.isCredit = true;
-      textBalance.style.border = "1px solid #ced4da";
-      invPayment.paidAmount = parseFloat(fieldValue);
+    // if paid amount lower than total payable balance
+    if (balance < 0) {
+      lblBalance.innerText = "Due (Rs.):";
+      cusPayment.paidAmount = parseFloat(paidAmount);
+      cusPayment.balance = -balance;
     } else {
-      invPayment.invoiceId.isCredit = false;
-      textBalance.style.border = "1px solid red";
-      invPayment.paidAmount = null;
+      lblBalance.innerText = "Balance (Rs.):";
+      cusPayment.paidAmount = parseFloat(totalBalance);
+      cusPayment.balance = 0;
     }
+    textBalance.value = parseFloat(balance).toFixed(2);
+
+    // bind value
+  } else {
+    textBalance.value = "";
   }
-  textBalance.value = parseFloat(balance).toFixed(2);
-  console.log(invPayment);
+
+  console.log(cusPayment);
 };
 
 //function for check errors
@@ -337,67 +227,20 @@ const checkErrors = () => {
   //need to check all required property fields
   let error = "";
 
-  if (invPayment.invoiceId == null) {
-    error = error + "Please Enter Invoice to Make Payment...!\n";
-    textInvoiceId.style.border = "1px solid red";
+  if (cusPayment.customer == null) {
+    error = error + "Please Select Customer...!\n";
+    textCustomer.style.border = "1px solid red";
   }
-  if (invPayment.paymethodId == null) {
+  if (cusPayment.paymethodId == null) {
     error = error + "Please Select Payment Method...!\n";
   }
-  if (invPayment.paidAmount == null) {
+  if (cusPayment.paidAmount == null) {
     error = error + "Please Enter Valid Payment Amount...!\n";
     textPayment.style.border = "1px solid red";
   }
 
   return error;
 };
-
-//function for check updates
-// const checkUpdates = () => {
-//   let updates = "";
-
-//   if (oldcustomer.name != customer.name) {
-//     updates +=
-//       "Name has changed " + oldcustomer.name + " into " + customer.name + " \n";
-//   }
-//   if (oldcustomer.contact != customer.contact) {
-//     updates +=
-//       "Contact No. has changed " +
-//       oldcustomer.contact +
-//       " into " +
-//       customer.contact +
-//       " \n";
-//   }
-
-//   if (oldcustomer.nic != customer.nic) {
-//     updates +=
-//       "NIC has changed " +
-//       (oldcustomer.nic ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.nic ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.address != customer.address) {
-//     updates +=
-//       "Address has changed " +
-//       (oldcustomer.address ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.address ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.customerStatusId.id != customer.customerStatusId.id) {
-//     updates +=
-//       "Status has changed " +
-//       oldcustomer.customerStatusId.name +
-//       " into " +
-//       customer.customerStatusId.name +
-//       " \n";
-//   }
-
-//   return updates;
-// };
 
 //function for add record
 const addRecord = () => {
@@ -408,16 +251,16 @@ const addRecord = () => {
     let title = "Are you sure to add following payment..?\n";
     let message =
       "Payment Amount : Rs." +
-      parseFloat(invPayment.paidAmount).toFixed(2) +
+      parseFloat(cusPayment.paidAmount).toFixed(2) +
       "\nPayment Method : " +
-      invPayment.paymethodId.name;
+      cusPayment.paymethodId.name;
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
         let serverResponse = ajaxRequestBody(
-          "/invoicepayment",
+          "/customerpayment",
           "POST",
-          invPayment
+          cusPayment
         ); // url,method,object
 
         //check back end response
@@ -441,107 +284,38 @@ const addRecord = () => {
 
 //function for update record
 const updateRecord = () => {
-  let errors = checkErrors();
-  if (errors == "") {
-    let updates = checkUpdates();
-    if (updates != "") {
-      let title = "Are you sure you want to update following changes...?";
-      let message = updates;
-      showConfirm(title, message).then((userConfirm) => {
-        if (userConfirm) {
-          let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
-          if (serverResponse == "OK") {
-            showAlert("success", "Customer Update successfully..!").then(() => {
-              //need to refresh table and form
-              refreshAll();
-            });
-          } else {
-            showAlert(
-              "error",
-              "Customer update not successfully..! have some errors \n" +
-                serverResponse
-            );
-          }
-        }
-      });
-    } else {
-      showAlert("warning", "Nothing to Update...!");
-    }
-  } else {
-    showAlert("error", "Cannot update!!!\n" + errors);
-  }
+  // let errors = checkErrors();
+  // if (errors == "") {
+  //   let updates = checkUpdates();
+  //   if (updates != "") {
+  //     let title = "Are you sure you want to update following changes...?";
+  //     let message = updates;
+  //     showConfirm(title, message).then((userConfirm) => {
+  //       if (userConfirm) {
+  //         let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
+  //         if (serverResponse == "OK") {
+  //           showAlert("success", "Customer Update successfully..!").then(() => {
+  //             //need to refresh table and form
+  //             refreshAll();
+  //           });
+  //         } else {
+  //           showAlert(
+  //             "error",
+  //             "Customer update not successfully..! have some errors \n" +
+  //               serverResponse
+  //           );
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     showAlert("warning", "Nothing to Update...!");
+  //   }
+  // } else {
+  //   showAlert("error", "Cannot update!!!\n" + errors);
+  // }
 };
 
 // ********* TABLE OPERATIONS *********
-
-//function for refresh table records
-const refreshTable = () => {
-  //array for store data list
-  customers = ajaxGetRequest("/customer/findall");
-
-  //object count = table column count
-  //String - number/string/date
-  //function - object/array/boolean
-  //currency - RS
-  const displayProperties = [
-    { property: "fullName", datatype: "String" },
-    { property: "contact", datatype: "String" },
-    { property: "nic", datatype: "String" },
-    { property: "address", datatype: "String" },
-    { property: getStatus, datatype: "function" },
-  ];
-
-  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
-  fillDataIntoTable(
-    customerTable,
-    customers,
-    displayProperties,
-    viewRecord,
-    refillRecord,
-    deleteRecord,
-    true,
-    userPrivilages
-  );
-
-  //hide delete button when status is 'deleted'
-  customers.forEach((customer, index) => {
-    if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
-      //catch the button
-      let targetElement =
-        customerTable.children[1].children[index].children[6].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
-      //add changes
-      targetElement.style.pointerEvents = "none";
-      targetElement.style.visibility = "hidden";
-    }
-  });
-
-  $("#customerTable").dataTable();
-};
-
-// function for get status
-const getStatus = (rowObject) => {
-  if (rowObject.customerStatusId.name == "Loyalty") {
-    return (
-      '<p class = "status status-active">' +
-      rowObject.customerStatusId.name +
-      "</p>"
-    );
-  } else if (rowObject.customerStatusId.name == "Normal") {
-    return (
-      '<p class = "status status-warning">' +
-      rowObject.customerStatusId.name +
-      "</p>"
-    );
-  } else if (rowObject.customerStatusId.name == "Deleted") {
-    return (
-      '<p class = "status status-error">' +
-      rowObject.customerStatusId.name +
-      "</p>"
-    );
-  }
-};
 
 //function for view record
 const viewRecord = (rowObject, rowId) => {
@@ -556,72 +330,6 @@ const viewRecord = (rowObject, rowId) => {
 
   //open model
   $("#modelDetailedView").modal("show");
-};
-
-//function for refill record
-const refillRecord = (rowObject, rowId) => {
-  $("#addNewButton").click();
-
-  customer = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
-  oldcustomer = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
-
-  textCustomerName.value = customer.fullName;
-  textCustomerContact.value = customer.contact;
-
-  //set optional fields
-  textCustomerNIC.value = customer.nic ?? "";
-  textCustomerAddress.value = customer.address ?? "";
-
-  // set status
-  fillDataIntoSelect(
-    selectStatus,
-    "Select Status",
-    statuses,
-    "name",
-    customer.customerStatusId.name
-  );
-
-  setBorderStyle([
-    textCustomerName,
-    textCustomerContact,
-    textCustomerNIC,
-    textCustomerAddress,
-    selectStatus,
-  ]);
-
-  //manage buttons
-  manageFormButtons("refill", userPrivilages);
-};
-
-// //function for delete record
-const deleteRecord = (rowObject, rowId) => {
-  //get user confirmation
-  let title = "Are you sure!\nYou wants to delete following record? \n";
-  let message =
-    "Customer Name : " +
-    rowObject.fullName +
-    "\nContact No. :" +
-    rowObject.contact;
-
-  showConfirm(title, message).then((userConfirm) => {
-    if (userConfirm) {
-      //response from backend ...
-      let serverResponse = ajaxRequestBody("/customer", "DELETE", rowObject); // url,method,object
-      //check back end response
-      if (serverResponse == "OK") {
-        showAlert("success", "Customer Delete successfully..!").then(() => {
-          // Need to refresh table and form
-          refreshAll();
-        });
-      } else {
-        showAlert(
-          "error",
-          "Customer delete not successfully..! have some errors \n" +
-            serverResponse
-        );
-      }
-    }
-  });
 };
 
 // ********* PRINT OPERATIONS *********

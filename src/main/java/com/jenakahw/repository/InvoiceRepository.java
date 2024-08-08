@@ -25,6 +25,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 	public Invoice findByInvoiceId(String invoiceId);
 
 	// query for get invoice list by customer incomplete payments
-	@Query(value = "Select inv from Invoice inv where inv.customerId.id=?1 and inv.balanceAmount != 0")
-	public List<Invoice> findByCustomerAndIncomplete(int invoiceId);
+	@Query(value = "Select inv from Invoice inv where inv.customerId.id=?1 and inv.balanceAmount != 0 order by inv.id")
+	public List<Invoice> findByCustomerAndIncomplete(int customerId);
 }

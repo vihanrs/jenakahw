@@ -342,6 +342,7 @@ const checkUpdates = () => {
 
   if (oldGrn.grandTotal != grn.grandTotal) {
     updates +=
+      "Products Updated\n" +
       "Grand Total Amount has changed Rs." +
       oldGrn.grandTotal +
       " into Rs." +
@@ -447,6 +448,7 @@ const refreshInnerFormAndTable = () => {
   lblQty.innerText = "";
   refillProductRowId = null;
   selectProduct.disabled = false;
+  innerFormTable.classList.remove("d-none");
 
   //set default border color
   let elements = [
@@ -857,7 +859,7 @@ const refillRecord = (rowObject, rowId) => {
       ? " - " + grn.purchaseOrderId.supplierId.company
       : "");
 
-  // disable changing supplier
+  // disable changing POID
   selectPOID.disabled = true;
 
   fillDataIntoSelect(
@@ -881,7 +883,7 @@ const refillRecord = (rowObject, rowId) => {
 
   statusDiv.classList.remove("d-none");
   divPaidAmount.classList.remove("d-none");
-  //refresh inner form and table to get saved products from purchaseOrder.poHasProducts
+  //refresh inner form and table to get saved products from grn.grnHasProducts
   refreshInnerFormAndTable();
 
   //get purchase order product list and then remove alrady added products
@@ -900,6 +902,23 @@ const refillRecord = (rowObject, rowId) => {
     textPaid,
     selectGRNStatus,
   ]);
+
+  //hide innerform buttons
+  innerFormTable.classList.add("d-none");
+
+  //hide inner table buttons when refill
+
+  for (i = 0; i < grn.grnHasProducts.length; i++) {
+    let targetElement0 =
+      productsTable.children[1].children[i].children[6].children[0];
+    let targetElement =
+      productsTable.children[1].children[i].children[6].children[1];
+    //add changes
+    targetElement0.style.pointerEvents = "none";
+    targetElement0.style.visibility = "hidden";
+    targetElement.style.pointerEvents = "none";
+    targetElement.style.visibility = "hidden";
+  }
 
   //manage buttons
   manageFormButtons("refill", userPrivilages);
@@ -965,10 +984,14 @@ const viewRecord = (rowObject, rowId) => {
       printObj.purchaseOrderId.supplierId.company ?? "";
   tdItemCount.innerText = printObj.itemCount;
   tdTotal.innerText = "Rs." + parseFloat(printObj.total).toFixed(2);
-  tdDiscount.innerText = "Rs." + parseFloat(printObj.discount).toFixed(2);
+  tdDiscount.innerText =
+    printObj.discount != null
+      ? "Rs." + parseFloat(printObj.discount).toFixed(2)
+      : "Rs.0.00";
   tdGrandTotal.innerText = "Rs." + parseFloat(printObj.grandTotal).toFixed(2);
   tdStatus.innerText = printObj.grnStatusId.name;
   tdCreatedDate.innerText = printObj.addedDateTime.split("T")[0];
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paid).toFixed(2);
   getGRNProductsForPrint(printObj);
   //open model
   $("#modelDetailedView").modal("show");
