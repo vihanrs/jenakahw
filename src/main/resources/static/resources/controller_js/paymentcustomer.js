@@ -118,7 +118,10 @@ const createViewPayMethodUI = () => {
           cusPayment.paymethodId.name == "Card" ||
           cusPayment.paymethodId.name == "Cheque"
         ) {
-          textPayment.value = parseFloat(textTotalBalance.value).toFixed(2);
+          textPayment.value =
+            textTotalBalance.value != ""
+              ? parseFloat(textTotalBalance.value).toFixed(2)
+              : 0;
           textPayment.style.border = "1px solid #ced4da";
           textPayment.disabled = true;
           calBalance();
@@ -152,32 +155,39 @@ const getCustomerList = () => {
   );
 };
 
+// function for refresh invoice table
 const refreshIncompelteInvoiceTable = () => {
   let customerid = 0;
   if (cusPayment.customer != null) {
     customerid = cusPayment.customer.id;
+
+    incompleteInvoicesByCustomer = ajaxGetRequest(
+      "/invoice/findincompletebycustomer/" + customerid
+    );
+
+    if (incompleteInvoicesByCustomer.length != 0) {
+      const displayProperties = [
+        { property: "invoiceId", datatype: "String" },
+        { property: "grandTotal", datatype: "currency" },
+        { property: "paidAmount", datatype: "currency" },
+        { property: "balanceAmount", datatype: "currency" },
+      ];
+
+      //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+      fillDataIntoInnerTable(
+        incompleteInvoicesTable,
+        incompleteInvoicesByCustomer,
+        displayProperties,
+        refillInvoice,
+        deleteInvoice,
+        false
+      );
+
+      getTotalBalance();
+    } else {
+      showAlert("warning", "No due payments");
+    }
   }
-  incompleteInvoicesByCustomer = ajaxGetRequest(
-    "/invoice/findincompletebycustomer/" + customerid
-  );
-  const displayProperties = [
-    { property: "invoiceId", datatype: "String" },
-    { property: "grandTotal", datatype: "currency" },
-    { property: "paidAmount", datatype: "currency" },
-    { property: "balanceAmount", datatype: "currency" },
-  ];
-
-  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
-  fillDataIntoInnerTable(
-    incompleteInvoicesTable,
-    incompleteInvoicesByCustomer,
-    displayProperties,
-    refillInvoice,
-    deleteInvoice,
-    false
-  );
-
-  getTotalBalance();
 };
 
 const refillInvoice = () => {};
@@ -283,53 +293,21 @@ const addRecord = () => {
 };
 
 //function for update record
-const updateRecord = () => {
-  // let errors = checkErrors();
-  // if (errors == "") {
-  //   let updates = checkUpdates();
-  //   if (updates != "") {
-  //     let title = "Are you sure you want to update following changes...?";
-  //     let message = updates;
-  //     showConfirm(title, message).then((userConfirm) => {
-  //       if (userConfirm) {
-  //         let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
-  //         if (serverResponse == "OK") {
-  //           showAlert("success", "Customer Update successfully..!").then(() => {
-  //             //need to refresh table and form
-  //             refreshAll();
-  //           });
-  //         } else {
-  //           showAlert(
-  //             "error",
-  //             "Customer update not successfully..! have some errors \n" +
-  //               serverResponse
-  //           );
-  //         }
-  //       }
-  //     });
-  //   } else {
-  //     showAlert("warning", "Nothing to Update...!");
-  //   }
-  // } else {
-  //   showAlert("error", "Cannot update!!!\n" + errors);
-  // }
-};
+const updateRecord = () => {};
 
 // ********* TABLE OPERATIONS *********
 
 //function for view record
 const viewRecord = (rowObject, rowId) => {
   //need to get full object
-  let printObj = rowObject;
-
-  tdCustomerName.innerText = printObj.fullName;
-  tdCustomerContact.innerText = printObj.contact;
-  tdCustomerNIC.innerText = printObj.nic;
-  tdCustomerAddress.innerText = printObj.address;
-  tdStatus.innerText = printObj.customerStatusId.name;
-
-  //open model
-  $("#modelDetailedView").modal("show");
+  // let printObj = rowObject;
+  // tdCustomerName.innerText = printObj.fullName;
+  // tdCustomerContact.innerText = printObj.contact;
+  // tdCustomerNIC.innerText = printObj.nic;
+  // tdCustomerAddress.innerText = printObj.address;
+  // tdStatus.innerText = printObj.customerStatusId.name;
+  // //open model
+  // $("#modelDetailedView").modal("show");
 };
 
 // ********* PRINT OPERATIONS *********

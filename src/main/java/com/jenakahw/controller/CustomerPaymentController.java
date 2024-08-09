@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.jenakahw.domain.CustomerHasPayment;
+import com.jenakahw.domain.CustomerPayment;
 import com.jenakahw.domain.Invoice;
+import com.jenakahw.domain.InvoiceHasPayment;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.CustomerPaymentRepository;
+import com.jenakahw.repository.InvoicePaymentRepository;
 import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
 
@@ -33,6 +36,9 @@ public class CustomerPaymentController {
 
 	@Autowired
 	private InvoiceRepository invoiceRepository;
+	
+	@Autowired
+	private InvoicePaymentRepository invoicePaymentRepository;
 
 	@Autowired
 	private InvoiceStatusRepository invoiceStatusRepository;
@@ -58,23 +64,33 @@ public class CustomerPaymentController {
 		return customerPaymentView;
 	}
 
-	// post mapping for save new invoice payment
+	// post mapping for save new customer payment
 	@PostMapping
-	public String saveInvoicePayment(@RequestBody CustomerHasPayment customerPayment) {
+	public String saveInvoicePayment(@RequestBody CustomerPayment customerPayment) {
 		// check privileges
 		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
 			return "Access Denied !!!";
 		}
 
 		try {
+			// get logged user id
+			int loggedUserId = userController.getLoggedUser().getId();
+			
+			// set customer payment date and added user
+			customerPayment.setAddedDateTime(LocalDateTime.now());
+			customerPayment.setAddedUserId(loggedUserId);
+			
+			//save customer payment
+			CustomerPayment newCustomerPayment =  customerPaymentRepository.save(customerPayment);
+			
 			// get paidAmount
-			BigDecimal paidAmount = customerPayment.getPaidAmount();
-
+			BigDecimal paidAmount = newCustomerPayment.getPaidAmount();
+			
 			// select incomplete invoices by customer
-			List<Invoice> incompleteInvoices = invoiceRepository
-					.findByCustomerAndIncomplete(customerPayment.getCustomer().getId());
+			List<Invoice> incompleteInvoices = invoiceRepository.findByCustomerAndIncomplete(newCustomerPayment.getCustomer().getId());
 
 			for (Invoice invoice : incompleteInvoices) {
+				
 				if (!paidAmount.equals(BigDecimal.ZERO)) {
 
 					BigDecimal invoiceBalance = invoice.getBalanceAmount();
@@ -83,16 +99,17 @@ public class CustomerPaymentController {
 					int comparison = invoiceBalance.compareTo(paidAmount);
 
 					if (comparison <= 0) {
-						// invoiceBalance < paidAmount (-1/0)
+						// invoiceBalance <= paidAmount (-1/0)
 
 						// update invoice
 						invoice.setBalanceAmount(BigDecimal.ZERO); // set 0 for balance amount
 						invoice.setPaidAmount(invoice.getPaidAmount().add(invoiceBalance)); // update paid amount
-						invoice.setInvoiceStatusId(invoiceStatusRepository.getReferenceById(4)); // set status 'Completed'
+						invoice.setInvoiceStatusId(invoiceStatusRepository.getReferenceById(2)); // set status 'Completed'
 						invoiceRepository.save(invoice);
-
-						// save customer payment record for this invoice
-						saveCustomerPayment(customerPayment, invoice.getId(), invoiceBalance);
+						
+						//save new invoice has payment record
+						InvoiceHasPayment invHasPayment = new InvoiceHasPayment(invoice,customerPayment.getPaymethodId(),invoiceBalance,newCustomerPayment.getId(),LocalDateTime.now(),loggedUserId);
+						invoicePaymentRepository.save(invHasPayment);
 
 						// update remaining paid amount
 						paidAmount = paidAmount.subtract(invoiceBalance);
@@ -101,13 +118,19 @@ public class CustomerPaymentController {
 						// invoiceBalance > paidAmount (1)
 						
 						// update invoice
-						invoice.setBalanceAmount(invoiceBalance.subtract(paidAmount)); // set 0 for balance amount
+						invoice.setBalanceAmount(invoiceBalance.subtract(paidAmount));
 						invoice.setPaidAmount(invoice.getPaidAmount().add(paidAmount)); // update paid amount
 						invoiceRepository.save(invoice);
 						
-						// save customer payment record for this invoice
-						saveCustomerPayment(customerPayment, invoice.getId(), paidAmount);
+						//save new invoice has payment record
+						InvoiceHasPayment invHasPayment = new InvoiceHasPayment(invoice,customerPayment.getPaymethodId(),paidAmount,newCustomerPayment.getId(),LocalDateTime.now(),loggedUserId);
+						invoicePaymentRepository.save(invHasPayment);
+						
+						// update remaining paid amount
+						paidAmount = BigDecimal.ZERO;
 					}
+				}else {
+					break;
 				}
 			}
 
@@ -117,16 +140,4 @@ public class CustomerPaymentController {
 		}
 	}
 
-	private void saveCustomerPayment(CustomerHasPayment customerPayment, int invoiceId, BigDecimal invPaidAmount) {
-		// set invoice id
-		customerPayment.setInvoiceId(invoiceId);
-		customerPayment.setPaidAmount(invPaidAmount);
-
-		// set customer payment date and added user
-		customerPayment.setAddedDateTime(LocalDateTime.now());
-		customerPayment.setAddedUserId(userController.getLoggedUser().getId());
-
-		customerPaymentRepository.save(customerPayment);
-
-	}
 }

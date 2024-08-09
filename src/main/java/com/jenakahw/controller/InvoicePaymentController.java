@@ -95,7 +95,7 @@ public class InvoicePaymentController {
 			invoice.setIsCredit(invoicePayment.getInvoiceId().getIsCredit());
 			
 			if(invoice.getIsCredit()) {
-				// update invoice status to "Not Paid"
+				// update invoice status to "Incompleted"
 				invoice.setInvoiceStatusId(invoiceStatusRepository.getReferenceById(4));
 			}else {
 				// update invoice status to "Completed"
@@ -105,12 +105,15 @@ public class InvoicePaymentController {
 			// update invoice 
 			invoiceRepository.save(invoice);
 			
+			if(!invoicePayment.getPaidAmount().equals(BigDecimal.ZERO)) {
+			
 			// set invoice payment date and user
 			invoicePayment.setAddedDateTime(LocalDateTime.now());
 			invoicePayment.setAddedUserId(userController.getLoggedUser().getId());
 			
 			invoicePaymentRepository.save(invoicePayment);
-		
+			
+			}
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();

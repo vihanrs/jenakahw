@@ -17,11 +17,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity // applied as an entity class
-@Table(name = "customer_has_payment") // map table
+@Table(name = "customer_payment") // map table
 @Data // generate getters and setters
 @NoArgsConstructor // generate default constructor
 @AllArgsConstructor // generate all args constructor
-public class CustomerHasPayment {
+public class CustomerPayment {
 	@Id // primary key -PK
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto generated id - AI
 	@Column(name = "id", unique = true) // map with database table column
@@ -30,10 +30,6 @@ public class CustomerHasPayment {
 	@Column(name = "paid_amount")
 	@NotNull
 	private BigDecimal paidAmount;
-	
-	@Column(name = "invoice_id")
-	@NotNull
-	private Integer invoiceId;
 
 	@ManyToOne
 	@JoinColumn(name = "customer_id", referencedColumnName = "id")

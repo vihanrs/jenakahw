@@ -2,7 +2,6 @@ package com.jenakahw.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +39,9 @@ public class InvoiceHasPayment {
 	@NotNull
 	private BigDecimal paidAmount;
 	
+	@Column(name = "customer_payment_id")
+	private Integer customerPaymentId;
+	
 	@Column(name = "added_datetime")
 	@NotNull
 	private LocalDateTime addedDateTime;
@@ -47,4 +49,13 @@ public class InvoiceHasPayment {
 	@Column(name = "added_user_id")
 	@NotNull
 	private Integer addedUserId;
+	
+	public InvoiceHasPayment(Invoice invoiceId,PayMethod paymethodId,BigDecimal paidAmount,Integer customerPaymentId,LocalDateTime addedDateTime,Integer addedUserId) {
+		this.invoiceId = invoiceId;
+		this.paymethodId = paymethodId;
+		this.paidAmount = paidAmount;
+		this.customerPaymentId = customerPaymentId;
+		this.addedDateTime = addedDateTime;
+		this.addedUserId = addedUserId;
+	}
 }
