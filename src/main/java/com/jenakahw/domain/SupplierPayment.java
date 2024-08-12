@@ -28,17 +28,9 @@ public class SupplierPayment {
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
 	
-	@Column(name = "total_paid_amount")
+	@Column(name = "paid_amount")
 	@NotNull
-	private BigDecimal totalPaidAmount;
-	
-	@Column(name = "total_balance_amount")
-	@NotNull
-	private BigDecimal totalBalanceAmount;
-	
-	@Column(name = "last_balance_amount")
-	@NotNull
-	private BigDecimal lastBalanceAmount;
+	private BigDecimal paidAmount;
 	
 	@ManyToOne
 	@JoinColumn(name = "paymethod_id",referencedColumnName = "id")
@@ -48,7 +40,10 @@ public class SupplierPayment {
 	@JoinColumn(name = "supplier_id",referencedColumnName = "id")
 	private Supplier supplierId;
 	
-	@Column(name = "paid_datetime")
+	@Column(name = "added_datetime")
 	@NotNull
-	private LocalDateTime paidDateTime;
+	private LocalDateTime addedDateTime;
+	
+	@Column(name = "added_user_id")
+	private Integer addedUserId;
 }

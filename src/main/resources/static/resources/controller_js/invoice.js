@@ -190,11 +190,11 @@ const checkErrors = () => {
   //need to check all required property fields
   let error = "";
 
-  if (customer.fullName == null) {
+  if (customer.fullName == null && customer.contact != null) {
     error += "Please Enter Customer Name...!\n";
     textCustomerName.style.border = "1px solid red";
   }
-  if (customer.contact == null) {
+  if (customer.contact == null && customer.fullName != null) {
     error += "Please Enter Customer Contact No...!\n";
     textCustomerContact.style.border = "1px solid red";
   }
@@ -215,44 +215,23 @@ const checkErrors = () => {
 const checkUpdates = () => {
   let updates = "";
 
-  if (oldcustomer.name != customer.name) {
-    updates +=
-      "Name has changed " + oldcustomer.name + " into " + customer.name + " \n";
-  }
-  if (oldcustomer.contact != customer.contact) {
-    updates +=
-      "Contact No. has changed " +
-      oldcustomer.contact +
-      " into " +
-      customer.contact +
-      " \n";
-  }
-
-  if (oldcustomer.nic != customer.nic) {
-    updates +=
-      "NIC has changed " +
-      (oldcustomer.nic ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-      " into " +
-      (customer.nic ?? "-") +
-      " \n";
-  }
-
-  if (oldcustomer.address != customer.address) {
-    updates +=
-      "Address has changed " +
-      (oldcustomer.address ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-      " into " +
-      (customer.address ?? "-") +
-      " \n";
-  }
-
-  if (oldcustomer.customerStatusId.id != customer.customerStatusId.id) {
-    updates +=
-      "Status has changed " +
-      oldcustomer.customerStatusId.name +
-      " into " +
-      customer.customerStatusId.name +
-      " \n";
+  if (oldinvoice.customerId.contact != null) {
+    if (oldinvoice.customerId.name != customer.name) {
+      updates +=
+        "Name has changed " +
+        oldinvoice.customerId.name +
+        " into " +
+        customer.name +
+        " \n";
+    }
+    if (oldinvoice.customerId.contact != customer.contact) {
+      updates +=
+        "Contact No. has changed " +
+        oldinvoice.customerId.contact +
+        " into " +
+        customer.contact +
+        " \n";
+    }
   }
 
   return updates;
@@ -265,11 +244,13 @@ const addRecord = () => {
   if (formErrors == "") {
     //get user confirmation
     let title = "Are you sure to add following record..?\n";
+    msgCustomer =
+      (customer.fullName != null
+        ? "Customer Name : " + customer.fullName
+        : "") +
+      (customer.fullName != null ? "\nContact : " + customer.contact : "");
     let message =
-      "Customer Name : " +
-      customer.fullName +
-      "\nContact : " +
-      customer.contact +
+      msgCustomer +
       "\nItem Count : " +
       invoice.itemCount +
       "\nTotal : Rs." +
@@ -648,7 +629,7 @@ const refreshTable = () => {
 
 // fucntion for get customer
 const getCustomer = (rowObject) => {
-  return rowObject.customerId.fullName;
+  return rowObject.customerId != null ? rowObject.customerId.fullName : "-";
 };
 
 // function for get added date
@@ -739,8 +720,10 @@ const refillRecord = (rowObject, rowId) => {
   invoice = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
   oldinvoice = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
 
-  textCustomerName.value = invoice.customerId.fullName;
-  textCustomerContact.value = invoice.customerId.contact;
+  textCustomerName.value =
+    invoice.customerId != null ? invoice.customerId.fullName : "";
+  textCustomerContact.value =
+    invoice.customerId != null ? invoice.customerId.contact : "";
   dateInvoiceDate.value = invoice.addedDateTime.split("T")[0];
 
   // set status

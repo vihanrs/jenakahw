@@ -129,29 +129,34 @@ public class InvoiceController {
 		for (InvoiceHasProduct invoiceHasProduct : invoice.getInvoiceHasProducts()) {
 			Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
 			if (extStock.getAvailableQty().compareTo(invoiceHasProduct.getQty()) < 0) {
-				return "Insufficient Stock : " + invoiceHasProduct.getStockId().getProductId().getName() + " - "
-						+ invoiceHasProduct.getStockId().getProductId().getName();
+				return "Insufficient Stock : " + invoiceHasProduct.getStockId().getProductId().getName() + " - Rs."
+						+ invoiceHasProduct.getStockId().getSellPrice();
 			}
 
 		}
 
 		try {
-			// check customer exsiting
-			Customer extCustomer = customerRepository.findByContact(invoice.getCustomerId().getContact());
-			if (extCustomer != null) {
-				invoice.setCustomerId(extCustomer);
-			} else {
-				// save new customer
-				Customer newCustomer = invoice.getCustomerId();
-				newCustomer.setAddedDateTime(LocalDateTime.now());
-				newCustomer.setAddedUserId(userController.getLoggedUser().getId());
-				newCustomer.setCustomerStatusId(customerStatusRepository.getReferenceById(1));
-				Customer SavedCustomer = customerRepository.save(newCustomer);
+			// check customer
+			if (invoice.getCustomerId().getId() != null) {
+				// check customer exsiting
+				Customer extCustomer = customerRepository.findByContact(invoice.getCustomerId().getContact());
+				if (extCustomer != null) {
+					invoice.setCustomerId(extCustomer);
+				} else {
+					// save new customer
+					Customer newCustomer = invoice.getCustomerId();
+					newCustomer.setAddedDateTime(LocalDateTime.now());
+					newCustomer.setAddedUserId(userController.getLoggedUser().getId());
+					newCustomer.setCustomerStatusId(customerStatusRepository.getReferenceById(1));
+					Customer SavedCustomer = customerRepository.save(newCustomer);
 
-				// add new saved customer to invoice
-				invoice.setCustomerId(SavedCustomer);
+					// add new saved customer to invoice
+					invoice.setCustomerId(SavedCustomer);
+				}
+			}else {
+				invoice.setCustomerId(null);
+				System.out.println("No Customer");
 			}
-
 			// set added user
 			invoice.setAddedUserId(userController.getLoggedUser().getId());
 
@@ -189,7 +194,7 @@ public class InvoiceController {
 
 			invoiceRepository.save(invoice);
 
-			// balance the stock
+			// balance the stocks
 
 			return "OK";
 		} catch (Exception e) {

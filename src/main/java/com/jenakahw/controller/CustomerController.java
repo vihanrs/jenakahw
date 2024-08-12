@@ -74,7 +74,12 @@ public class CustomerController {
 	public Customer getByContact(@PathVariable("contact") String contact) {
 		// check privileges
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return customerRepository.findByContact(contact);
+			Customer customer =  customerRepository.findByContact(contact);
+			if(customer != null) {
+				return customer;
+			}else {
+				return null;
+			}
 		} else {
 			return null;
 		}

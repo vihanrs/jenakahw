@@ -61,7 +61,7 @@ public class Invoice {
 	@NotNull
 	private Boolean isCredit;
 	
-	@ManyToOne
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "customer_id", referencedColumnName = "id") // join column condition
 	private Customer customerId;
 	
