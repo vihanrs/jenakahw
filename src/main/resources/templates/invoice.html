@@ -86,8 +86,8 @@
                           for="textCustomerContact"
                           class="form-label fw-bold"
                         >
-                          Contact No. : </span
-                          ><span
+                          Contact No. :
+                          <span
                             class="text-danger d-none"
                             id="contactRegisterCheck"
                             ><i>not registerd</i></span
@@ -375,6 +375,40 @@
             >
               <div class="accordion-body">
                 <div class="card card-body p-2">
+                  <div class="row mt-2 mb-4">
+                    <!-- required date -->
+                    <div class="col-md-3">
+                      <label for="dateFromDate" class="form-label fw-bold">
+                        From Date :
+                      </label>
+                      <input
+                        type="date"
+                        id="dateFromDate"
+                        class="form-control"
+                      />
+                    </div>
+                    <div class="col-md-3">
+                      <label for="dateToDate" class="form-label fw-bold">
+                        To Date :
+                      </label>
+                      <input type="date" id="dateToDate" class="form-control" />
+                    </div>
+                    <!-- search button -->
+                    <div class="col-md-1">
+                      <label
+                        for="btnSearch"
+                        class="form-label fw-bold"
+                        style="color: #d8d8d834"
+                      >
+                        .
+                      </label>
+                      <br />
+                      <button class="btn btn-plus" type="button" id="btnSearch">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                      </button>
+                    </div>
+                  </div>
+
                   <table class="table table-hover pt-3 mb-3" id="invoiceTable">
                     <thead class="table-dark">
                       <tr>

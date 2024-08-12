@@ -200,13 +200,21 @@ const getInvoiceValues = () => {
       textInvoiceId.value = inv.invoiceId;
       textInvoiceId.style.border = "2px solid #00FF7F";
 
-      textCustomer.value =
-        inv.customerId.fullName + " - " + inv.customerId.contact;
+      if (inv.customerId != null) {
+        textCustomer.value =
+          inv.customerId.fullName + " - " + inv.customerId.contact;
+        divCustomer.classList.remove("d-none");
+      } else {
+        divCustomer.classList.add("d-none");
+      }
 
       textTotalAmount.value = parseFloat(inv.total).toFixed(2);
       textGrandTotal.value = parseFloat(inv.grandTotal).toFixed(2);
 
-      if (inv.customerId.customerStatusId.name == "Loyalty") {
+      if (
+        inv.customerId != null &&
+        inv.customerId.customerStatusId.name == "Loyalty"
+      ) {
         divCreditSell.classList.remove("d-none");
       }
 

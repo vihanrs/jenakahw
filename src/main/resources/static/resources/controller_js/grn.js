@@ -640,7 +640,7 @@ const addProduct = () => {
       }
     });
   } else {
-    showAlert("error", formErrors).then(() => {});
+    showAlert("error", formErrors);
   }
 };
 
@@ -936,39 +936,38 @@ const calDiscountPrecentage = (total, discount) => {
 // //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  let title = "Are you sure!\nYou wants to delete following record? \n";
-  let message =
-    "GRN : " +
-    rowObject.grnCode +
-    "\n" +
-    "Supplier : " +
-    rowObject.purchaseOrderId.supplierId.firstName +
-    "\n" +
-    "Item Count : " +
-    rowObject.itemCount +
-    "\n" +
-    "Grand Total (Rs.) : " +
-    rowObject.grandTotal;
-
-  showConfirm(title, message).then((userConfirm) => {
-    if (userConfirm) {
-      //response from backend ...
-      let serverResponse = ajaxRequestBody("/grn", "DELETE", rowObject); // url,method,object
-      //check back end response
-      if (serverResponse == "OK") {
-        showAlert("success", "Delete successfully..!").then(() => {
-          // Need to refresh table and form
-          refreshAll();
-        });
-      } else {
-        showAlert(
-          "error",
-          "Delete not successfully..! There were some errors \n" +
-            serverResponse
-        );
-      }
-    }
-  });
+  // let title = "Are you sure!\nYou wants to delete following record? \n";
+  // let message =
+  //   "GRN : " +
+  //   rowObject.grnCode +
+  //   "\n" +
+  //   "Supplier : " +
+  //   rowObject.purchaseOrderId.supplierId.firstName +
+  //   "\n" +
+  //   "Item Count : " +
+  //   rowObject.itemCount +
+  //   "\n" +
+  //   "Grand Total (Rs.) : " +
+  //   rowObject.grandTotal;
+  // showConfirm(title, message).then((userConfirm) => {
+  //   if (userConfirm) {
+  //     //response from backend ...
+  //     let serverResponse = ajaxRequestBody("/grn", "DELETE", rowObject); // url,method,object
+  //     //check back end response
+  //     if (serverResponse == "OK") {
+  //       showAlert("success", "Delete successfully..!").then(() => {
+  //         // Need to refresh table and form
+  //         refreshAll();
+  //       });
+  //     } else {
+  //       showAlert(
+  //         "error",
+  //         "Delete not successfully..! There were some errors \n" +
+  //           serverResponse
+  //       );
+  //     }
+  //   }
+  // });
 };
 
 //function for view record

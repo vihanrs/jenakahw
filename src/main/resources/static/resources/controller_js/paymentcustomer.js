@@ -160,33 +160,33 @@ const refreshIncompelteInvoiceTable = () => {
   let customerid = 0;
   if (cusPayment.customer != null) {
     customerid = cusPayment.customer.id;
+  }
 
-    incompleteInvoicesByCustomer = ajaxGetRequest(
-      "/invoice/findincompletebycustomer/" + customerid
+  incompleteInvoicesByCustomer = ajaxGetRequest(
+    "/invoice/findincompletebycustomer/" + customerid
+  );
+
+  if (incompleteInvoicesByCustomer.length != 0) {
+    const displayProperties = [
+      { property: "invoiceId", datatype: "String" },
+      { property: "grandTotal", datatype: "currency" },
+      { property: "paidAmount", datatype: "currency" },
+      { property: "balanceAmount", datatype: "currency" },
+    ];
+
+    //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+    fillDataIntoInnerTable(
+      incompleteInvoicesTable,
+      incompleteInvoicesByCustomer,
+      displayProperties,
+      refillInvoice,
+      deleteInvoice,
+      false
     );
 
-    if (incompleteInvoicesByCustomer.length != 0) {
-      const displayProperties = [
-        { property: "invoiceId", datatype: "String" },
-        { property: "grandTotal", datatype: "currency" },
-        { property: "paidAmount", datatype: "currency" },
-        { property: "balanceAmount", datatype: "currency" },
-      ];
-
-      //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
-      fillDataIntoInnerTable(
-        incompleteInvoicesTable,
-        incompleteInvoicesByCustomer,
-        displayProperties,
-        refillInvoice,
-        deleteInvoice,
-        false
-      );
-
-      getTotalBalance();
-    } else {
-      showAlert("warning", "No due payments");
-    }
+    getTotalBalance();
+  } else {
+    // showAlert("warning", "No due payments");
   }
 };
 

@@ -73,6 +73,10 @@ const addEventListeners = () => {
     );
   });
 
+  dateFromDate.addEventListener("change", () => {
+    checkDates();
+  });
+
   //form reset button function call
   btnReset.addEventListener("click", () => {
     refreshForm();
@@ -96,6 +100,11 @@ const addEventListeners = () => {
   //product selection reset function call
   btnProductReset.addEventListener("click", () => {
     resetProductSelection();
+  });
+
+  //product selection reset function call
+  btnSearch.addEventListener("click", () => {
+    refreshTable();
   });
 
   //record print function call
@@ -157,6 +166,20 @@ const refreshForm = () => {
 
   refreshInnerFormAndTable();
 
+  // related to the table
+  const today = new Date();
+
+  // Get the current year, month, and day using local time
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const day = String(today.getDate()).padStart(2, "0");
+
+  const currentDate = year + "-" + month + "-" + day;
+  dateFromDate.value = currentDate;
+  dateToDate.value = currentDate;
+
+  dateFromDate.max = currentDate;
+  dateToDate.max = currentDate;
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
 };
@@ -215,24 +238,26 @@ const checkErrors = () => {
 const checkUpdates = () => {
   let updates = "";
 
-  if (oldinvoice.customerId.contact != null) {
-    if (oldinvoice.customerId.name != customer.name) {
-      updates +=
-        "Name has changed " +
-        oldinvoice.customerId.name +
-        " into " +
-        customer.name +
-        " \n";
-    }
-    if (oldinvoice.customerId.contact != customer.contact) {
-      updates +=
-        "Contact No. has changed " +
-        oldinvoice.customerId.contact +
-        " into " +
-        customer.contact +
-        " \n";
-    }
-  }
+  // if (oldinvoice.customerId == null) {
+  //   oldinvoice.customerId = { fullName: null, contact: null };
+  // }
+
+  // if (oldinvoice.customerId.fullName != customer.fullName) {
+  //   updates +=
+  //     "Name has changed " +
+  //     oldinvoice.customerId.fullName +
+  //     " into " +
+  //     customer.fullName +
+  //     " \n";
+  // }
+  // if (oldinvoice.customerId.contact != customer.contact) {
+  //   updates +=
+  //     "Contact No. has changed " +
+  //     oldinvoice.customerId.contact +
+  //     " into " +
+  //     customer.contact +
+  //     " \n";
+  // }
 
   return updates;
 };
@@ -312,7 +337,7 @@ const updateRecord = () => {
       showAlert("warning", "Nothing to Update...!");
     }
   } else {
-    showAlert("error", "Cannot update!!!\n" + errors);
+    showAlert("error", errors);
   }
 };
 
@@ -454,6 +479,8 @@ const resetProductSelection = () => {
   textLineAmount.value = "";
   textUnitType.classList.add("d-none");
 
+  refillProductRowId = null;
+
   //set default border color
   setBorderStyle([textProduct, textSellPrice, textQty, textLineAmount]);
 };
@@ -489,32 +516,45 @@ const addProduct = () => {
   // check errors
   let formErrors = checkInnerFormErrors();
   if (formErrors == "") {
-    if (!isAlreayAdded()) {
-      // get user confirmation
-      let title = "Are you sure to add following product..?";
-      let message =
-        "Product Name : " +
-        invProduct.stockId.productId.name +
-        "\nPurchase Price : " +
-        invProduct.sellPrice +
-        "\nQty : " +
-        invProduct.qty;
-
-      showConfirm(title, message).then((userConfirm) => {
-        if (userConfirm) {
-          //add object into array
-          invoice.invoiceHasProducts.push(invProduct);
-          refreshInnerFormAndTable();
-        }
-      });
+    if (refillProductRowId != null) {
+      updateProduct(invProduct);
     } else {
-      showAlert("error", "This Product Already Added!");
+      if (!isAlreayAdded()) {
+        // get user confirmation
+        let title = "Are you sure to add following product..?";
+        let message =
+          "Product Name : " +
+          invProduct.stockId.productId.name +
+          "\nPurchase Price : " +
+          invProduct.sellPrice +
+          "\nQty : " +
+          invProduct.qty;
+
+        showConfirm(title, message).then((userConfirm) => {
+          if (userConfirm) {
+            //add object into array
+            invoice.invoiceHasProducts.push(invProduct);
+            refreshInnerFormAndTable();
+          }
+        });
+      } else {
+        showAlert("error", "This Product Already Added!");
+      }
     }
   } else {
     showAlert("error", formErrors);
   }
 
   console.log(invoice);
+};
+
+// function for reset update refilled product
+const updateProduct = (updatedProduct) => {
+  invoice.invoiceHasProducts[refillProductRowId].qty = updatedProduct.qty;
+  invoice.invoiceHasProducts[refillProductRowId].lineAmount =
+    updatedProduct.lineAmount;
+
+  refreshInnerFormAndTable();
 };
 
 // ********* INNER TABLE OPERATIONS *********
@@ -527,14 +567,16 @@ const getProduct = (rowObject, rowId) => {
 };
 
 // function for refill product
-const refillProductDetail = (rowObject) => {
+const refillProductDetail = (rowObject, rowId) => {
   //remove refilled product from grn.grnHasProducts
-  invoice.invoiceHasProducts = invoice.invoiceHasProducts.filter(
-    (product) => product.stockId.productId.id != rowObject.stockId.productId.id
-  );
+  // invoice.invoiceHasProducts = invoice.invoiceHasProducts.filter(
+  //   (product) => product.stockId.productId.id != rowObject.stockId.productId.id
+  // );
 
   // refresh inner table
-  refreshInnerFormAndTable();
+  // refreshInnerFormAndTable();
+
+  refillProductRowId = rowId;
 
   //fill product data into relavent fields
   invProduct = JSON.parse(JSON.stringify(rowObject));
@@ -582,7 +624,9 @@ const deleteProductDetail = (rowObject) => {
 //function for refresh table records
 const refreshTable = () => {
   //array for store data list
-  invoices = ajaxGetRequest("/invoice/findall");
+  invoices = ajaxGetRequest(
+    "/invoice/findall/" + dateFromDate.value + "/" + dateToDate.value
+  );
 
   //object count = table column count
   //String - number/string/date
@@ -672,7 +716,8 @@ const viewRecord = (rowObject, rowId) => {
   let printObj = rowObject;
 
   tdInvoiceId.innerText = printObj.invoiceId;
-  tdCustomer.innerText = printObj.customerId.fullName;
+  tdCustomer.innerText =
+    printObj.customerId != null ? printObj.customerId.fullName : "";
   tdItemCount.innerText = printObj.itemCount;
   tdInvoicedDate.innerText = printObj.addedDateTime.split("T")[0];
   tdInvoiceType.innerText = printObj.isCredit != true ? "Normal" : "Credit";
@@ -719,6 +764,8 @@ const refillRecord = (rowObject, rowId) => {
 
   invoice = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
   oldinvoice = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
+
+  customer = invoice.customerId;
 
   textCustomerName.value =
     invoice.customerId != null ? invoice.customerId.fullName : "";
@@ -778,6 +825,14 @@ const deleteRecord = (rowObject, rowId) => {
       }
     }
   });
+};
+
+// function for get invoices by given date range
+const checkDates = () => {
+  dateToDate.min = dateFromDate.value;
+  if (dateToDate.value < dateFromDate.value) {
+    dateToDate.value = dateFromDate.value;
+  }
 };
 
 // ********* PRINT OPERATIONS *********

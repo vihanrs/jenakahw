@@ -1,9 +1,11 @@
 package com.jenakahw.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.jenakahw.domain.Invoice;
@@ -27,4 +29,9 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 	// query for get invoice list by customer incomplete payments
 	@Query(value = "Select inv from Invoice inv where inv.customerId.id=?1 and inv.balanceAmount != 0 order by inv.id")
 	public List<Invoice> findByCustomerAndIncomplete(int customerId);
+	
+	// query for get all invoices in current date
+	@Query(value = "Select inv from Invoice inv where DATE(inv.addedDateTime) between DATE(:fromDate) and DATE(:toDate)")
+	public List<Invoice> findAllInDateRange(@Param("fromDate") String fromDate,@Param("toDate") String toDate);
 }
+
