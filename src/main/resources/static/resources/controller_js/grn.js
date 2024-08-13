@@ -519,6 +519,7 @@ const calGrandTotal = () => {
 
   grn.grandTotal = parseFloat(grn.total - discount).toFixed(2);
   textGrandTotal.value = grn.grandTotal;
+  grn.balanceAmount = grn.grandTotal;
 
   //set precentage label value
   dicountPrecentageView.innerText = discountPrecentageCheck.checked

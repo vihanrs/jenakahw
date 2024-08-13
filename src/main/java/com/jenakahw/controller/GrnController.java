@@ -89,6 +89,16 @@ public class GrnController {
 			return null;
 		}
 	}
+	
+	// get mapping for get all incomplete grn data by supplier -- [/grn/findincompletebysupplier]
+	@GetMapping(value = "/findincompletebysupplier/{supplierid}", produces = "application/json")
+	public List<Grn> findAllIncompleteBySupplier(@PathVariable("supplierid") int supplierId) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return grnRepository.findAllIncompleteBySupplier(supplierId);
+		} else {
+			return null;
+		}
+	}
 
 	// get mapping for get all grn data by grnID -- [/grn/findbyid/5]
 	@GetMapping(value = "/findbyid/{grnId}", produces = "application/json")

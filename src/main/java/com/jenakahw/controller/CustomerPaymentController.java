@@ -23,6 +23,8 @@ import com.jenakahw.repository.InvoicePaymentRepository;
 import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 //add class level mapping /customerpayment
 @RequestMapping(value = "/customerpayment")
@@ -65,6 +67,7 @@ public class CustomerPaymentController {
 	}
 
 	// post mapping for save new customer payment
+//	@Transactional
 	@PostMapping
 	public String saveInvoicePayment(@RequestBody CustomerPayment customerPayment) {
 		// check privileges
@@ -111,7 +114,7 @@ public class CustomerPaymentController {
 						InvoiceHasPayment invHasPayment = new InvoiceHasPayment(invoice,customerPayment.getPaymethodId(),invoiceBalance,newCustomerPayment.getId(),LocalDateTime.now(),loggedUserId);
 						invoicePaymentRepository.save(invHasPayment);
 
-						// update remaining paid amount
+						//update remaining paid amount
 						paidAmount = paidAmount.subtract(invoiceBalance);
 
 					} else {

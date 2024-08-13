@@ -158,36 +158,37 @@ const getCustomerList = () => {
 // function for refresh invoice table
 const refreshIncompelteInvoiceTable = () => {
   let customerid = 0;
+  incompleteInvoicesByCustomer = [];
   if (cusPayment.customer != null) {
     customerid = cusPayment.customer.id;
-  }
 
-  incompleteInvoicesByCustomer = ajaxGetRequest(
-    "/invoice/findincompletebycustomer/" + customerid
-  );
-
-  if (incompleteInvoicesByCustomer.length != 0) {
-    const displayProperties = [
-      { property: "invoiceId", datatype: "String" },
-      { property: "grandTotal", datatype: "currency" },
-      { property: "paidAmount", datatype: "currency" },
-      { property: "balanceAmount", datatype: "currency" },
-    ];
-
-    //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
-    fillDataIntoInnerTable(
-      incompleteInvoicesTable,
-      incompleteInvoicesByCustomer,
-      displayProperties,
-      refillInvoice,
-      deleteInvoice,
-      false
+    incompleteInvoicesByCustomer = ajaxGetRequest(
+      "/invoice/findincompletebycustomer/" + customerid
     );
 
-    getTotalBalance();
-  } else {
-    // showAlert("warning", "No due payments");
+    if (incompleteInvoicesByCustomer.length == 0) {
+      showAlert("warning", "No due payments");
+    }
   }
+
+  const displayProperties = [
+    { property: "invoiceId", datatype: "String" },
+    { property: "grandTotal", datatype: "currency" },
+    { property: "paidAmount", datatype: "currency" },
+    { property: "balanceAmount", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    incompleteInvoicesTable,
+    incompleteInvoicesByCustomer,
+    displayProperties,
+    refillInvoice,
+    deleteInvoice,
+    false
+  );
+
+  getTotalBalance();
 };
 
 const refillInvoice = () => {};

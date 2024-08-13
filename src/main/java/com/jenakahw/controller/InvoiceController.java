@@ -84,18 +84,19 @@ public class InvoiceController {
 		}
 
 	}
-	
-	// get service mapping for get all invoices in current date
-		@GetMapping(value = "/findall/{fromdate}/{todate}", produces = "application/json")
-		public List<Invoice> findAllInDateRange(@PathVariable("fromdate") String fromDate,@PathVariable("todate") String toDate) {
-			// check privileges
-			if (privilegeController.hasPrivilege(MODULE, "select")) {
-				return invoiceRepository.findAllInDateRange(fromDate,toDate);
-		} else {
-				return null;
-			}
 
+	// get service mapping for get all invoices in current date
+	@GetMapping(value = "/findall/{fromdate}/{todate}", produces = "application/json")
+	public List<Invoice> findAllInDateRange(@PathVariable("fromdate") String fromDate,
+			@PathVariable("todate") String toDate) {
+		// check privileges
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return invoiceRepository.findAllInDateRange(fromDate, toDate);
+		} else {
+			return null;
 		}
+
+	}
 
 	// get mapping for find invoices by status
 	@GetMapping(value = "/findbystatus/{status}", produces = "application/json")
@@ -165,7 +166,7 @@ public class InvoiceController {
 					// add new saved customer to invoice
 					invoice.setCustomerId(SavedCustomer);
 				}
-			}else {
+			} else {
 				invoice.setCustomerId(null);
 				System.out.println("No Customer");
 			}

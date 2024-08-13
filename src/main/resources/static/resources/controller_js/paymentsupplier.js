@@ -25,39 +25,8 @@ const addEventListeners = () => {
   let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
 
   selectSupplier.addEventListener("change", () => {
-    selectDFieldValidator(selectSupplier, "supplierPayment", "supplierId");
-  });
-
-  selectGrn.addEventListener("change", () => {
-    selectDFieldValidator(selectGrn, "supplierPayment", "GrnId");
-  });
-
-  textDiscount.addEventListener("keyup", () => {
-    discountValidator(
-      textDiscount,
-      textTotalAmount,
-      discountPrecentageCheck,
-      "invPayment",
-      "discount"
-    ),
-      calDisount(),
-      calPayment();
-  });
-
-  discountPrecentageCheck.addEventListener("change", () => {
-    discountValidator(
-      textDiscount,
-      textTotalAmount,
-      discountPrecentageCheck,
-      "invPayment",
-      "discount"
-    ),
-      calDisount(),
-      calPayment();
-  });
-
-  creditSellCheck.addEventListener("change", () => {
-    calPayment();
+    selectDFieldValidator(selectSupplier, "supplierPayment", "supplierId"),
+      refreshIncompelteGRNTable(supplierPayment.supplierId.id);
   });
 
   textPayment.addEventListener("keyup", () => {
@@ -71,7 +40,7 @@ const addEventListeners = () => {
 
   //record update function call
   btnUpdate.addEventListener("click", () => {
-    updateRecord();
+    // updateRecord();
   });
 
   //record save function call
@@ -106,7 +75,7 @@ const refreshForm = () => {
   //create empty object
   supplierPayment = {};
 
-  suppliers = ajaxGetRequest("/supplier/findactivesuppliers");
+  suppliers = ajaxGetRequest("/supplier/findall");
   fillMoreDataIntoSelect(
     selectSupplier,
     "Select Supplier",
@@ -115,12 +84,22 @@ const refreshForm = () => {
     "company"
   );
 
+  refreshFiledAmounts();
   createViewPayMethodUI();
+  refreshIncompelteGRNTable(0);
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
 };
 
+// refresh data fields
+const refreshFiledAmounts = () => {
+  textTotalBalance.value = "";
+  textPayment.value = "";
+  textBalance.value = "";
+
+  setBorderStyle([selectSupplier, textTotalBalance, textPayment, textBalance]);
+};
 //function for create select Roles UI part
 const createViewPayMethodUI = () => {
   divPaymethods.innerHTML = "";
@@ -137,18 +116,14 @@ const createViewPayMethodUI = () => {
     inputCHK.onchange = function () {
       if (this.checked) {
         //if not exist add new role
-        invPayment.paymethodId = paymethod;
+        supplierPayment.paymethodId = paymethod;
         if (
-          invPayment.paymethodId.name == "Card" ||
-          invPayment.paymethodId.name == "Cheque"
+          supplierPayment.paymethodId.name == "Card" ||
+          supplierPayment.paymethodId.name == "Cheque"
         ) {
-          textPayment.value = parseFloat(
-            invPayment.invoiceId.grandTotal
-          ).toFixed(2);
-          textPayment.style.border = "1px solid #ced4da";
+          textPayment.value = parseFloat(textTotalBalance.value).toFixed(2);
           calPayment();
         } else {
-          textPayment.value = "";
           calPayment();
         }
       }
@@ -166,43 +141,48 @@ const createViewPayMethodUI = () => {
   });
 };
 
-// function for reset invoice values
-const resetInvoiceDetails = () => {
-  textCustomer.value = "";
-  textTotalAmount.value = "";
-  textGrandTotal.value = "";
-  creditSellCheck.checked = false;
-  divCreditSell.classList.add("d-none");
-  textDiscount.disabled = true;
-  discountPrecentageCheck.disabled = true;
-  textPayment.disabled = true;
+// function for refresh payment pending grn table
+const refreshIncompelteGRNTable = (supplierId) => {
+  refreshFiledAmounts();
+  incompleteGRNsBySupplier = ajaxGetRequest(
+    "/grn/findincompletebysupplier/" + supplierId
+  );
 
-  textDiscount.value = "";
-  textPayment.value = "";
-  textBalance.value = "";
-
-  setBorderStyle([textDiscount, textPayment, textBalance]);
-
-  let paymethods = divPaymethods.querySelectorAll("input");
-  paymethods.forEach((input) => {
-    input.disabled = true;
-  });
-};
-
-// function for cal discount
-const calDisount = () => {
-  let discount = 0;
-  let total = invPayment.invoiceId.total;
-  if (invPayment.discount != null) {
-    discount = invPayment.discount;
-    textGrandTotal.value = parseFloat(total - discount).toFixed(2);
-  } else {
-    textGrandTotal.value = parseFloat(total).toFixed(2);
+  if (supplierId != 0 && incompleteGRNsBySupplier.length == 0) {
+    showAlert("warning", "No due payments");
+    selectSupplier.value = "";
   }
 
-  //bind values
-  invPayment.invoiceId.discount = discount;
-  invPayment.invoiceId.grandTotal = parseFloat(textGrandTotal.value);
+  const displayProperties = [
+    { property: "grnCode", datatype: "String" },
+    { property: "grandTotal", datatype: "currency" },
+    { property: "paid", datatype: "currency" },
+    { property: "balanceAmount", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list,refill function name, delete function name, button visibilitys)
+  fillDataIntoInnerTable(
+    incompleteGrnsTable,
+    incompleteGRNsBySupplier,
+    displayProperties,
+    refillInvoice,
+    deleteInvoice,
+    false
+  );
+
+  getTotalBalance();
+};
+
+const refillInvoice = () => {};
+const deleteInvoice = () => {};
+
+// function for get total balance of loaded grns
+const getTotalBalance = () => {
+  let totBalance = 0;
+  incompleteGRNsBySupplier.forEach((grn) => {
+    totBalance += parseFloat(grn.balanceAmount);
+  });
+  textTotalBalance.value = parseFloat(totBalance).toFixed(2);
 };
 
 // fucntion for cal payment and balance
@@ -212,30 +192,39 @@ const calPayment = () => {
   let fieldValue = textPayment.value;
 
   if (fieldValue != "" && new RegExp(numberWithdecimals).test(fieldValue)) {
-    textPayment.style.border = "2px solid #00FF7F";
-    balance = parseFloat(fieldValue) - parseFloat(textGrandTotal.value);
-  } else {
-    balance = -parseFloat(textGrandTotal.value).toFixed(2);
-  }
-
-  if (balance >= 0) {
-    textBalance.style.border = "1px solid #ced4da";
-    invPayment.paidAmount = parseFloat(textGrandTotal.value);
-    creditSellCheck.checked = false;
-    invPayment.invoiceId.isCredit = false;
-  } else if (balance < 0) {
-    if (creditSellCheck.checked) {
-      invPayment.invoiceId.isCredit = true;
-      textBalance.style.border = "1px solid #ced4da";
-      invPayment.paidAmount = parseFloat(fieldValue);
+    if (
+      typeof supplierPayment.paymethodId !== "undefined" &&
+      (supplierPayment.paymethodId.name == "Card" ||
+        supplierPayment.paymethodId.name == "Cheque") &&
+      parseFloat(fieldValue) > parseFloat(textTotalBalance.value)
+    ) {
+      textPayment.style.border = "1px solid red";
+      supplierPayment.paidAmount = null;
+      supplierPayment.balanceAmount = null;
+      textBalance.value = parseFloat(textTotalBalance.value).toFixed(2);
     } else {
-      invPayment.invoiceId.isCredit = false;
-      textBalance.style.border = "1px solid red";
-      invPayment.paidAmount = null;
+      textPayment.style.border = "2px solid #00FF7F";
+      balance = parseFloat(fieldValue) - parseFloat(textTotalBalance.value);
+      textBalance.value = Math.abs(parseFloat(balance)).toFixed(2);
+
+      if (balance >= 0) {
+        lblBalance.innerText = "Balance (Rs.):";
+        supplierPayment.paidAmount = parseFloat(textTotalBalance.value);
+        supplierPayment.balanceAmount = 0;
+      } else {
+        lblBalance.innerText = "Due (Rs.):";
+        supplierPayment.balanceAmount = balance;
+        supplierPayment.paidAmount = parseFloat(textPayment.value);
+      }
     }
+  } else {
+    supplierPayment.paidAmount = null;
+    supplierPayment.balanceAmount = null;
+    textPayment.style.border = "1px solid red";
+    lblBalance.innerText = "Due (Rs.):";
+    textBalance.value = parseFloat(textTotalBalance.value).toFixed(2);
   }
-  textBalance.value = parseFloat(balance).toFixed(2);
-  console.log(invPayment);
+  console.log(supplierPayment);
 };
 
 //function for check errors
@@ -243,16 +232,15 @@ const checkErrors = () => {
   //need to check all required property fields
   let error = "";
 
-  if (invPayment.invoiceId == null) {
-    error = error + "Please Enter Invoice to Make Payment...!\n";
-    textInvoiceId.style.border = "1px solid red";
+  if (supplierPayment.supplierId == null) {
+    error = error + "Please Select Supplier to Make Payment...!\n";
+    selectSupplier.style.border = "1px solid red";
   }
-  console.log(!invPayment.isCredit && invPayment.paymethodId == null + " T");
 
-  if (!invPayment.isCredit && invPayment.paymethodId == null) {
+  if (supplierPayment.paymethodId == null) {
     error = error + "Please Select Payment Method...!\n";
   }
-  if (invPayment.paidAmount == null) {
+  if (supplierPayment.paidAmount == null) {
     error = error + "Please Enter Valid Payment Amount...!\n";
     textPayment.style.border = "1px solid red";
   }
@@ -316,16 +304,16 @@ const addRecord = () => {
     let title = "Are you sure to add following payment..?\n";
     let message =
       "Payment Amount : Rs." +
-      parseFloat(invPayment.paidAmount).toFixed(2) +
+      parseFloat(supplierPayment.paidAmount).toFixed(2) +
       "\nPayment Method : " +
-      invPayment.paymethodId.name;
+      supplierPayment.paymethodId.name;
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
         let serverResponse = ajaxRequestBody(
-          "/invoicepayment",
+          "/supplierpayment",
           "POST",
-          invPayment
+          supplierPayment
         ); // url,method,object
 
         //check back end response
@@ -349,35 +337,35 @@ const addRecord = () => {
 
 //function for update record
 const updateRecord = () => {
-  let errors = checkErrors();
-  if (errors == "") {
-    let updates = checkUpdates();
-    if (updates != "") {
-      let title = "Are you sure you want to update following changes...?";
-      let message = updates;
-      showConfirm(title, message).then((userConfirm) => {
-        if (userConfirm) {
-          let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
-          if (serverResponse == "OK") {
-            showAlert("success", "Customer Update successfully..!").then(() => {
-              //need to refresh table and form
-              refreshAll();
-            });
-          } else {
-            showAlert(
-              "error",
-              "Customer update not successfully..! have some errors \n" +
-                serverResponse
-            );
-          }
-        }
-      });
-    } else {
-      showAlert("warning", "Nothing to Update...!");
-    }
-  } else {
-    showAlert("error", "Cannot update!!!\n" + errors);
-  }
+  // let errors = checkErrors();
+  // if (errors == "") {
+  //   let updates = checkUpdates();
+  //   if (updates != "") {
+  //     let title = "Are you sure you want to update following changes...?";
+  //     let message = updates;
+  //     showConfirm(title, message).then((userConfirm) => {
+  //       if (userConfirm) {
+  //         let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
+  //         if (serverResponse == "OK") {
+  //           showAlert("success", "Customer Update successfully..!").then(() => {
+  //             //need to refresh table and form
+  //             refreshAll();
+  //           });
+  //         } else {
+  //           showAlert(
+  //             "error",
+  //             "Customer update not successfully..! have some errors \n" +
+  //               serverResponse
+  //           );
+  //         }
+  //       }
+  //     });
+  //   } else {
+  //     showAlert("warning", "Nothing to Update...!");
+  //   }
+  // } else {
+  //   showAlert("error", "Cannot update!!!\n" + errors);
+  // }
 };
 
 // ********* TABLE OPERATIONS *********
@@ -504,32 +492,31 @@ const refillRecord = (rowObject, rowId) => {
 // //function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
-  let title = "Are you sure!\nYou wants to delete following record? \n";
-  let message =
-    "Customer Name : " +
-    rowObject.fullName +
-    "\nContact No. :" +
-    rowObject.contact;
-
-  showConfirm(title, message).then((userConfirm) => {
-    if (userConfirm) {
-      //response from backend ...
-      let serverResponse = ajaxRequestBody("/customer", "DELETE", rowObject); // url,method,object
-      //check back end response
-      if (serverResponse == "OK") {
-        showAlert("success", "Customer Delete successfully..!").then(() => {
-          // Need to refresh table and form
-          refreshAll();
-        });
-      } else {
-        showAlert(
-          "error",
-          "Customer delete not successfully..! have some errors \n" +
-            serverResponse
-        );
-      }
-    }
-  });
+  // let title = "Are you sure!\nYou wants to delete following record? \n";
+  // let message =
+  //   "Customer Name : " +
+  //   rowObject.fullName +
+  //   "\nContact No. :" +
+  //   rowObject.contact;
+  // showConfirm(title, message).then((userConfirm) => {
+  //   if (userConfirm) {
+  //     //response from backend ...
+  //     let serverResponse = ajaxRequestBody("/customer", "DELETE", rowObject); // url,method,object
+  //     //check back end response
+  //     if (serverResponse == "OK") {
+  //       showAlert("success", "Customer Delete successfully..!").then(() => {
+  //         // Need to refresh table and form
+  //         refreshAll();
+  //       });
+  //     } else {
+  //       showAlert(
+  //         "error",
+  //         "Customer delete not successfully..! have some errors \n" +
+  //           serverResponse
+  //       );
+  //     }
+  //   }
+  // });
 };
 
 // ********* PRINT OPERATIONS *********

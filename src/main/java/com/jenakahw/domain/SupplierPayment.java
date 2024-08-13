@@ -2,7 +2,6 @@ package com.jenakahw.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +33,7 @@ public class SupplierPayment {
 	
 	@ManyToOne
 	@JoinColumn(name = "paymethod_id",referencedColumnName = "id")
-	private PayMethod payMethodId;
+	private PayMethod paymethodId;
 	
 	@ManyToOne
 	@JoinColumn(name = "supplier_id",referencedColumnName = "id")

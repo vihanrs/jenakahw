@@ -30,10 +30,6 @@ public class GrnHasSupplierPayment {
 	@NotNull
 	private BigDecimal paidAmount;
 	
-	@Column(name = "balance_amount")
-	@NotNull
-	private BigDecimal balanceAmount;
-	
 	@ManyToOne
 	@JoinColumn(name = "grn_id",referencedColumnName = "id")
 	private Grn grnId;
@@ -41,4 +37,10 @@ public class GrnHasSupplierPayment {
 	@ManyToOne
 	@JoinColumn(name = "supplier_payment_id",referencedColumnName = "id")
 	private SupplierPayment supplierPaymentId;
+	
+	public GrnHasSupplierPayment(BigDecimal paidAmount,Grn grnId,SupplierPayment supplierPaymentId) {
+		this.paidAmount =paidAmount;
+		this.grnId = grnId;
+		this.supplierPaymentId = supplierPaymentId;
+	}
 }

@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -61,6 +62,10 @@ public class Grn {
 	@Column(name = "paid")
 	@NotNull
 	private BigDecimal paid;
+	
+	@Column(name = "balance_amount")
+	@NotNull
+	private BigDecimal balanceAmount;
 
 	@Column(name = "item_count")
 	@NotNull
@@ -94,5 +99,15 @@ public class Grn {
 
 	@OneToMany(mappedBy = "grnId", cascade = CascadeType.ALL, orphanRemoval = true) // map with grnId foreign key property in GrnHasProduct object,use cascade all to access alloperations in grn_has_product table
 	private List<GrnHasProduct> grnHasProducts;
+	
+	public Grn(Integer id,String grnCode,Integer supplierId,BigDecimal grandTotal,BigDecimal paid,BigDecimal balanceAmount,GrnStatus grnStatusId) {
+		this.id = id;
+		this.grnCode = grnCode;
+		this.supplierId = supplierId;
+		this.grandTotal = grandTotal;
+		this.paid = paid;
+		this.balanceAmount = balanceAmount;
+		this.grnStatusId = grnStatusId;
+	}
 
 }

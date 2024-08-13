@@ -7,7 +7,7 @@
     <!-- common heading file -->
     <head th:replace="~{head :: headFragment}"> </head>
 
-    <script src="resources/controller_js/paymentcustomer.js"></script>
+    <script src="resources/controller_js/paymentsupplier.js"></script>
   </head>
   <body class="sidebar-mini layout-fixed">
     <div class="container-fluid wrapper ps-2">
@@ -54,7 +54,7 @@
                 aria-controls="addNewSection"
                 id="addNewButton"
               >
-                Add New Customer Payment
+                Add New Supplier Payment
               </button>
             </h2>
             <div
@@ -73,36 +73,37 @@
                         >
                       </div>
                     </div>
-                    <!-- invoice id -->
+
+                    <!-- supplier -->
                     <div class="row mt-2">
                       <div class="col-md-2"></div>
                       <div class="col-md-3">
-                        <label for="textCustomer" class="form-label fw-bold"
-                          >Select Customer :<span class="text-danger"> * </span>
+                        <label for="selectSupplier" class="form-label fw-bold">
+                          Supplier : <span class="text-danger"> * </span>
                         </label>
                       </div>
                       <div class="col-md-4">
-                        <input
-                          type="text"
-                          placeholder="Enter Customer Contact/Name"
-                          class="form-control"
-                          id="textCustomer"
-                          list="dataListCustomers"
+                        <select
+                          id="selectSupplier"
+                          class="form-select me-2"
                           required
-                        />
-                        <datalist id="dataListCustomers"></datalist>
+                        >
+                          <option value="" selected disabled>
+                            Select Supplier
+                          </option>
+                        </select>
                       </div>
                     </div>
                     <!-- invoice payment details table -->
                     <div class="row mt-4">
                       <table
                         class="table table-hover pt-3 mb-3"
-                        id="incompleteInvoicesTable"
+                        id="incompleteGrnsTable"
                       >
                         <thead class="table-dark">
                           <tr>
                             <th>#</th>
-                            <th>Invoice ID</th>
+                            <th>GRN ID</th>
                             <th>Grand Total</th>
                             <th>Paid</th>
                             <th>Balance</th>
@@ -139,14 +140,8 @@
                     <!-- pay method -->
                     <div class="row mt-3">
                       <div class="col-md-2"></div>
-                      <!-- <div class="col-md-3">
-                        <p>
-                          <b><i>payment method</i></b
-                          ><span class="text-danger"> * </span>
-                        </p>
-                      </div> -->
                       <div class="col-md-3">
-                        <label for="textGrandTotal" class="form-label fw-bold">
+                        <label for="divPaymethods" class="form-label fw-bold">
                           Payment Method :<span class="text-danger"> * </span>
                         </label>
                       </div>
