@@ -84,6 +84,7 @@ const refreshForm = () => {
   // get status
   statuses = ajaxGetRequest("/dailyincomeexpensesstatus/findall");
   fillDataIntoSelect(selectStatus, "Select Status", statuses, "name", "Saved");
+  statusDiv.classList.add("d-none");
 
   //bind default selected status in to supplier object and set valid color
   dailyexpense.dailyIncomeExpensesStatusId = JSON.parse(selectStatus.value);
@@ -344,7 +345,7 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     dailyexpense.dailyIncomeExpensesStatusId.name
   );
-
+  statusDiv.classList.remove("d-none");
   setBorderStyle([selectStatus, textAmount, textReason]);
 
   //manage buttons
