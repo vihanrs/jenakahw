@@ -13,5 +13,5 @@ public interface GrnSupplierPaymentRepository extends JpaRepository<GrnHasSuppli
 
 	// query for get grn supplier payments by supplier payment
 	@Query("Select gsp from GrnHasSupplierPayment gsp where supplierPaymentId.id=?1")
-	public List<GrnHasSupplierPayment> findGrnPaymentsSupplierPayment(int supplierPaymentId);
+	public List<GrnHasSupplierPayment> findGrnPaymentsBySupplierPayment(int supplierPaymentId);
 }

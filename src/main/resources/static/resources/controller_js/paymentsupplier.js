@@ -11,19 +11,16 @@ window.addEventListener("load", () => {
   //set default selected section
   if (userPrivilages.insert) {
     showDefaultSection("addNewButton", "addNewSection");
+  } else {
+    showDefaultSection("viewAllButton", "viewAllSection");
+    addAccordion.style.display = "none";
   }
-  // else {
-  //   showDefaultSection("viewAllButton", "viewAllSection");
-  //   addAccordion.style.display = "none";
-  // }
   //call all event listners
   addEventListeners();
 });
 
 // ********* LISTENERS *********
 const addEventListeners = () => {
-  let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
-
   selectSupplier.addEventListener("change", () => {
     selectDFieldValidator(selectSupplier, "supplierPayment", "supplierId"),
       refreshIncompelteGRNTable(supplierPayment.supplierId.id);
@@ -100,8 +97,8 @@ const refreshForm = () => {
   refreshIncompelteGRNTable(0);
 
   //get all users
-  // users = ajaxGetRequest("/user/findallusers");
-  // fillDataIntoSelect(selectUser, "Select User", users, "username");
+  users = ajaxGetRequest("/user/findallusers");
+  fillDataIntoSelect(selectUser, "Select User", users, "username");
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -263,53 +260,6 @@ const checkErrors = () => {
   return error;
 };
 
-//function for check updates
-// const checkUpdates = () => {
-//   let updates = "";
-
-//   if (oldcustomer.name != customer.name) {
-//     updates +=
-//       "Name has changed " + oldcustomer.name + " into " + customer.name + " \n";
-//   }
-//   if (oldcustomer.contact != customer.contact) {
-//     updates +=
-//       "Contact No. has changed " +
-//       oldcustomer.contact +
-//       " into " +
-//       customer.contact +
-//       " \n";
-//   }
-
-//   if (oldcustomer.nic != customer.nic) {
-//     updates +=
-//       "NIC has changed " +
-//       (oldcustomer.nic ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.nic ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.address != customer.address) {
-//     updates +=
-//       "Address has changed " +
-//       (oldcustomer.address ?? "-") + //nullish coalescing operator --> return right side operand when left side is null or undefined
-//       " into " +
-//       (customer.address ?? "-") +
-//       " \n";
-//   }
-
-//   if (oldcustomer.customerStatusId.id != customer.customerStatusId.id) {
-//     updates +=
-//       "Status has changed " +
-//       oldcustomer.customerStatusId.name +
-//       " into " +
-//       customer.customerStatusId.name +
-//       " \n";
-//   }
-
-//   return updates;
-// };
-
 //function for add record
 const addRecord = () => {
   //check form errors -
@@ -351,37 +301,7 @@ const addRecord = () => {
 };
 
 //function for update record
-const updateRecord = () => {
-  // let errors = checkErrors();
-  // if (errors == "") {
-  //   let updates = checkUpdates();
-  //   if (updates != "") {
-  //     let title = "Are you sure you want to update following changes...?";
-  //     let message = updates;
-  //     showConfirm(title, message).then((userConfirm) => {
-  //       if (userConfirm) {
-  //         let serverResponse = ajaxRequestBody("/customer", "PUT", customer);
-  //         if (serverResponse == "OK") {
-  //           showAlert("success", "Customer Update successfully..!").then(() => {
-  //             //need to refresh table and form
-  //             refreshAll();
-  //           });
-  //         } else {
-  //           showAlert(
-  //             "error",
-  //             "Customer update not successfully..! have some errors \n" +
-  //               serverResponse
-  //           );
-  //         }
-  //       }
-  //     });
-  //   } else {
-  //     showAlert("warning", "Nothing to Update...!");
-  //   }
-  // } else {
-  //   showAlert("error", "Cannot update!!!\n" + errors);
-  // }
-};
+const updateRecord = () => {};
 
 // ********* TABLE OPERATIONS *********
 
@@ -410,20 +330,6 @@ const refreshTable = () => {
     true,
     userPrivilages
   );
-
-  //hide delete button when status is 'deleted'
-  // customers.forEach((customer, index) => {
-  //   if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
-  //     //catch the button
-  //     let targetElement =
-  //       customerTable.children[1].children[index].children[6].children[
-  //         userPrivilages.update && userPrivilages.insert ? 2 : 1
-  //       ];
-  //     //add changes
-  //     targetElement.style.pointerEvents = "none";
-  //     targetElement.style.visibility = "hidden";
-  //   }
-  // });
 
   // hide the refill button
   supplierPayments.forEach((obj, index) => {
@@ -473,6 +379,22 @@ const getPaymethod = (rowObject) => {
 // function for get paid date
 const getAddedDate = (rowObject) => {
   return rowObject.addedDateTime.split("T")[0];
+};
+
+//function for filter table by user
+const filterPaymentsByUser = () => {
+  //array for store data list
+  supplierPayments = ajaxGetRequest("/supplierpayment/findall");
+
+  if (selectUser.value != "") {
+    const userId = JSON.parse(selectUser.value).id;
+
+    supplierPayments = ajaxGetRequest(
+      "/supplierpayment/findallbyuser/" + userId
+    );
+  }
+
+  refreshTable();
 };
 
 //function for view record
@@ -549,22 +471,6 @@ const deleteRecord = (rowObject, rowId) => {
   //     }
   //   }
   // });
-};
-
-//function for filter table by user
-const filterPaymentsByUser = () => {
-  //array for store data list
-  supplierPayments = ajaxGetRequest("/supplierpayment/findall");
-
-  if (selectUser.value != "") {
-    const userId = JSON.parse(selectUser.value).id;
-
-    supplierPayments = ajaxGetRequest(
-      "/supplierpayment/findallbyuser/" + userId
-    );
-  }
-
-  refreshTable();
 };
 
 // ********* PRINT OPERATIONS *********

@@ -11,19 +11,16 @@ window.addEventListener("load", () => {
   //set default selected section
   if (userPrivilages.insert) {
     showDefaultSection("addNewButton", "addNewSection");
+  } else {
+    showDefaultSection("viewAllButton", "viewAllSection");
+    addAccordion.style.display = "none";
   }
-  //  else {
-  //   showDefaultSection("viewAllButton", "viewAllSection");
-  //   addAccordion.style.display = "none";
-  // }
   //call all event listners
   addEventListeners();
 });
 
 // ********* LISTENERS *********
 const addEventListeners = () => {
-  let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
-
   textCustomer.addEventListener("keyup", () => {
     getCustomerList();
   });
@@ -40,14 +37,18 @@ const addEventListeners = () => {
       refreshIncompelteInvoiceTable();
   });
 
+  selectUser.addEventListener("change", () => {
+    filterPaymentsByUser();
+  });
+
   textPayment.addEventListener("keyup", () => {
-    textFieldValidator(
-      textPayment,
-      numberWithdecimals,
-      "cusPayment",
-      "paidAmount"
-    ),
-      calBalance();
+    calBalance();
+  });
+
+  //form reset button function call
+  btnUserReset.addEventListener("click", () => {
+    selectUser.value = "";
+    filterPaymentsByUser();
   });
 
   //form reset button function call
@@ -57,12 +58,22 @@ const addEventListeners = () => {
 
   //record update function call
   btnUpdate.addEventListener("click", () => {
-    updateRecord();
+    // updateRecord();
   });
 
   //record save function call
   btnAdd.addEventListener("click", () => {
     addRecord();
+  });
+
+  // record print function call
+  btnViewPrint.addEventListener("click", () => {
+    printViewRecord();
+  });
+
+  //record print function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
   });
 };
 
@@ -72,7 +83,8 @@ const refreshAll = () => {
   //Call form refresh function
   refreshForm();
   //Call table refresh function
-  // refreshTable();
+  filterPaymentsByUser();
+  refreshTable();
 };
 
 // ********* FORM OPERATIONS *********
@@ -90,8 +102,13 @@ const refreshForm = () => {
   textCustomer.value = "";
   textBalance.value = "";
   textPayment.value = "";
+  textTotalBalance.value = "";
 
-  setBorderStyle([textCustomer, textPayment]);
+  setBorderStyle([textCustomer, textPayment, textBalance]);
+
+  //get all users
+  users = ajaxGetRequest("/user/findallusers");
+  fillDataIntoSelect(selectUser, "Select User", users, "username");
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -118,15 +135,10 @@ const createViewPayMethodUI = () => {
           cusPayment.paymethodId.name == "Card" ||
           cusPayment.paymethodId.name == "Cheque"
         ) {
-          textPayment.value =
-            textTotalBalance.value != ""
-              ? parseFloat(textTotalBalance.value).toFixed(2)
-              : 0;
-          textPayment.style.border = "1px solid #ced4da";
-          textPayment.disabled = true;
+          textPayment.value = parseFloat(textTotalBalance.value).toFixed(2);
           calBalance();
         } else {
-          textPayment.disabled = false;
+          calBalance();
         }
       }
     };
@@ -205,31 +217,43 @@ const getTotalBalance = () => {
 
 // fucntion for cal payment and balance
 const calBalance = () => {
-  let paidAmount = textPayment.value;
-  let totalBalance = textTotalBalance.value;
-  let balance = 0;
+  let numberWithdecimals = "^(([1-9]{1}[0-9]{0,7})|([0-9]{0,8}[.][0-9]{2}))$";
+  let balance = "";
+  let fieldValue = textPayment.value;
 
-  if (paidAmount != "" && cusPayment.paidAmount != null) {
-    // cal balance amount
-    balance = parseFloat(paidAmount) - parseFloat(totalBalance);
-
-    // if paid amount lower than total payable balance
-    if (balance < 0) {
-      lblBalance.innerText = "Due (Rs.):";
-      cusPayment.paidAmount = parseFloat(paidAmount);
-      cusPayment.balance = -balance;
+  if (fieldValue != "" && new RegExp(numberWithdecimals).test(fieldValue)) {
+    if (
+      typeof cusPayment.paymethodId !== "undefined" &&
+      (cusPayment.paymethodId.name == "Card" ||
+        cusPayment.paymethodId.name == "Cheque") &&
+      parseFloat(fieldValue) > parseFloat(textTotalBalance.value)
+    ) {
+      textPayment.style.border = "1px solid red";
+      cusPayment.paidAmount = null;
+      cusPayment.balance = null;
+      textBalance.value = parseFloat(textTotalBalance.value).toFixed(2);
     } else {
-      lblBalance.innerText = "Balance (Rs.):";
-      cusPayment.paidAmount = parseFloat(totalBalance);
-      cusPayment.balance = 0;
+      textPayment.style.border = "2px solid #00FF7F";
+      balance = parseFloat(fieldValue) - parseFloat(textTotalBalance.value);
+      textBalance.value = Math.abs(parseFloat(balance)).toFixed(2);
+
+      if (balance >= 0) {
+        lblBalance.innerText = "Balance (Rs.):";
+        cusPayment.paidAmount = parseFloat(textTotalBalance.value);
+        cusPayment.balance = 0;
+      } else {
+        lblBalance.innerText = "Due (Rs.):";
+        cusPayment.balance = balance;
+        cusPayment.paidAmount = parseFloat(textPayment.value);
+      }
     }
-    textBalance.value = parseFloat(balance).toFixed(2);
-
-    // bind value
   } else {
-    textBalance.value = "";
+    cusPayment.paidAmount = null;
+    cusPayment.balance = null;
+    textPayment.style.border = "1px solid red";
+    lblBalance.innerText = "Due (Rs.):";
+    textBalance.value = parseFloat(textTotalBalance.value).toFixed(2);
   }
-
   console.log(cusPayment);
 };
 
@@ -298,17 +322,163 @@ const updateRecord = () => {};
 
 // ********* TABLE OPERATIONS *********
 
+//function for refresh table records
+const refreshTable = () => {
+  //object count = table column count
+  //String - number/string/date
+  //function - object/array/boolean
+  //currency - RS
+  const displayProperties = [
+    { property: "paymentInvoiceId", datatype: "String" },
+    { property: getCustomer, datatype: "function" },
+    { property: getAddedDate, datatype: "function" },
+    { property: getPaymethod, datatype: "function" },
+    { property: "paidAmount", datatype: "currency" },
+  ];
+
+  //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
+  fillDataIntoTable(
+    customerPaymentsTable,
+    customerPayments,
+    displayProperties,
+    viewRecord,
+    refillRecord,
+    deleteRecord,
+    true,
+    userPrivilages
+  );
+
+  // hide the refill button
+  customerPayments.forEach((obj, index) => {
+    if (userPrivilages.update) {
+      let targetElement =
+        customerPaymentsTable.children[1].children[index].children[6]
+          .children[1];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.visibility = "hidden";
+      targetElement.style.display = "none";
+    }
+  });
+
+  $("#customerPaymentsTable").dataTable();
+};
+
+// function for get customer
+const getCustomer = (rowObject) => {
+  return rowObject.customer.fullName;
+};
+
+// function for get paymethod
+const getPaymethod = (rowObject) => {
+  if (rowObject.paymethodId.name == "Cash") {
+    return (
+      '<p class = "status status-active">' + rowObject.paymethodId.name + "</p>"
+    );
+  } else if (rowObject.paymethodId.name == "Card") {
+    return (
+      '<p class = "status btn-plus">' + rowObject.paymethodId.name + "</p>"
+    );
+  } else if (rowObject.paymethodId.name == "Cheque") {
+    return (
+      '<p class = "status status-warning">' +
+      rowObject.paymethodId.name +
+      "</p>"
+    );
+  }
+};
+
+// function for get paid date
+const getAddedDate = (rowObject) => {
+  return rowObject.addedDateTime.split("T")[0];
+};
+
+//function for filter table by user
+const filterPaymentsByUser = () => {
+  //array for store data list
+  customerPayments = ajaxGetRequest("/customerpayment/findall");
+
+  if (selectUser.value != "") {
+    const userId = JSON.parse(selectUser.value).id;
+
+    customerPayments = ajaxGetRequest(
+      "/customerpayment/findallbyuser/" + userId
+    );
+  }
+
+  refreshTable();
+};
+
+//function for refill record
+const refillRecord = (rowObject, rowId) => {
+  //manage buttons
+  // manageFormButtons("refill", userPrivilages);
+};
+
+//function for delete record
+const deleteRecord = (rowObject, rowId) => {
+  //get user confirmation
+  // let title = "Are you sure!\nYou wants to delete following record? \n";
+  // let message =
+  //   "Customer Name : " +
+  //   rowObject.fullName +
+  //   "\nContact No. :" +
+  //   rowObject.contact;
+  // showConfirm(title, message).then((userConfirm) => {
+  //   if (userConfirm) {
+  //     //response from backend ...
+  //     let serverResponse = ajaxRequestBody("/customer", "DELETE", rowObject); // url,method,object
+  //     //check back end response
+  //     if (serverResponse == "OK") {
+  //       showAlert("success", "Customer Delete successfully..!").then(() => {
+  //         // Need to refresh table and form
+  //         refreshAll();
+  //       });
+  //     } else {
+  //       showAlert(
+  //         "error",
+  //         "Customer delete not successfully..! have some errors \n" +
+  //           serverResponse
+  //       );
+  //     }
+  //   }
+  // });
+};
+
 //function for view record
 const viewRecord = (rowObject, rowId) => {
   //need to get full object
-  // let printObj = rowObject;
-  // tdCustomerName.innerText = printObj.fullName;
-  // tdCustomerContact.innerText = printObj.contact;
-  // tdCustomerNIC.innerText = printObj.nic;
-  // tdCustomerAddress.innerText = printObj.address;
-  // tdStatus.innerText = printObj.customerStatusId.name;
-  // //open model
-  // $("#modelDetailedView").modal("show");
+  let printObj = rowObject;
+
+  tdInvoiceId.innerText = printObj.paymentInvoiceId;
+  tdCustomer.innerText = printObj.customer.fullName;
+  tdInvoicedDate.innerText = printObj.addedDateTime.split("T")[0];
+  tdPayMethod.innerText = printObj.paymethodId.name;
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paidAmount).toFixed(2);
+  getGRNPaymentBySupPaymentForPrint(printObj.id);
+  //open model
+  $("#modelDetailedView").modal("show");
+};
+
+//function for get customer payment related invoice payment details
+const getGRNPaymentBySupPaymentForPrint = (payId) => {
+  //get invoice payment details
+  customerPayments = ajaxGetRequest(
+    "/customerpayment/findinvpaymentsbycustomerpayment/" + payId
+  );
+
+  customerPayments.forEach((ele) => {
+    const tr = document.createElement("tr");
+    const tdInvoiceId = document.createElement("td");
+    const tdAmount = document.createElement("td");
+
+    tdInvoiceId.innerText = ele.invoiceId.invoiceId;
+    tdAmount.innerText = "Rs." + parseFloat(ele.paidAmount).toFixed(2);
+
+    tr.appendChild(tdInvoiceId);
+    tr.appendChild(tdAmount);
+    printTable.appendChild(tr);
+  });
 };
 
 // ********* PRINT OPERATIONS *********
@@ -318,9 +488,9 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customer</title>" +
+    "<head><title>Print Customer Payment</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customer Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Customer Payment Details</h2>" +
       printTable.outerHTML
   );
 
@@ -335,12 +505,12 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customers</title>" +
+    "<head><title>Print Customer Payments</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customers Details</h2>" +
-      customerTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      "<h2 style = 'font-weight:bold'>Customer Payments</h2>" +
+      customerPaymentsTable.outerHTML +
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

@@ -16,6 +16,6 @@ public interface SupplierPaymentRepository extends JpaRepository<SupplierPayment
 	public String getNextPayInvoiceID();
 	
 	// query for get all supplier payments by added user
-	@Query(value = "Select sp from SupplierPayment sp where addedUserId = ?1")
+	@Query(value = "Select sp from SupplierPayment sp where addedUserId = ?1 order by sp.id")
 	public List<SupplierPayment> findAllByUser(int userId);
 }

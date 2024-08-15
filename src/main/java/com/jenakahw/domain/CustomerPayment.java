@@ -26,6 +26,10 @@ public class CustomerPayment {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // auto generated id - AI
 	@Column(name = "id", unique = true) // map with database table column
 	private Integer id;
+	
+	@Column(name = "payment_invoice_id")
+	@NotNull
+	private String paymentInvoiceId;
 
 	@Column(name = "paid_amount")
 	@NotNull

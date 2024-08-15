@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -22,7 +21,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.GrnHasSupplierPayment;
-import com.jenakahw.domain.Role;
 import com.jenakahw.domain.SupplierPayment;
 import com.jenakahw.repository.GrnRepository;
 import com.jenakahw.repository.GrnStatusRepository;
@@ -101,7 +99,7 @@ public class SupplierPaymentController {
 	@GetMapping(value = "/findgrnpaymentsbysupplierpayment/{supplierpaymentid}", produces = "application/json")
 	public List<GrnHasSupplierPayment> findGrnPaymentsSupplierPayment(@PathVariable("supplierpaymentid") int supplierPaymentId) {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return grnSupplierPaymentRepository.findGrnPaymentsSupplierPayment(supplierPaymentId);
+			return grnSupplierPaymentRepository.findGrnPaymentsBySupplierPayment(supplierPaymentId);
 		} else {
 			return null;
 		}
