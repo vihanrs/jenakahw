@@ -2,10 +2,9 @@ package com.jenakahw.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.jenakahw.domain.Role;
 import com.jenakahw.domain.User;
 import com.jenakahw.repository.UserRepository;
 import com.jenakahw.repository.UserStatusRepository;
@@ -41,7 +41,7 @@ public class UserController {
 
 	@Autowired
 	private UserStatusRepository userStatusRepository;
-	
+
 	private static final String MODULE = "User";
 
 	// user UI service [/user -- return user UI]
@@ -62,6 +62,16 @@ public class UserController {
 	public List<User> findAll() {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
 			return userRepository.findAll();
+		} else {
+			return null;
+		}
+	}
+
+	// get mapping for get all user names and ids -- [/user/findallusers]
+	@GetMapping(value = "/findallusers", produces = "application/json")
+	public List<User> findAllUsers() {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return userRepository.findAllUsers();
 		} else {
 			return null;
 		}
@@ -189,7 +199,21 @@ public class UserController {
 	public User getLoggedUser() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		
+
 		return userRepository.getUserByUsername(auth.getName());
+	}
+
+	// method to check logged user role by given role
+	public boolean isLoggedUserHasRole(String roleName) {
+		// Get the logged user's roles
+		Set<Role> roles = getLoggedUser().getRoles();
+
+		for (Role role : roles) {
+			if (roleName.equals(role.getName())) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

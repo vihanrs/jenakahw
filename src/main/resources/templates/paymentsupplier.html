@@ -49,6 +49,7 @@
               <button
                 class="accordion-button collapsed fw-bold"
                 type="button"
+                data-bs-toggle="collapse"
                 data-bs-target="#addNewSection"
                 aria-expanded="false"
                 aria-controls="addNewSection"
@@ -225,9 +226,144 @@
             </div>
           </div>
           <!-- add new form area end -->
+          <!-- view all table area start -->
+          <div class="accordion-item" id="viewAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View All Supplier Payments
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <div class="row mt-2 mb-4">
+                    <!-- required date -->
+                    <div class="col-md-3">
+                      <label for="selectUser" class="form-label fw-bold">
+                        Select User :
+                      </label>
+                      <select id="selectUser" class="form-select me-2" required>
+                        <option value="" selected disabled>Select User</option>
+                      </select>
+                    </div>
+                    <!-- reset button -->
+                    <div class="col-md-1">
+                      <label
+                        for="btnUserReset"
+                        class="form-label fw-bold"
+                        style="color: #d8d8d834"
+                      >
+                        .
+                      </label>
+                      <br />
+                      <button
+                        class="btn btn-outline-danger"
+                        type="button"
+                        id="btnUserReset"
+                      >
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <table
+                    class="table table-hover pt-3 mb-3"
+                    id="supplierPaymentsTable"
+                  >
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Invoice ID</th>
+                        <th>Supplier</th>
+                        <th>Date</th>
+                        <th>Pay Method</th>
+                        <th>Amount</th>
+                        <th
+                          style="width: 40px; text-align: right"
+                          id="modifyButtons"
+                        >
+                          Modify
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider"></tbody>
+                  </table>
+                </div>
+                <!-- print full table button -->
+                <div class="row mt-2">
+                  <button
+                    type="button"
+                    id="btnPrintFullTable"
+                    class="btn btn-info col-md-2 ml-auto me-2"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    Print All
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
         </div>
         <!-- content area end -->
       </div>
+      <!-- view record model start -->
+      <div class="modal" id="modelDetailedView">
+        <div class="modal-dialog">
+          <div class="modal-content" style="margin: 5px">
+            <div class="modal-header">
+              <h2 class="fw-bold">View Supplier Payment Details</h2>
+              <button class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <table id="printTable" class="table table-striped">
+                <tr>
+                  <th>Invoice ID</th>
+                  <td colspan="2" id="tdInvoiceId"></td>
+                </tr>
+                <tr>
+                  <th>Supplier</th>
+                  <td colspan="2" id="tdSupplier"></td>
+                </tr>
+                <tr>
+                  <th>Invoiced Date</th>
+                  <td colspan="2" id="tdInvoicedDate"></td>
+                </tr>
+                <tr>
+                  <th>Pay Method</th>
+                  <td colspan="2" id="tdPayMethod"></td>
+                </tr>
+                <tr>
+                  <th>Paid Amount</th>
+                  <td colspan="2" id="tdPaid"></td>
+                </tr>
+                <tr>
+                  <th><i>Related GRNs</i></th>
+                  <td id="tdGRNpayments"></td>
+                </tr>
+              </table>
+            </div>
+            <dv class="modal-footer">
+              <button id="btnViewPrint" class="btn btn-info">
+                <i class="fa-solid fa-print"></i> Print
+              </button>
+            </dv>
+          </div>
+        </div>
+      </div>
+      <!-- view record model end -->
     </div>
     <!-- Alert Box -->
     <div th:replace="~{alertbox :: alertFragment}"></div>

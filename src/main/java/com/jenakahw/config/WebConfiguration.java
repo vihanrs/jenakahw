@@ -26,11 +26,12 @@ public class WebConfiguration {
 			.requestMatchers("/privileges/**").hasAnyAuthority("Admin","Manager")
 			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
-			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
+			.requestMatchers("/supplier/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier")
 			.requestMatchers("/purchaseorder/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/grn/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
 			.requestMatchers("/stock/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
 			.requestMatchers("/report/**").hasAnyAuthority("Admin","Manager","Store-Keeper")
+			.requestMatchers("/supplierpayment/**").hasAnyAuthority("Admin","Manager","Cashier")
 			.anyRequest().authenticated();
 		})
 		//login form detail

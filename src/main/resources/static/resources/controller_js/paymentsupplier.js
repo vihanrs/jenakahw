@@ -2,7 +2,7 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest(
-    "/privilege/byloggeduserandmodule/Invoice Payment"
+    "/privilege/byloggeduserandmodule/Supplier Payment"
   );
 
   //refresh all
@@ -33,6 +33,10 @@ const addEventListeners = () => {
     calPayment();
   });
 
+  selectUser.addEventListener("change", () => {
+    filterPaymentsByUser();
+  });
+
   //form reset button function call
   btnReset.addEventListener("click", () => {
     refreshForm();
@@ -48,15 +52,21 @@ const addEventListeners = () => {
     addRecord();
   });
 
-  //record print function call
-  // btnViewPrint.addEventListener("click", () => {
-  //   printViewRecord();
-  // });
+  //form reset button function call
+  btnUserReset.addEventListener("click", () => {
+    selectUser.value = "";
+    filterPaymentsByUser();
+  });
 
-  //print full table function call
-  // btnPrintFullTable.addEventListener("click", () => {
-  //   printFullTable();
-  // });
+  // record print function call
+  btnViewPrint.addEventListener("click", () => {
+    printViewRecord();
+  });
+
+  //record print function call
+  btnPrintFullTable.addEventListener("click", () => {
+    printFullTable();
+  });
 };
 
 // ********* RESET *********
@@ -65,7 +75,8 @@ const refreshAll = () => {
   //Call form refresh function
   refreshForm();
   //Call table refresh function
-  // refreshTable();
+  filterPaymentsByUser();
+  refreshTable();
 };
 
 // ********* FORM OPERATIONS *********
@@ -87,6 +98,10 @@ const refreshForm = () => {
   refreshFiledAmounts();
   createViewPayMethodUI();
   refreshIncompelteGRNTable(0);
+
+  //get all users
+  // users = ajaxGetRequest("/user/findallusers");
+  // fillDataIntoSelect(selectUser, "Select User", users, "username");
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
@@ -372,25 +387,22 @@ const updateRecord = () => {
 
 //function for refresh table records
 const refreshTable = () => {
-  //array for store data list
-  customers = ajaxGetRequest("/customer/findall");
-
   //object count = table column count
   //String - number/string/date
   //function - object/array/boolean
   //currency - RS
   const displayProperties = [
-    { property: "fullName", datatype: "String" },
-    { property: "contact", datatype: "String" },
-    { property: "nic", datatype: "String" },
-    { property: "address", datatype: "String" },
-    { property: getStatus, datatype: "function" },
+    { property: "paymentInvoiceId", datatype: "String" },
+    { property: getSupplier, datatype: "function" },
+    { property: getAddedDate, datatype: "function" },
+    { property: getPaymethod, datatype: "function" },
+    { property: "paidAmount", datatype: "currency" },
   ];
 
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
-    customerTable,
-    customers,
+    supplierPaymentsTable,
+    supplierPayments,
     displayProperties,
     viewRecord,
     refillRecord,
@@ -400,43 +412,67 @@ const refreshTable = () => {
   );
 
   //hide delete button when status is 'deleted'
-  customers.forEach((customer, index) => {
-    if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
-      //catch the button
+  // customers.forEach((customer, index) => {
+  //   if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
+  //     //catch the button
+  //     let targetElement =
+  //       customerTable.children[1].children[index].children[6].children[
+  //         userPrivilages.update && userPrivilages.insert ? 2 : 1
+  //       ];
+  //     //add changes
+  //     targetElement.style.pointerEvents = "none";
+  //     targetElement.style.visibility = "hidden";
+  //   }
+  // });
+
+  // hide the refill button
+  supplierPayments.forEach((obj, index) => {
+    if (userPrivilages.update) {
       let targetElement =
-        customerTable.children[1].children[index].children[6].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
+        supplierPaymentsTable.children[1].children[index].children[6]
+          .children[1];
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
+      targetElement.style.display = "none";
     }
   });
 
-  $("#customerTable").dataTable();
+  $("#supplierPaymentsTable").dataTable();
 };
 
-// function for get status
-const getStatus = (rowObject) => {
-  if (rowObject.customerStatusId.name == "Loyalty") {
+// function for get supplier
+const getSupplier = (rowObject) => {
+  return (
+    rowObject.supplierId.firstName +
+    (rowObject.supplierId.company != null
+      ? " - " + rowObject.supplierId.company
+      : "")
+  );
+};
+
+// function for get paymethod
+const getPaymethod = (rowObject) => {
+  if (rowObject.paymethodId.name == "Cash") {
     return (
-      '<p class = "status status-active">' +
-      rowObject.customerStatusId.name +
-      "</p>"
+      '<p class = "status status-active">' + rowObject.paymethodId.name + "</p>"
     );
-  } else if (rowObject.customerStatusId.name == "Normal") {
+  } else if (rowObject.paymethodId.name == "Card") {
+    return (
+      '<p class = "status btn-plus">' + rowObject.paymethodId.name + "</p>"
+    );
+  } else if (rowObject.paymethodId.name == "Cheque") {
     return (
       '<p class = "status status-warning">' +
-      rowObject.customerStatusId.name +
-      "</p>"
-    );
-  } else if (rowObject.customerStatusId.name == "Deleted") {
-    return (
-      '<p class = "status status-error">' +
-      rowObject.customerStatusId.name +
+      rowObject.paymethodId.name +
       "</p>"
     );
   }
+};
+
+// function for get paid date
+const getAddedDate = (rowObject) => {
+  return rowObject.addedDateTime.split("T")[0];
 };
 
 //function for view record
@@ -444,52 +480,48 @@ const viewRecord = (rowObject, rowId) => {
   //need to get full object
   let printObj = rowObject;
 
-  tdCustomerName.innerText = printObj.fullName;
-  tdCustomerContact.innerText = printObj.contact;
-  tdCustomerNIC.innerText = printObj.nic;
-  tdCustomerAddress.innerText = printObj.address;
-  tdStatus.innerText = printObj.customerStatusId.name;
-
+  tdInvoiceId.innerText = printObj.paymentInvoiceId;
+  tdSupplier.innerText =
+    printObj.supplierId.firstName +
+    (printObj.supplierId.company != null
+      ? " - " + printObj.supplierId.company
+      : "");
+  tdInvoicedDate.innerText = printObj.addedDateTime.split("T")[0];
+  tdPayMethod.innerText = printObj.paymethodId.name;
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paidAmount).toFixed(2);
+  getGRNPaymentBySupPaymentForPrint(printObj.id);
   //open model
   $("#modelDetailedView").modal("show");
 };
 
-//function for refill record
-const refillRecord = (rowObject, rowId) => {
-  $("#addNewButton").click();
-
-  customer = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
-  oldcustomer = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
-
-  textCustomerName.value = customer.fullName;
-  textCustomerContact.value = customer.contact;
-
-  //set optional fields
-  textCustomerNIC.value = customer.nic ?? "";
-  textCustomerAddress.value = customer.address ?? "";
-
-  // set status
-  fillDataIntoSelect(
-    selectStatus,
-    "Select Status",
-    statuses,
-    "name",
-    customer.customerStatusId.name
+//function for get supplier payment related grn payment details
+const getGRNPaymentBySupPaymentForPrint = (payId) => {
+  //get grn payment details
+  supplierPayments = ajaxGetRequest(
+    "/supplierpayment/findgrnpaymentsbysupplierpayment/" + payId
   );
 
-  setBorderStyle([
-    textCustomerName,
-    textCustomerContact,
-    textCustomerNIC,
-    textCustomerAddress,
-    selectStatus,
-  ]);
+  supplierPayments.forEach((ele) => {
+    const tr = document.createElement("tr");
+    const tdGRNId = document.createElement("td");
+    const tdAmount = document.createElement("td");
 
-  //manage buttons
-  manageFormButtons("refill", userPrivilages);
+    tdGRNId.innerText = ele.grnId.grnCode;
+    tdAmount.innerText = "Rs." + parseFloat(ele.paidAmount).toFixed(2);
+
+    tr.appendChild(tdGRNId);
+    tr.appendChild(tdAmount);
+    printTable.appendChild(tr);
+  });
 };
 
-// //function for delete record
+//function for refill record
+const refillRecord = (rowObject, rowId) => {
+  //manage buttons
+  // manageFormButtons("refill", userPrivilages);
+};
+
+//function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
   // let title = "Are you sure!\nYou wants to delete following record? \n";
@@ -519,6 +551,22 @@ const deleteRecord = (rowObject, rowId) => {
   // });
 };
 
+//function for filter table by user
+const filterPaymentsByUser = () => {
+  //array for store data list
+  supplierPayments = ajaxGetRequest("/supplierpayment/findall");
+
+  if (selectUser.value != "") {
+    const userId = JSON.parse(selectUser.value).id;
+
+    supplierPayments = ajaxGetRequest(
+      "/supplierpayment/findallbyuser/" + userId
+    );
+  }
+
+  refreshTable();
+};
+
 // ********* PRINT OPERATIONS *********
 
 //print function
@@ -526,9 +574,9 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customer</title>" +
+    "<head><title>Print Supplier Payment</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customer Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Supplier Payment</h2>" +
       printTable.outerHTML
   );
 
@@ -543,12 +591,12 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customers</title>" +
+    "<head><title>Print Supplier Payments</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customers Details</h2>" +
-      customerTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      "<h2 style = 'font-weight:bold'>Supplier Payments</h2>" +
+      supplierPaymentsTable.outerHTML +
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

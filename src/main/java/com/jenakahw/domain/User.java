@@ -86,4 +86,10 @@ public class User {
 	@ManyToMany
 	@JoinTable(name = "user_has_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles;
+	
+	public User(Integer id,String username,UserStatus userStatusId) {
+		this.id = id;
+		this.username=username;
+		this.userStatusId = userStatusId;
+	}
 }

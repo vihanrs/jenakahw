@@ -24,7 +24,7 @@ public interface GrnRepository extends JpaRepository<Grn, Integer> {
 	public Grn getGrnById(Integer gid);
 	
 	// query for get all incomplete grns by supplier
-	@Query(value = "Select new Grn(g.id,g.grnCode,g.supplierId,g.grandTotal,g.paid,g.balanceAmount,g.grnStatusId) from Grn g where g.grandTotal != g.paid and g.supplierId = ?1")
+	@Query(value = "Select new Grn(g.id,g.grnCode,g.supplierId,g.grandTotal,g.paid,g.balanceAmount,g.grnStatusId) from Grn g where g.grandTotal != g.paid and g.supplierId = ?1 order by g.id")
 	public List<Grn> findAllIncompleteBySupplier(int supplierId);
 	
 }

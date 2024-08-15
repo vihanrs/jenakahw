@@ -14,6 +14,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	// query for get all users except admin
 	@Query(value = "Select u from User u where u.username != 'admin' order by u.id desc")
 	public List<User> findAll();
+	
+	// query for get all users names and ids except admin
+	@Query(value = "Select new User(u.id,u.username,u.userStatusId) from User u where u.username != 'admin' order by u.id desc")
+	public List<User> findAllUsers();
 
 	// query for generate employee id
 	@Query(value= "Select concat('EMP', lpad (substring(max(u.emp_id),4 )+1, 3, '0')) FROM user as u", nativeQuery = true)
