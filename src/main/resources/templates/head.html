@@ -53,10 +53,13 @@
 
   <script th:inline="javascript">
     window.addEventListener("load", () => {
+      //by adding this multiline comment, it can read the value of loguserphoto attribute which passed from backend
       let userPhoto = /*[[${loguserphoto}]]*/ "loguserphoto";
       if (userPhoto != null) {
         imgUser.src = atob(userPhoto);
       }
+
+      userRole = /*[[${loguserrole}]]*/ "loguserrole";
     });
   </script>
 </head>

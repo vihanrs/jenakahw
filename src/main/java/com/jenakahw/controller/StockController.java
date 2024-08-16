@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Stock;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.StockRepository;
 
 @RestController
@@ -25,6 +26,9 @@ public class StockController {
 	 */
 	@Autowired
 	private StockRepository stockRepository;
+	
+	@Autowired
+	private UserController userController;
 
 	@Autowired
 	private PrivilegeController privilegeController;
@@ -37,9 +41,14 @@ public class StockController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("title", "Stock | Jenaka Hardware");
 		modelAndView.addObject("logusername", auth.getName());
+		modelAndView.addObject("loguserrole", userRole);
+		modelAndView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		modelAndView.setViewName("stock.html");
 		return modelAndView;
 	}

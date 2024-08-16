@@ -9,6 +9,8 @@ window.addEventListener("load", () => {
 
 const refreshAll = () => {
   refreshCards();
+
+  console.log(userRole);
 };
 
 const refreshCards = () => {

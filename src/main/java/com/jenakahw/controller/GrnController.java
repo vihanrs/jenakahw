@@ -25,6 +25,7 @@ import com.jenakahw.domain.GrnHasProduct;
 import com.jenakahw.domain.Product;
 import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.domain.Stock;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.GrnRepository;
 import com.jenakahw.repository.GrnStatusRepository;
 import com.jenakahw.repository.PurchaseOrderRepository;
@@ -73,9 +74,15 @@ public class GrnController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
+
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("title", "GRN | Jenaka Hardware");
 		modelAndView.addObject("logusername", auth.getName());
+		modelAndView.addObject("loguserrole", userRole);
+		modelAndView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		modelAndView.setViewName("grn.html");
 		return modelAndView;
 	}

@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jenakahw.domain.POHasProduct;
 import com.jenakahw.domain.Product;
 import com.jenakahw.domain.PurchaseOrder;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.POHasProductRepository;
 import com.jenakahw.repository.PurchaseOrderRepository;
 import com.jenakahw.repository.PurchaseOrderStatusRepository;
@@ -59,9 +60,14 @@ public class PurchaseOrderController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("title", "Purchase Order | Jenaka Hardware");
 		modelAndView.addObject("logusername", auth.getName());
+		modelAndView.addObject("loguserrole", userRole);
+		modelAndView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		modelAndView.setViewName("purchaseorder.html");
 		return modelAndView;
 	}

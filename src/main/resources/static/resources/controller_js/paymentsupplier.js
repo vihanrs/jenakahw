@@ -97,8 +97,13 @@ const refreshForm = () => {
   refreshIncompelteGRNTable(0);
 
   //get all users
-  users = ajaxGetRequest("/user/findallusers");
-  fillDataIntoSelect(selectUser, "Select User", users, "username");
+  if (userRole == "Admin" || userRole == "Manager") {
+    divUserFilter.classList.remove("d-none");
+    users = ajaxGetRequest("/user/findallusers");
+    fillDataIntoSelect(selectUser, "Select User", users, "username");
+  } else {
+    divUserFilter.classList.add("d-none");
+  }
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);

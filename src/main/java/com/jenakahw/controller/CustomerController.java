@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Customer;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.CustomerRepository;
 import com.jenakahw.repository.CustomerStatusRepository;
 
@@ -50,9 +51,15 @@ public class CustomerController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+		
 		ModelAndView customerView = new ModelAndView();
-		customerView.addObject("title", "Customer  | Jenaka Hardware");
+		
 		customerView.addObject("logusername", auth.getName());
+		customerView.addObject("loguserrole", userRole);
+		customerView.addObject("loguserphoto", loggedUser.getUserPhoto());
+		customerView.addObject("title", "Customer  | Jenaka Hardware");
 		customerView.setViewName("customer.html");
 		return customerView;
 	}

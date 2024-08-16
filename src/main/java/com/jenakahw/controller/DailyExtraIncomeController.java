@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.DailyExtraIncome;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.DailyExtraIncomeRepository;
 import com.jenakahw.repository.DailyIncomeExpensesStatusRepository;
 
@@ -49,9 +50,14 @@ public class DailyExtraIncomeController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
 		ModelAndView dailyextraincomeView = new ModelAndView();
 		dailyextraincomeView.addObject("title", "Daily Extra Income  | Jenaka Hardware");
 		dailyextraincomeView.addObject("logusername", auth.getName());
+		dailyextraincomeView.addObject("loguserrole", userRole);
+		dailyextraincomeView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dailyextraincomeView.setViewName("dailyextraincome.html");
 		return dailyextraincomeView;
 	}

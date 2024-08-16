@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.CustomerPayment;
-import com.jenakahw.domain.GrnHasSupplierPayment;
 import com.jenakahw.domain.Invoice;
 import com.jenakahw.domain.InvoiceHasPayment;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.CustomerPaymentRepository;
-import com.jenakahw.repository.GrnSupplierPaymentRepository;
 import com.jenakahw.repository.InvoicePaymentRepository;
 import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
@@ -62,10 +61,16 @@ public class CustomerPaymentController {
 	public ModelAndView getCustomerPaymentUI() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
 
 		ModelAndView customerPaymentView = new ModelAndView();
-		customerPaymentView.addObject("title", "Customer Payment | Jenaka Hardware");
+		
 		customerPaymentView.addObject("logusername", auth.getName());
+		customerPaymentView.addObject("loguserrole", userRole);
+		customerPaymentView.addObject("loguserphoto", loggedUser.getUserPhoto());
+		customerPaymentView.addObject("title", "Customer Payment | Jenaka Hardware");
 		customerPaymentView.setViewName("paymentcustomer.html");
 		return customerPaymentView;
 	}

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Invoice;
 import com.jenakahw.domain.InvoiceHasPayment;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.InvoicePaymentRepository;
 import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
@@ -52,9 +53,15 @@ public class InvoicePaymentController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
+
 		ModelAndView invoicePaymentView = new ModelAndView();
 		invoicePaymentView.addObject("title", "Invoice Payment | Jenaka Hardware");
 		invoicePaymentView.addObject("logusername", auth.getName());
+		invoicePaymentView.addObject("loguserrole", userRole);
+		invoicePaymentView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		invoicePaymentView.setViewName("paymentinvoice.html");
 		return invoicePaymentView;
 	}

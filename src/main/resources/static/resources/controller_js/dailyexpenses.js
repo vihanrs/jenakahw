@@ -2,7 +2,7 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest(
-    "/privilege/byloggeduserandmodule/Daily Extra Income"
+    "/privilege/byloggeduserandmodule/Daily Expenses"
   );
 
   //refresh all

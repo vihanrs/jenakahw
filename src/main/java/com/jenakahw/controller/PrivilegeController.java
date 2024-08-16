@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Privilege;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.PrivilegeRepository;
 
 @RestController
@@ -33,6 +33,9 @@ public class PrivilegeController {
 	@Autowired
 	private PrivilegeRepository privilegeRepository;
 	
+//	@Autowired
+//	private UserController userController;
+	
 	private static final String MODULE = "Privilege";
 
 	// get mapping for generate privilege UI
@@ -41,9 +44,15 @@ public class PrivilegeController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+//		User loggedUser = userController.getLoggedUser();
+//		String userRole = userController.getLoggedUserRole();
+
+
 		ModelAndView privilegeView = new ModelAndView();
 		privilegeView.addObject("title", "Privilege  | Jenaka Hardware");
 		privilegeView.addObject("logusername", auth.getName());
+//		privilegeView.addObject("loguserrole", userRole);
+//		privilegeView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		privilegeView.setViewName("privilege.html");
 		return privilegeView;
 	}

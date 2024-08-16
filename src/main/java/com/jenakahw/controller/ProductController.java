@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Product;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.ProductRepository;
 import com.jenakahw.repository.ProductStatusRepository;
 
@@ -51,9 +52,14 @@ public class ProductController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
 		ModelAndView productView = new ModelAndView();
 		productView.addObject("title", "Product  | Jenaka Hardware");
 		productView.addObject("logusername", auth.getName());
+		productView.addObject("loguserrole", userRole);
+		productView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		productView.setViewName("product.html");
 		return productView;
 	}

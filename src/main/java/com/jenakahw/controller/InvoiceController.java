@@ -23,6 +23,7 @@ import com.jenakahw.domain.Customer;
 import com.jenakahw.domain.Invoice;
 import com.jenakahw.domain.InvoiceHasProduct;
 import com.jenakahw.domain.Stock;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.CustomerRepository;
 import com.jenakahw.repository.CustomerStatusRepository;
 import com.jenakahw.repository.InvoiceRepository;
@@ -66,9 +67,15 @@ public class InvoiceController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
+
 		ModelAndView invoiceView = new ModelAndView();
 		invoiceView.addObject("title", "Invoice  | Jenaka Hardware");
 		invoiceView.addObject("logusername", auth.getName());
+		invoiceView.addObject("loguserrole", userRole);
+		invoiceView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		invoiceView.setViewName("invoice.html");
 		return invoiceView;
 	}

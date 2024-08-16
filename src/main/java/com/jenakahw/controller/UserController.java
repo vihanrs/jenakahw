@@ -50,9 +50,14 @@ public class UserController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = getLoggedUser();
+		String userRole = getLoggedUserRole();
+
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.addObject("title", "User | Jenaka Hardware");
 		modelAndView.addObject("logusername", auth.getName());
+		modelAndView.addObject("loguserrole", userRole);
+		modelAndView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		modelAndView.setViewName("user.html");
 		return modelAndView;
 	}
@@ -201,6 +206,26 @@ public class UserController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		return userRepository.getUserByUsername(auth.getName());
+	}
+	
+	// method for get logged user role
+	public String getLoggedUserRole() {
+		User loggedUser = getLoggedUser();
+
+		String userRole = "";
+		
+		for (Role role : loggedUser.getRoles()) {
+			if (role.getName().equals("Admin")) {
+				userRole = "Admin";
+				break;
+			} else if (role.getName().equals("Manager")) {
+				userRole = "Manager";
+				break;
+			} else {
+				userRole = role.getName();
+			}
+		}
+		return userRole;
 	}
 
 	// method to check logged user role by given role

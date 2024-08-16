@@ -787,9 +787,10 @@ const refreshTable = () => {
   //hide delete button when status is 'deleted'
   grns.forEach((grn, index) => {
     if (
-      (userPrivilages.delete && grn.grnStatusId.name == "Deleted") ||
-      grn.grnStatusId.name == "Received" ||
-      grn.grnStatusId.name == "Completed"
+      userPrivilages.delete &&
+      (grn.grnStatusId.name == "Deleted" ||
+        grn.grnStatusId.name == "Received" ||
+        grn.grnStatusId.name == "Completed")
     ) {
       //catch the button
       let targetElement =

@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.GrnHasSupplierPayment;
 import com.jenakahw.domain.SupplierPayment;
+import com.jenakahw.domain.User;
 import com.jenakahw.repository.GrnRepository;
 import com.jenakahw.repository.GrnStatusRepository;
 import com.jenakahw.repository.GrnSupplierPaymentRepository;
@@ -64,9 +65,14 @@ public class SupplierPaymentController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+		User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
+
 		ModelAndView supplierPaymentView = new ModelAndView();
 		supplierPaymentView.addObject("title", "Supplier Payment  | Jenaka Hardware");
 		supplierPaymentView.addObject("logusername", auth.getName());
+		supplierPaymentView.addObject("loguserrole", userRole);
+		supplierPaymentView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		supplierPaymentView.setViewName("paymentsupplier.html");
 		return supplierPaymentView;
 	}

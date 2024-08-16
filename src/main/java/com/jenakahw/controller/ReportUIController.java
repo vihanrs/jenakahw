@@ -26,10 +26,12 @@ public class ReportUIController {
     	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
     	
     	User loggedUser = userController.getLoggedUser();
+		String userRole = userController.getLoggedUserRole();
     	
 		ModelAndView dashboardView = new ModelAndView();
 		
 		dashboardView.addObject("logusername",auth.getName());
+		dashboardView.addObject("loguserrole", userRole);
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title","Report | Jenaka Hardware");
 		dashboardView.setViewName("reportpurchaseorder.html");
