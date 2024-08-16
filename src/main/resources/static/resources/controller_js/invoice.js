@@ -735,8 +735,12 @@ const viewRecord = (rowObject, rowId) => {
 
 // funtion for get invoice product list for print
 const getINVProductsForPrint = (printObj) => {
+  // remove the previously added dynamic rows
+  document.querySelectorAll(".dynamic-row").forEach((row) => row.remove());
+
   printObj.invoiceHasProducts.forEach((ele) => {
     const tr = document.createElement("tr");
+    tr.classList.add("dynamic-row");
     const tdProduct = document.createElement("td");
     const tdSellPrice = document.createElement("td");
     const tdQty = document.createElement("td");
@@ -842,9 +846,9 @@ const printViewRecord = () => {
   newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Customer</title>" +
+    "<head><title>Print Invoice</title>" +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Customer Details</h2>" +
+      "<h2 style = 'font-weight:bold'>Invoice Details</h2>" +
       printTable.outerHTML
   );
 
@@ -864,7 +868,7 @@ const printFullTable = () => {
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Invoices Details</h2>" +
       invoiceTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

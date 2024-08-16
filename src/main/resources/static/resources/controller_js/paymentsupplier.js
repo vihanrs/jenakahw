@@ -418,6 +418,9 @@ const viewRecord = (rowObject, rowId) => {
 
 //function for get supplier payment related grn payment details
 const getGRNPaymentBySupPaymentForPrint = (payId) => {
+  // remove the previously added dynamic rows
+  document.querySelectorAll(".dynamic-row").forEach((row) => row.remove());
+
   //get grn payment details
   supplierPayments = ajaxGetRequest(
     "/supplierpayment/findgrnpaymentsbysupplierpayment/" + payId
@@ -425,6 +428,7 @@ const getGRNPaymentBySupPaymentForPrint = (payId) => {
 
   supplierPayments.forEach((ele) => {
     const tr = document.createElement("tr");
+    tr.classList.add("dynamic-row");
     const tdGRNId = document.createElement("td");
     const tdAmount = document.createElement("td");
 

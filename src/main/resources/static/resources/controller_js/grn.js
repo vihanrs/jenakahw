@@ -788,13 +788,24 @@ const refreshTable = () => {
   grns.forEach((grn, index) => {
     if (
       (userPrivilages.delete && grn.grnStatusId.name == "Deleted") ||
-      grn.grnStatusId.name == "Received"
+      grn.grnStatusId.name == "Received" ||
+      grn.grnStatusId.name == "Completed"
     ) {
       //catch the button
       let targetElement =
         grnTable.children[1].children[index].children[8].children[
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.display = "none";
+      targetElement.style.visibility = "hidden";
+    }
+
+    if (userPrivilages.update && grn.grnStatusId.name == "Completed") {
+      //catch the button
+      let targetElement =
+        grnTable.children[1].children[index].children[8].children[1];
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
@@ -826,13 +837,19 @@ const getAddedDate = (rowObject) => {
 
 // function for get status
 const getStatus = (rowObject) => {
-  if (rowObject.grnStatusId.name == "Received") {
+  if (rowObject.grnStatusId.name == "Completed") {
     return (
       '<p class = "status status-active">' + rowObject.grnStatusId.name + "</p>"
     );
   } else if (rowObject.grnStatusId.name == "Deleted") {
     return (
       '<p class = "status status-error">' + rowObject.grnStatusId.name + "</p>"
+    );
+  } else if (rowObject.grnStatusId.name == "Received") {
+    return (
+      '<p class = "status status-warning">' +
+      rowObject.grnStatusId.name +
+      "</p>"
     );
   }
 };
@@ -999,8 +1016,12 @@ const viewRecord = (rowObject, rowId) => {
 
 // funtion for get purchase order product list for print
 const getGRNProductsForPrint = (printObj) => {
+  // remove the previously added dynamic rows
+  document.querySelectorAll(".dynamic-row").forEach((row) => row.remove());
+
   printObj.grnHasProducts.forEach((ele) => {
     const tr = document.createElement("tr");
+    tr.classList.add("dynamic-row");
     const tdProductName = document.createElement("td");
     const tdPurchasePrice = document.createElement("td");
     const tdQty = document.createElement("td");

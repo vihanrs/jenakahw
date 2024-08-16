@@ -720,8 +720,12 @@ const viewRecord = (ob, rowId) => {
 
 // funtion for get purchase order product list for print
 const getPOProductsForPrint = (printObj) => {
+  // remove the previously added dynamic rows
+  document.querySelectorAll(".dynamic-row").forEach((row) => row.remove());
+
   printObj.poHasProducts.forEach((ele) => {
     const tr = document.createElement("tr");
+    tr.classList.add("dynamic-row");
     const tdProductName = document.createElement("td");
     const tdPurchasePrice = document.createElement("td");
     const tdQty = document.createElement("td");
