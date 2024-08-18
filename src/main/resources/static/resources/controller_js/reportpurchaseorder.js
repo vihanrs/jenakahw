@@ -1,9 +1,7 @@
 //Access Browser onload event
 window.addEventListener("load", () => {
   //get logged user privileges
-  userPrivilages = ajaxGetRequest(
-    "/privilege/byloggeduserandmodule/Purchase Order"
-  );
+  userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Report");
 
   //refresh all
   refreshAll();

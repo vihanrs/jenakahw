@@ -27,7 +27,7 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	@Query(value = "Select count(po.id) from jenakahw.purchase_order as po where po.purchase_order_status_id = (select pos.id from jenakahw.purchase_order_status as pos where pos.name='Requested')",nativeQuery = true)
 	public int getPendingPOCount();
 	
-	// query for get completed invoice count
+	// query for get completed invoice count since last month
 	@Query(value = "SELECT count(inv.id) FROM jenakahw.invoice as inv where inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where invs.name='Completed') and month(inv.added_datetime) = month(current_date())",nativeQuery = true)
 	public int getCompletedInvoiceCountSinceLastMonth();
 
@@ -38,6 +38,19 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	// query for get invoices total since last month
 	@Query(value = "select * from jenakahw.invoice as inv where year(inv.added_datetime) = year(current_date()) and month(inv.added_datetime) = month(current_date()) and inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where invs.name = 'Completed')",nativeQuery = true)
 	public List<Invoice> getInvoicesSinceLastMonth();
+	
+	// sales report queries 
+	
+	// query for get daily income expenses report
+	@Query(value = "SELECT DAYNAME(DATE(invp.added_datetime)) as day_of_week, DATE(invp.added_datetime) as date, SUM(invp.paid_amount) as amount, 'Invoice' as type FROM jenakahw.invoice_has_payment invp WHERE DATE(invp.added_datetime) "
+			+ "BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() GROUP BY DAYNAME(DATE(invp.added_datetime)), DATE(invp.added_datetime) UNION ALL "
+			+ "SELECT DAYNAME(DATE(dein.added_datetime)) as day_of_week, DATE(dein.added_datetime) as date, SUM(dein.total) as amount, 'Extra Income' as type FROM daily_extra_income dein "
+			+ "WHERE DATE(dein.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() AND dein.daily_income_expenses_status_id = 1 GROUP BY DAYNAME(DATE(dein.added_datetime)), DATE(dein.added_datetime) UNION ALL "
+			+ "SELECT DAYNAME(DATE(sp.added_datetime)) as day_of_week, DATE(sp.added_datetime) as date, SUM(sp.paid_amount) as amount, 'Supplier Payment' as type FROM supplier_payment sp "
+			+ "WHERE DATE(sp.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() GROUP BY DAYNAME(DATE(sp.added_datetime)), DATE(sp.added_datetime) UNION ALL "
+			+ "SELECT DAYNAME(DATE(dexp.added_datetime)) as day_of_week, DATE(dexp.added_datetime) as date, SUM(dexp.total) as amount, 'Expense' as type FROM daily_expenses dexp "
+			+ "WHERE DATE(dexp.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() AND dexp.daily_income_expenses_status_id = 1 GROUP BY DAYNAME(DATE(dexp.added_datetime)), DATE(dexp.added_datetime)",nativeQuery = true)
+	public String[][] getDailyFinancialSummary();
 	
 	// purchase order reports queries
 

@@ -1,6 +1,9 @@
 package com.jenakahw.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.PurchaseOrder;
+import com.jenakahw.domain.ReportDailyFinancialSummary;
 import com.jenakahw.domain.ReportGrn;
 import com.jenakahw.domain.ReportPurchaseOrder;
 import com.jenakahw.repository.ReportRepository;
@@ -28,7 +32,7 @@ public class ReportDataController {
 	private ReportRepository reportRepository;
 	// Purchase Order Reports
 
-	// [/report/reportpurchaseorder/findbystatus//2]
+	// [/report/reportpurchaseorder/findbystatus/2]
 	// get mapping for get purchase order report by status
 	@GetMapping(value = "/reportpurchaseorder/findbystatus/{statusId}", produces = "application/json")
 	public List<PurchaseOrder> getPurchaseOrderByStatus(@PathVariable("statusId") int statusId) {
@@ -71,8 +75,8 @@ public class ReportDataController {
 
 	// GRN Reports
 
-	//[/report/reportgrn/findbysupplier/9]
-	//get mapping for get grn by supplier
+	// [/report/reportgrn/findbysupplier/9]
+	// get mapping for get grn by supplier
 	@GetMapping(value = "/reportgrn/findbysupplier/{supplierId}", produces = "application/json")
 	public List<Grn> getGrnBySupplier(@PathVariable("supplierId") int supplierId) {
 		return reportRepository.grnBySupplierId(supplierId);
@@ -94,5 +98,46 @@ public class ReportDataController {
 		}
 
 		return reportGrns;
+	}
+
+	// Sales Reports
+	// [/report/reportsales/dailysummery]
+	@GetMapping(value = "/reportsales/dailysummery", produces = "application/json")
+	public List<ReportDailyFinancialSummary> getSalesSummarybyDaily() {
+		String[][] queryDataList = reportRepository.getDailyFinancialSummary();
+		List<ReportDailyFinancialSummary> summary = new ArrayList<>();
+
+		String[] daysOfWeek = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+
+		LinkedHashMap<String, BigDecimal> income = new LinkedHashMap<>();
+		LinkedHashMap<String, BigDecimal> expense = new LinkedHashMap<>();
+
+		// update LinkedHashMaps with days of the week and BigDecimal.ZERO
+		for (String day : daysOfWeek) {
+			income.put(day, BigDecimal.ZERO);
+			expense.put(day, BigDecimal.ZERO);
+		}
+
+		// update LinkedHashMaps with incomes and expenses
+		for (String[] queryData : queryDataList) {
+			BigDecimal amount = new BigDecimal(queryData[2]);
+			if (queryData[3].equals("Invoice") || queryData[3].equals("Extra Income")) {
+				BigDecimal total = income.get(queryData[0]);
+				income.put(queryData[0], total.add(amount));
+			} else {
+				BigDecimal total = expense.get(queryData[0]);
+				expense.put(queryData[0], total.add(amount));
+			}
+		}
+
+		// loops the days of week and update income expense values
+		for (String day : daysOfWeek) {
+			BigDecimal incomeValue = income.get(day);
+			BigDecimal expenseValue = expense.get(day);
+			ReportDailyFinancialSummary dailySummary = new ReportDailyFinancialSummary(day, incomeValue, expenseValue);
+			summary.add(dailySummary);
+		}
+
+		return summary;
 	}
 }
