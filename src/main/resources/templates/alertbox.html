@@ -1,6 +1,6 @@
 <!-- alertbox.html -->
 <div th:fragment="alertFragment">
-  <div id="customAlertBox" class="alert-box hidden">
+  <div id="customAlertBox" class="alert-box hidden" style="z-index: 100">
     <div class="alert-content">
       <h2 id="alertTitle" class="fw-bold"></h2>
       <img id="alertImage" src="" alt="Alert Icon" class="alert-icon" />
@@ -9,7 +9,7 @@
     </div>
   </div>
 
-  <div id="customConfirmBox" class="alert-box hidden">
+  <div id="customConfirmBox" class="alert-box hidden" style="z-index: 100">
     <div class="alert-content">
       <p id="confirmTitle"></p>
       <p id="confirmMessage"></p>

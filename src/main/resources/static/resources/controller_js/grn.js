@@ -525,6 +525,11 @@ const calGrandTotal = () => {
   dicountPrecentageView.innerText = discountPrecentageCheck.checked
     ? "Rs." + parseFloat(discount).toFixed(2)
     : calDiscountPrecentage(grn.total, discount) + "%";
+
+  if (textPaid.value != "" && parseFloat(textPaid.value) != 0) {
+    paidAmount = textPaid.value;
+    // need to do
+  }
 };
 
 // function for get unit type for selected product

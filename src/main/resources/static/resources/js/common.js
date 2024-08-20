@@ -173,6 +173,8 @@ function showDefaultSection(buttonId, sectionId) {
   document.getElementById(sectionId).classList.add("show");
 }
 
+// ************************* logged user related functions start*************************
+
 // function for logout user with user confirmation
 const logoutUser = () => {
   let title = "<span style ='color:red; font-size: 25px'>LogOut!</span>";
@@ -184,6 +186,96 @@ const logoutUser = () => {
     }
   });
 };
+
+//function for update user profile
+const submitUserSettings = () => {
+  if (isUserProfileUpdated()) {
+    let serverResponse = ajaxRequestBody(
+      "/user/updateprofile",
+      "PUT",
+      loggedUser
+    ); // url,method,object
+    //check back end response
+    if (serverResponse == "OK") {
+      showAlert("success", "User Profile Update successfully..!").then(() => {
+        // Need to refresh table and form
+        window.location.assign("/logout");
+      });
+    } else {
+      showAlert(
+        "error",
+        "User profile update not successfully..!\n" + serverResponse
+      );
+    }
+  } else {
+    showAlert("warning", "Nothing to update");
+  }
+};
+
+// function for check user profile updates
+const isUserProfileUpdated = () => {
+  if (
+    oldLoggedUser.email != loggedUser.email ||
+    oldLoggedUser.username != loggedUser.username ||
+    loggedUser.password != null ||
+    oldLoggedUser.userPhoto != loggedUser.userPhoto
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// function for refresh user profile model
+const refreshUserProfile = () => {
+  loggedUser = ajaxGetRequest("/user/loggeduser");
+  oldLoggedUser = JSON.parse(JSON.stringify(loggedUser));
+
+  // set user image
+  if (loggedUser.userPhoto == null) {
+    imgUserPhoto.src = "resources/images/default-user-img.jpg";
+    textUserPhoto.value = "";
+  } else {
+    imgUserPhoto.src = atob(loggedUser.userPhoto);
+    textUserPhoto.value = loggedUser.photoName;
+  }
+  textEmail.value = loggedUser.email;
+  textUsername.value = loggedUser.username;
+  textPassword.value = "";
+  textRPassword.value = "";
+};
+
+// function for clear user photo and set default
+const clearProfileUserPhoto = () => {
+  loggedUser.userPhoto = null;
+  loggedUser.photoName = null;
+  imgUserPhoto.src = "resources/images/default-user-img.jpg";
+  textUserPhoto.value = "";
+  fileUserPhoto.files = null;
+};
+
+//function for check user password
+const profilePasswordRTValidator = () => {
+  if (textPassword.value != "") {
+    if (textPassword.value == textRPassword.value) {
+      textPassword.style.border = "2px solid #00FF7F";
+      textRPassword.style.border = "2px solid #00FF7F";
+      loggedUser.password = textPassword.value;
+    } else {
+      textPassword.style.border = "1px solid red";
+      textRPassword.style.border = "1px solid red";
+      loggedUser.password = null;
+    }
+  } else {
+    // showAlert("warning", "Please fill the password field first...!");
+    textPassword.style.border = "1px solid red";
+    textRPassword.style.border = "1px solid red";
+    // textRPassword.value = "";
+    // textPassword.focus();
+  }
+};
+
+// ************************* logged user related functions end*************************
 
 // function for set elements border color
 const setBorderStyle = (elements, borderStyle = "1px solid #ced4da") => {

@@ -82,6 +82,14 @@ public class UserController {
 		}
 	}
 
+	// get mapping for get logged user
+	@GetMapping(value = "/loggeduser", produces = "application/json")
+	public User getLoggedUserDetails() {
+		User loggedUser = getLoggedUser();
+		loggedUser.setPassword(null);
+		return loggedUser;
+	}
+
 	// post mapping for save new user
 	@PostMapping
 	public String saveUser(@RequestBody User user) {
@@ -200,6 +208,45 @@ public class UserController {
 		}
 	}
 
+	// method for update user settings
+	@PutMapping(value = "/updateprofile")
+	public String updateUserSettings(@RequestBody User user) {
+		
+		// check duplicates...
+		
+		// check username
+		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
+		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {
+			return "Username " + user.getUsername() + " is already exist!";
+		}
+
+		// check email
+		User extUserByEmail = userRepository.getUserByEmail(user.getEmail());
+		if (extUserByEmail != null && user.getId() != extUserByEmail.getId()) {
+			return "Email " + extUserByEmail.getEmail() + " is already exist!";
+		}
+
+		try {
+			// check password
+			User extUserByPassword = userRepository.getReferenceById(user.getId());
+			if (user.getPassword() != null) {
+				if (bCryptPasswordEncoder.matches(user.getPassword(), extUserByPassword.getPassword())) {
+					return "Cannot Update Same Password";
+				} else {
+					// encrypt password
+					user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+				}
+			} else {
+				user.setPassword(extUserByPassword.getPassword());
+			}
+
+			userRepository.save(user);
+			return "OK";
+		} catch (Exception e) {
+			return e.getMessage();
+		}
+	}
+
 	// method for get logged user object
 	public User getLoggedUser() {
 		// get logged user authentication object
@@ -207,13 +254,13 @@ public class UserController {
 
 		return userRepository.getUserByUsername(auth.getName());
 	}
-	
+
 	// method for get logged user role
 	public String getLoggedUserRole() {
 		User loggedUser = getLoggedUser();
 
 		String userRole = "";
-		
+
 		for (Role role : loggedUser.getRoles()) {
 			if (role.getName().equals("Admin")) {
 				userRole = "Admin";

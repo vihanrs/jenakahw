@@ -129,11 +129,11 @@ const passwordRTValidator = () => {
       user.password = null;
     }
   } else {
-    showAlert("warning", "Please fill the password field first...!");
+    // showAlert("warning", "Please fill the password field first...!");
     textPassword.style.border = "1px solid red";
     textRPassword.style.border = "1px solid red";
-    textRPassword.value = "";
-    textPassword.focus();
+    // textRPassword.value = "";
+    // textPassword.focus();
   }
 };
 

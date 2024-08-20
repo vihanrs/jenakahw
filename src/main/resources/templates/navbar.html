@@ -31,7 +31,14 @@
       >
       </span>
 
-      <button type="button" class="btn">
+      <!-- Button trigger modal -->
+      <button
+        type="button"
+        class="btn"
+        data-bs-toggle="modal"
+        data-bs-target="#modelsetting"
+        onclick="refreshUserProfile()"
+      >
         <i class="fa-solid fa-gear"></i>
       </button>
       <button type="button" class="btn" onclick="logoutUser()">
@@ -41,3 +48,192 @@
   </ul>
 </nav>
 <!-- /.navbar -->
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modelsetting"
+  tabindex="-1"
+  th:fragment="settingmodel"
+  aria-labelledby="settingsModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="settingsModalLabel">
+          Edit User Profile
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="return false" id="formUserSetting">
+          <div class="form-group">
+            <!-- username -->
+            <div class="row mt-2">
+              <label for="textUsername" class="col-md-4 form-label fw-bold">
+                Username :<span class="text-danger"> * </span>
+              </label>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  placeholder="Enter Username"
+                  class="form-control"
+                  id="textUsername"
+                  required
+                  onkeyup="textFieldValidator(textUsername, '^[a-zA-Z0-9]{5,16}$', 'loggedUser', 'username');"
+                />
+              </div>
+            </div>
+            <!-- photo -->
+            <div class="row mt-2">
+              <label for="fileUserPhoto" class="col-md-4 form-label fw-bold">
+                Photo :
+              </label>
+              <div class="col-md-8">
+                <img
+                  src="resources/images/default-user-img.jpg"
+                  alt="user-img"
+                  style="height: 100px; width: 100px"
+                  id="imgUserPhoto"
+                />
+                <br />
+                <button
+                  type="button"
+                  id="btnSelectImage"
+                  class="btn btn-primary"
+                  onclick="fileUserPhoto.click()"
+                >
+                  Select Image
+                </button>
+                <button
+                  type="button"
+                  id="btnClearImage"
+                  class="btn btn-info"
+                  onclick="clearProfileUserPhoto()"
+                >
+                  Clear Image
+                </button>
+                <input
+                  type="text"
+                  class="form-control mt-2 col-md-3"
+                  id="textUserPhoto"
+                  disabled
+                  style="background-color: #fff; border: none; padding-top: 0"
+                />
+                <input
+                  type="file"
+                  class="form-control d-none"
+                  id="fileUserPhoto"
+                  onchange="fileFieldValidator( fileUserPhoto,
+                'loggedUser', 'photoName', 'userPhoto', imgUserPhoto,
+                textUserPhoto )"
+                />
+              </div>
+            </div>
+            <!-- email -->
+            <div class="row mt-2">
+              <label for="textEmail" class="col-md-4 form-label fw-bold">
+                Email :<span class="text-danger"> * </span>
+              </label>
+              <div class="col-md-8">
+                <input
+                  type="text"
+                  placeholder="Enter Email"
+                  class="form-control"
+                  id="textEmail"
+                  required
+                  onkeyup="textFieldValidator(textEmail, '^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$', 'loggedUser', 'email');"
+                />
+              </div>
+            </div>
+            <!-- password -->
+            <div class="row mt-2">
+              <label for="textPassword" class="col-md-4 form-label fw-bold">
+                Password :<span class="text-danger"> * </span>
+              </label>
+              <div class="col-md-8">
+                <input
+                  type="password"
+                  placeholder="Enter Password"
+                  class="form-control"
+                  id="textPassword"
+                  required
+                  onkeyup="textFieldValidator(textPassword, '^[a-zA-Z0-9]{5,16}$', 'loggedUser', 'password'),
+                  profilePasswordRTValidator()"
+                />
+              </div>
+            </div>
+            <!-- re-password -->
+            <div class="row mt-2">
+              <label for="textRPassword" class="col-md-4 form-label fw-bold">
+                Password Re-type :<span class="text-danger"> * </span>
+              </label>
+              <div class="col-md-8">
+                <input
+                  type="password"
+                  placeholder="Re-type Password"
+                  class="form-control"
+                  id="textRPassword"
+                  required
+                  onkeyup="profilePasswordRTValidator()"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="row mt-2">
+            <button
+              type="submit"
+              onclick="submitUserSettings()"
+              class="btn btn-update col-md-3 ml-auto"
+            >
+              Update
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- user setting model -->
+<!-- <div
+  class="modal fade"
+  th:fragment="settingmodel"
+  id="modelsetting"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  aria-hidden="true"
+>
+  <div class="modal-dialog model-xl">
+    <div class="modal-conntent">
+      <div class="modal-header">
+        <h2>Edit User Profile</h2>
+        <button
+          type="button"
+          class="btn btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form onsubmit="return false" id="formUserSetting">
+          <div class="form-group">
+            <input type="text" />
+          </div>
+          <button
+            type="submit"
+            onclick="submitUserSettings()"
+            class="btn btn-update"
+          >
+            Update
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div> -->
