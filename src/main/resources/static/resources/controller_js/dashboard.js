@@ -5,12 +5,12 @@ window.addEventListener("load", () => {
 
   //refresh all
   refreshAll();
+  getAge();
+  getGenderDOBByNIC();
 });
 
 const refreshAll = () => {
   refreshCards();
-
-  console.log(userRole);
 };
 
 const refreshCards = () => {

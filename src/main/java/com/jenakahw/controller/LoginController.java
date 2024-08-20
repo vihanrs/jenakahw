@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.User;
+import com.jenakahw.email.EmailDetails;
+import com.jenakahw.email.EmailService;
 
 @RestController
 public class LoginController {
@@ -17,7 +19,7 @@ public class LoginController {
 	 */
 	@Autowired
 	private UserController userController;
-
+	
 	@GetMapping("/login")
 	public ModelAndView loginUI() {
 		ModelAndView loginView = new ModelAndView();
@@ -47,6 +49,7 @@ public class LoginController {
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title", "Dashboard | Jenaka Hardware");
 		dashboardView.setViewName("dashboard.html");
+		
 		return dashboardView;
 	}
 }

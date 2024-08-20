@@ -243,6 +243,8 @@ const refreshUserProfile = () => {
   textUsername.value = loggedUser.username;
   textPassword.value = "";
   textRPassword.value = "";
+
+  setBorderStyle([textEmail, textUsername, textPassword, textRPassword]);
 };
 
 // function for clear user photo and set default
@@ -327,4 +329,62 @@ const getMonthName = (monthNumber) => {
 
   // Subtract 1 from the month number to get the correct index
   return monthNames[monthNumber - 1];
+};
+
+// function for get age from date
+const getAge = (filedId) => {
+  // create date objects
+  let dateDOB = new Date("1998-10-17"); //new Date(filedId.value)
+
+  let dateDifference = new Date().getTime() - dateDOB.getTime();
+  let difDate = new Date(dateDifference);
+
+  let age = Math.abs(difDate.getFullYear() - 1970);
+
+  console.log(age);
+};
+
+// function for get gender and dob by nic
+const getGenderDOBByNIC = (filedId) => {
+  let nicValue = "980480526V";
+  let year, days;
+  let month, date;
+
+  if (
+    new RegExp("^(([0-9]{9}[Vv])|([2][0][0-9]{2}[0-9]{8}))$").test(nicValue)
+  ) {
+    if (nicValue.length == 10) {
+      year = "19" + nicValue.substring(0, 2);
+      days = nicValue.substring(2, 5);
+    } else if (nicValue.length == 12) {
+      year = nicValue.substring(0, 4);
+      days = nicValue.substring(4, 7);
+    }
+
+    //get gender
+    if (days < 500) {
+      console.log("Male");
+    } else {
+      console.log("Female");
+      days -= 500;
+    }
+
+    let dateDOB = new Date(year); // get birthday year
+
+    if (year % 4 != 0) {
+      dateDOB.setDate(parseInt(days) - 1);
+    } else {
+      dateDOB.setDate(parent(days));
+    }
+
+    month = dateDOB.getMonth() + 1;
+    if (month < 10) month = "0" + month;
+
+    date = dateDOB.getDate();
+    if (date < 10) date = "0" + date;
+
+    dob = year + "-" + month + "-" + date;
+
+    console.log(dob);
+  }
 };

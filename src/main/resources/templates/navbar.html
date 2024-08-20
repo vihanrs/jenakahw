@@ -61,7 +61,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="settingsModalLabel">
+        <h1 class="modal-title fs-5 fw-bold" id="settingsModalLabel">
           Edit User Profile
         </h1>
         <button
@@ -155,7 +155,7 @@
             <!-- password -->
             <div class="row mt-2">
               <label for="textPassword" class="col-md-4 form-label fw-bold">
-                Password :<span class="text-danger"> * </span>
+                Password :
               </label>
               <div class="col-md-8">
                 <input
@@ -163,7 +163,6 @@
                   placeholder="Enter Password"
                   class="form-control"
                   id="textPassword"
-                  required
                   onkeyup="textFieldValidator(textPassword, '^[a-zA-Z0-9]{5,16}$', 'loggedUser', 'password'),
                   profilePasswordRTValidator()"
                 />
@@ -172,7 +171,7 @@
             <!-- re-password -->
             <div class="row mt-2">
               <label for="textRPassword" class="col-md-4 form-label fw-bold">
-                Password Re-type :<span class="text-danger"> * </span>
+                Password Re-type :
               </label>
               <div class="col-md-8">
                 <input
@@ -180,7 +179,6 @@
                   placeholder="Re-type Password"
                   class="form-control"
                   id="textRPassword"
-                  required
                   onkeyup="profilePasswordRTValidator()"
                 />
               </div>
@@ -188,7 +186,7 @@
           </div>
           <div class="row mt-2">
             <button
-              type="submit"
+              type="button"
               onclick="submitUserSettings()"
               class="btn btn-update col-md-3 ml-auto"
             >
@@ -200,40 +198,3 @@
     </div>
   </div>
 </div>
-<!-- user setting model -->
-<!-- <div
-  class="modal fade"
-  th:fragment="settingmodel"
-  id="modelsetting"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
-  aria-hidden="true"
->
-  <div class="modal-dialog model-xl">
-    <div class="modal-conntent">
-      <div class="modal-header">
-        <h2>Edit User Profile</h2>
-        <button
-          type="button"
-          class="btn btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <form onsubmit="return false" id="formUserSetting">
-          <div class="form-group">
-            <input type="text" />
-          </div>
-          <button
-            type="submit"
-            onclick="submitUserSettings()"
-            class="btn btn-update"
-          >
-            Update
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div> -->

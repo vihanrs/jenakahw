@@ -24,6 +24,8 @@ import com.jenakahw.domain.POHasProduct;
 import com.jenakahw.domain.Product;
 import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.domain.User;
+import com.jenakahw.email.EmailDetails;
+import com.jenakahw.email.EmailService;
 import com.jenakahw.repository.POHasProductRepository;
 import com.jenakahw.repository.PurchaseOrderRepository;
 import com.jenakahw.repository.PurchaseOrderStatusRepository;
@@ -51,6 +53,9 @@ public class PurchaseOrderController {
 
 	@Autowired
 	private POHasProductRepository poHasProductRepository;
+	
+	@Autowired
+	private EmailService emailService;
 
 	private static final String MODULE = "Purchase Order";
 
@@ -92,13 +97,14 @@ public class PurchaseOrderController {
 			return null;
 		}
 	}
-	
+
 	// get mapping for find POHasProduct details by poid and product id
 	// --[/purchaseorder/findpoproductsbypoid/10]
 	@GetMapping(value = "/findpohasproductbypoidandproductid/{poid}/{productid}", produces = "application/json")
-	public POHasProduct findByPOIDAndProductId(@PathVariable("poid") Integer poId,@PathVariable("productid") Integer productId) {
+	public POHasProduct findByPOIDAndProductId(@PathVariable("poid") Integer poId,
+			@PathVariable("productid") Integer productId) {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return poHasProductRepository.findByPOIDAndProductId(poId,productId);
+			return poHasProductRepository.findByPOIDAndProductId(poId, productId);
 		} else {
 			return null;
 		}
@@ -116,7 +122,7 @@ public class PurchaseOrderController {
 	}
 
 	// post mapping for save new purchase order
-	@Transactional
+//	@Transactional
 	@PostMapping
 	public String savePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
@@ -147,7 +153,19 @@ public class PurchaseOrderController {
 				poHasProduct.setPurchaseOrderId(purchaseOrder);
 			}
 
-			purchaseOrderRepository.save(purchaseOrder);
+			PurchaseOrder newPO = purchaseOrderRepository.save(purchaseOrder);
+			
+
+			if (newPO.getSupplierId().getEmail() != null) {
+				// send email
+				EmailDetails emailDetails = new EmailDetails();
+				emailDetails.setSendTo(newPO.getSupplierId().getEmail());	
+				emailDetails.setSubject("Jenaka Hardware | Purchase Order "+newPO.getPoCode());
+				emailDetails.setMsgBody("Test");
+				
+				emailService.sendSimpleMail(emailDetails);;
+				
+			}
 
 			return "OK";
 		} catch (Exception e) {

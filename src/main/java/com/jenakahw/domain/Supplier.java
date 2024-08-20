@@ -83,11 +83,12 @@ public class Supplier {
 	@OneToMany(mappedBy = "supplierId", cascade = CascadeType.ALL, orphanRemoval = true) //map with supplierId foreign key property in SupplierBankDetails object, use cascade all to access all operations in supplier_bank_details table
 	private List<SupplierBankDetails> bankDetails;
 
-	public Supplier(int id, String firstName, String lastName, String company,String contact) {
+	public Supplier(int id, String firstName, String lastName, String company,String contact,String email) {
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.company = company;
 		this.contact = contact;
+		this.email= email;
 	}
 }
