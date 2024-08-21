@@ -39,6 +39,14 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	@Query(value = "select * from jenakahw.invoice as inv where year(inv.added_datetime) = year(current_date()) and month(inv.added_datetime) = month(current_date()) and inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where invs.name = 'Completed')",nativeQuery = true)
 	public List<Invoice> getInvoicesSinceLastMonth();
 	
+	// query for get top five selling products in last 3 months
+	@Query(value = "SELECT p.name,b.name as brand,c.name as category, sc.name as subcategory,ihp.product_id,sum(ihp.qty) as sellqty,sum(ihp.line_amount) as total_amount "
+			+ "FROM jenakahw.invoice_has_product as ihp JOIN jenakahw.invoice as i ON ihp.invoice_id = i.id JOIN jenakahw.product as p ON ihp.product_id = p.id "
+			+ "JOIN jenakahw.brand as b ON p.brand_id = b.id JOIN jenakahw.subcategory as sc ON p.subcategory_id = sc.id "
+			+ "JOIN jenakahw.category as c ON sc.category_id=c.id WHERE i.added_datetime >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) "
+			+ "group by ihp.product_id order by sellqty desc limit 5;",nativeQuery = true)
+	public String[][] getTopSellingProducts();
+	
 	// sales report queries 
 	
 	// query for get daily income expenses report
@@ -83,5 +91,7 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	// query for get grn summary monthly
 	@Query(value = "Select month(g.added_datetime),sum(g.grand_total) from Grn as g where g.grn_status_id=1 and year(g.added_datetime) = year(CURRENT_DATE()) group by month(g.added_datetime)", nativeQuery = true)
 	public String[][] grnSummaryByMonthly();
+	
+	
 
 }

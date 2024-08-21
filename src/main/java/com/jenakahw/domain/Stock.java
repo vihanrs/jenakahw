@@ -48,6 +48,13 @@ public class Stock {
 	
 	@ManyToOne // relationship format
 	@JoinColumn(name = "product_id", referencedColumnName = "id") // join column condition
-	private Product productId; 
+	private Product productId;
+	
+	public Stock(Integer id,Product productId,StockStatus stockStatus,BigDecimal sellPrice) {
+		this.id = id;
+		this.productId = productId;
+		this.stockStatus = stockStatus;
+		this.sellPrice= sellPrice;
+	}
 	
 }

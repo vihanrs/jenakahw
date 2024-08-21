@@ -19,4 +19,8 @@ public interface StockRepository extends JpaRepository<Stock, Integer>{
 	@Query(value = "Select s from Stock s where s.productId in (select p from Product p where p.name like ?1% or p.barcode like ?1 ) and availableQty != 0")
 	public List<Stock> getStockProductListByNameBarcode(String nameBarcode);
 	
+	// query for get low stock products
+	@Query(value = "Select new Stock(s.id,s.productId,s.stockStatus,s.sellPrice) from Stock s where s.stockStatus.name = 'Low Stock' or s.stockStatus.name = 'Out of Stock'")
+	public List<Stock> findAllLowStocks();
+	
 }

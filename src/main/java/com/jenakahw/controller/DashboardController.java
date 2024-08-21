@@ -1,6 +1,7 @@
 package com.jenakahw.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jenakahw.domain.Invoice;
+import com.jenakahw.domain.Stock;
+import com.jenakahw.domain.TopSellingProduct;
 import com.jenakahw.repository.ReportRepository;
+import com.jenakahw.repository.StockRepository;
 
 @RestController
 @RequestMapping(value = "/dashboard") // add class level mapping
@@ -21,6 +24,9 @@ public class DashboardController {
 
 	@Autowired
 	private ReportRepository reportRepository;
+
+	@Autowired
+	private StockRepository stockRepository;
 
 	// [/dashboard/activesuppliercount]
 	// get mapping for get active supplier count
@@ -64,6 +70,33 @@ public class DashboardController {
 //		}
 
 		return totalSell;
+	}
+
+	// get mappinng for get low stocks
+	@GetMapping(value = "/findlowstockproducts")
+	public List<Stock> getAlllowStocks() {
+		return stockRepository.findAllLowStocks();
+	}
+
+	// get mapping for get top 5 selling products in last 3 months
+	@GetMapping(value = "/topsellingproducts")
+	public List<TopSellingProduct> getTopSellingProducts() {
+		List<TopSellingProduct> sellingProducts = new  ArrayList<>();
+		String[][] productList = reportRepository.getTopSellingProducts();
+
+		for (String[] product : productList) {
+			TopSellingProduct topSellingProduct = new TopSellingProduct();
+			topSellingProduct.setName(product[0]);
+			topSellingProduct.setBrand(product[1]);
+			topSellingProduct.setCategory(product[2]);
+			topSellingProduct.setSubCategory(product[3]);
+			topSellingProduct.setSellQty(new BigDecimal(product[5]));
+			topSellingProduct.setTotalAmount(new BigDecimal(product[6]));
+			
+			sellingProducts.add(topSellingProduct);
+		}
+		
+		return sellingProducts;
 	}
 
 }

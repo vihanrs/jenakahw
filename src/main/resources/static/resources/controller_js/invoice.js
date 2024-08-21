@@ -526,7 +526,7 @@ const addProduct = () => {
           "Product Name : " +
           invProduct.stockId.productId.name +
           "\nPurchase Price : " +
-          invProduct.sellPrice +
+          parseFloat(invProduct.sellPrice).toFixed(2) +
           "\nQty : " +
           invProduct.qty;
 
