@@ -81,7 +81,7 @@
                     <!-- brand/category/subcategory -->
                     <div class="row mt-2">
                       <!-- brand -->
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <label for="selectBrand" class="form-label fw-bold">
                           Brand : <span class="text-danger"> * </span>
                         </label>
@@ -96,8 +96,80 @@
                         </select>
                       </div>
 
+                      <!-- add new brand button -->
+                      <div class="col-md-1 add-new-option">
+                        <label
+                          for="btnAddBrand"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddBrand"
+                          style="display: block"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addNewBrandModel"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+
+                      <!-- Add New Brand Modal -->
+                      <div
+                        class="modal fade"
+                        id="addNewBrandModel"
+                        data-bs-backdrop="static"
+                        data-bs-keyboard="false"
+                        tabindex="-1"
+                        aria-labelledby="staticBackdropLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold">Add New Brand</h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                id="btnCloseNewBrand"
+                              ></button>
+                            </div>
+
+                            <div class="modal-body">
+                              <label
+                                for="textNewBrandName"
+                                class="form-label fw-bold"
+                                >Brand Name :
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter Brand Name"
+                                class="form-control"
+                                id="textNewBrandName"
+                              />
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-add"
+                                id="btnAddNewBrand"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <!-- Category  -->
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <label for="selectCategory" class="form-label fw-bold">
                           Category : <span class="text-danger"> * </span>
                         </label>
@@ -112,8 +184,82 @@
                         </select>
                       </div>
 
+                      <!-- add new category button -->
+                      <div class="col-md-1 add-new-option">
+                        <label
+                          for="btnAddCategory"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddCategory"
+                          style="display: block"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addNewCategoryModel"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+
+                      <!-- Add New category Modal -->
+                      <div
+                        class="modal fade"
+                        id="addNewCategoryModel"
+                        data-bs-backdrop="static"
+                        data-bs-keyboard="false"
+                        tabindex="-1"
+                        aria-labelledby="staticBackdropLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold">
+                                Add New Category
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                id="btnCloseCategory"
+                              ></button>
+                            </div>
+
+                            <div class="modal-body">
+                              <label
+                                for="textNewCategoryName"
+                                class="form-label fw-bold"
+                                >Category Name :
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter Category Name"
+                                class="form-control"
+                                id="textNewCategoryName"
+                              />
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-add"
+                                id="btnAddNewCategory"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
                       <!-- Sub Category -->
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <label
                           for="selectSubCategory"
                           class="form-label fw-bold"
@@ -129,6 +275,80 @@
                             Select Sub-Category
                           </option>
                         </select>
+                      </div>
+
+                      <!-- add new sub-category button -->
+                      <div class="col-md-1 add-new-option">
+                        <label
+                          for="btnAddSubCategory"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddSubCategory"
+                          style="display: block"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addNewSubCategoryModel"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+
+                      <!-- Add New sub-category Modal -->
+                      <div
+                        class="modal fade"
+                        id="addNewSubCategoryModel"
+                        data-bs-backdrop="static"
+                        data-bs-keyboard="false"
+                        tabindex="-1"
+                        aria-labelledby="staticBackdropLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold">
+                                Add New Sub-Category
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                id="btnCloseSubCategory"
+                              ></button>
+                            </div>
+
+                            <div class="modal-body">
+                              <label
+                                for="textNewSubCategoryName"
+                                class="form-label fw-bold"
+                                >Sub-Category Name :
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter Sub-Category Name"
+                                class="form-control"
+                                id="textNewSubCategoryName"
+                              />
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-add"
+                                id="btnAddNewSubCategory"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -148,7 +368,7 @@
                         />
                       </div>
                       <!-- unit Type -->
-                      <div class="col-md-4">
+                      <div class="col-md-3">
                         <label for="selectUnitType" class="form-label fw-bold">
                           Unit Type : <span class="text-danger"> * </span>
                         </label>
@@ -162,6 +382,80 @@
                           </option>
                           <option value="Option1">Option 1</option>
                         </select>
+                      </div>
+
+                      <!-- add new unit type button -->
+                      <div class="col-md-1 add-new-option">
+                        <label
+                          for="btnAddUnitType"
+                          class="form-label fw-bold"
+                          style="color: rgba(255, 255, 255, 0)"
+                          >..</label
+                        >
+                        <button
+                          type="button"
+                          class="btn btn-plus"
+                          id="btnAddUnitType"
+                          style="display: block"
+                          data-bs-toggle="modal"
+                          data-bs-target="#addNewUnitTypeModel"
+                        >
+                          <i
+                            class="fa-solid fa-plus me-2"
+                            style="margin-left: 8px"
+                          ></i>
+                        </button>
+                      </div>
+
+                      <!-- Add New unit type Modal -->
+                      <div
+                        class="modal fade"
+                        id="addNewUnitTypeModel"
+                        data-bs-backdrop="static"
+                        data-bs-keyboard="false"
+                        tabindex="-1"
+                        aria-labelledby="staticBackdropLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-centered">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title fw-bold">
+                                Add New Unit Type
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                                id="btnCloseUnitType"
+                              ></button>
+                            </div>
+
+                            <div class="modal-body">
+                              <label
+                                for="textNewUnitName"
+                                class="form-label fw-bold"
+                                >Unit Type Name :
+                              </label>
+                              <input
+                                type="text"
+                                placeholder="Enter Unit Type Name"
+                                class="form-control"
+                                id="textNewUnitName"
+                              />
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-add"
+                                id="btnAddNewUnitType"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 

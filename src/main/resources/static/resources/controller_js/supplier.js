@@ -218,7 +218,7 @@ const refreshForm = () => {
   clearFiltersAndList();
 
   refreshInnerFormAndTable();
-
+  getAllAvailableProductsWithFiltering();
   //manage buttons
   manageFormButtons("insert", userPrivilages);
 };
@@ -384,6 +384,26 @@ const checkUpdate = () => {
       (supplier.supplierStatusId.name ?? "-") +
       " \n";
   }
+
+  if (oldSupplier.products.length != supplier.products.length) {
+    updates += "Products are changed ";
+  } else {
+    for (let i = 0; i < oldSupplier.products.length; i++) {
+      const oldProduct = oldSupplier.products[i];
+      const productExists = supplier.products.some(
+        (newProduct) => newProduct.id === oldProduct.id
+      );
+
+      if (
+        !productExists ||
+        supplier.products.length > oldSupplier.products.length
+      ) {
+        updates += "Products are changed ";
+        break;
+      }
+    }
+  }
+
   return updates;
 };
 
@@ -875,6 +895,7 @@ const refillRecord = (rowObject, rowId) => {
   setBorderStyle(elements);
 
   refreshInnerFormAndTable();
+  getAllAvailableProductsWithFiltering(supplier.id);
   //manage buttons
   manageFormButtons("refill", userPrivilages);
 };

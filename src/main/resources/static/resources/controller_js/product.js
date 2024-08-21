@@ -67,6 +67,42 @@ const addEventListeners = () => {
     selectDFieldValidator(selectStatus, "product", "productStatusId");
   });
 
+  textNewBrandName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textNewBrandName,
+      "^([A-Z][A-z -]{0,30}[A-z])$",
+      "newBrand",
+      "name"
+    );
+  });
+
+  textNewUnitName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textNewUnitName,
+      "^([A-Z][A-z -]{0,30}[A-z])$",
+      "newUnitType",
+      "name"
+    );
+  });
+
+  textNewCategoryName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textNewCategoryName,
+      "^([A-Z][A-z -]{0,30}[A-z])$",
+      "newCategory",
+      "name"
+    );
+  });
+
+  textNewSubCategoryName.addEventListener("keyup", () => {
+    textFieldValidator(
+      textNewSubCategoryName,
+      "^([A-Z][A-z -]{0,30}[A-z])$",
+      "newSubCategory",
+      "name"
+    );
+  });
+
   //form reset button function call
   btnReset.addEventListener("click", () => {
     refreshForm();
@@ -90,6 +126,38 @@ const addEventListeners = () => {
   //print full table function call
   btnPrintFullTable.addEventListener("click", () => {
     printFullTable();
+  });
+
+  btnAddNewBrand.addEventListener("click", () => {
+    addBrand();
+  });
+
+  btnCloseNewBrand.addEventListener("click", () => {
+    refreshAddNewBrand();
+  });
+
+  btnAddNewUnitType.addEventListener("click", () => {
+    addUnitType();
+  });
+
+  btnCloseUnitType.addEventListener("click", () => {
+    refreshAddNewUnitType();
+  });
+
+  btnAddNewCategory.addEventListener("click", () => {
+    addCategory();
+  });
+
+  btnCloseCategory.addEventListener("click", () => {
+    refreshAddNewCategory();
+  });
+
+  btnAddNewSubCategory.addEventListener("click", () => {
+    addSubCategory();
+  });
+
+  btnCloseSubCategory.addEventListener("click", () => {
+    refreshAddNewSubCategory();
   });
 };
 
@@ -118,6 +186,7 @@ const refreshForm = () => {
   fillDataIntoSelect(selectCategory, "Select Category", categories, "name");
 
   selectSubCategory.disabled = true;
+  btnAddSubCategory.disabled = true;
 
   // get unit-type
   unittypes = ajaxGetRequest("/unittype/findall");
@@ -163,11 +232,13 @@ const refreshForm = () => {
 
   //manage form buttons
   manageFormButtons("insert", userPrivilages);
+  refreshAllAddNew();
 };
 
 // function for get sub caregory when select category
 const getSubCategoriesByCategory = (categoryId, selectedValue = null) => {
   selectSubCategory.disabled = false;
+  btnAddSubCategory.disabled = false;
 
   // selectedValue parameter used when refill saved data
   // if function call in category event listner - need to reset product.subCategory id
@@ -590,7 +661,7 @@ const refillRecord = (rowObject, rowId) => {
   manageFormButtons("refill", userPrivilages);
 };
 
-// //function for delete record
+//function for delete record
 const deleteRecord = (rowObject, rowId) => {
   //get user confirmation
   let title = "Are you sure!\nYou wants to delete following record? \n";
@@ -653,4 +724,267 @@ const printFullTable = () => {
   setTimeout(function () {
     newTab.print();
   }, 1000);
+};
+
+// ********* Add New OPERATIONS *********
+
+//function for refresh all add new options
+const refreshAllAddNew = () => {
+  refreshAddNewBrand();
+  refreshAddNewUnitType();
+  refreshAddNewCategory();
+  refreshAddNewSubCategory();
+  manageAddNewElementsVisibility();
+};
+
+//function for refresh brand
+const refreshAddNewBrand = () => {
+  newBrand = {};
+  newBrand.name = null;
+  textNewBrandName.value = "";
+  setBorderStyle([textNewBrandName]);
+};
+
+//function for refresh unit type
+const refreshAddNewUnitType = () => {
+  newUnitType = {};
+  newUnitType.name = null;
+  textNewUnitName.value = "";
+  setBorderStyle([textNewUnitName]);
+};
+
+//function for refresh category
+const refreshAddNewCategory = () => {
+  newCategory = {};
+  newCategory.name = null;
+  textNewCategoryName.value = "";
+  setBorderStyle([textNewCategoryName]);
+};
+
+//function for refresh subcategory
+const refreshAddNewSubCategory = () => {
+  newSubCategory = {};
+  newSubCategory.name = null;
+  textNewSubCategoryName.value = "";
+  setBorderStyle([textNewSubCategoryName]);
+};
+
+//function for add new brand
+const addBrand = () => {
+  if (newBrand.name != null) {
+    //get user confirmation
+    let title = "Are you sure!\nYou wants to add following record? \n";
+    let message = "Brand Name : " + newBrand.name;
+
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //response from backend ...
+        let serverResponse = ajaxRequestBody("/brand", "POST", newBrand); // url,method,object
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Brand Added successfully..!").then(() => {
+            //refresh brands with new added brand
+            brands = ajaxGetRequest("/brand/findall");
+            fillDataIntoSelect(
+              selectBrand,
+              "Select Brand",
+              brands,
+              "name",
+              newBrand.name
+            );
+
+            //bind value in to supplier object and set valid color
+            product.brandId = JSON.parse(selectBrand.value);
+            selectBrand.style.border = "2px solid #00FF7F";
+
+            // Need to refresh form
+            refreshAddNewBrand();
+
+            // hide modal
+            $("#addNewBrandModel").modal("hide");
+          });
+        } else {
+          showAlert(
+            "error",
+            "Brand added not successfully..! have some errors \n" +
+              serverResponse
+          );
+        }
+      }
+    });
+  } else {
+    showAlert("warning", "Please Enter Valid Brand Name");
+  }
+};
+
+//function for add new unit type
+const addUnitType = () => {
+  if (newUnitType.name != null) {
+    //get user confirmation
+    let title = "Are you sure!\nYou wants to add following record? \n";
+    let message = "Unit Type Name : " + newUnitType.name;
+
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //response from backend ...
+        let serverResponse = ajaxRequestBody("/unittype", "POST", newUnitType); // url,method,object
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Unit Type Added successfully..!").then(() => {
+            //refresh unit-types with new added unit-type
+            unittypes = ajaxGetRequest("/unittype/findall");
+            fillDataIntoSelect(
+              selectUnitType,
+              "Select Unit Type",
+              unittypes,
+              "name",
+              newUnitType.name
+            );
+
+            //bind value in to supplier object and set valid color
+            product.unitTypeId = JSON.parse(selectUnitType.value);
+            selectUnitType.style.border = "2px solid #00FF7F";
+
+            // Need to refresh form
+            refreshAddNewUnitType();
+
+            // hide modal
+            $("#addNewUnitTypeModel").modal("hide");
+          });
+        } else {
+          showAlert(
+            "error",
+            "Unit Type added not successfully..! have some errors \n" +
+              serverResponse
+          );
+        }
+      }
+    });
+  } else {
+    showAlert("warning", "Please Enter Valid Unit Type Name");
+  }
+};
+
+//function for add new category
+const addCategory = () => {
+  if (newCategory.name != null) {
+    //get user confirmation
+    let title = "Are you sure!\nYou wants to add following record? \n";
+    let message = "Category Name : " + newCategory.name;
+
+    showConfirm(title, message).then((userConfirm) => {
+      if (userConfirm) {
+        //response from backend ...
+        let serverResponse = ajaxRequestBody("/category", "POST", newCategory); // url,method,object
+        //check back end response
+        if (serverResponse == "OK") {
+          showAlert("success", "Category Added successfully..!").then(() => {
+            //refresh category with new added category
+            categories = ajaxGetRequest("/category/findall");
+            fillDataIntoSelect(
+              selectCategory,
+              "Select Category",
+              categories,
+              "name",
+              newCategory.name
+            );
+
+            //bind value in to supplier object and set valid color
+            product.categoryId = JSON.parse(selectCategory.value);
+            selectCategory.style.border = "2px solid #00FF7F";
+            selectSubCategory.disabled = false;
+            btnAddSubCategory.disabled = false;
+
+            // Need to refresh form
+            refreshAddNewCategory();
+
+            // hide modal
+            $("#addNewCategoryModel").modal("hide");
+          });
+        } else {
+          showAlert(
+            "error",
+            "Category added not successfully..! have some errors \n" +
+              serverResponse
+          );
+        }
+      }
+    });
+  } else {
+    showAlert("warning", "Please Enter Valid Category Name");
+  }
+};
+
+//function for add new subcategory
+const addSubCategory = () => {
+  if (typeof product.categoryId != "undefined") {
+    newSubCategory.categoryId = product.categoryId;
+    if (newSubCategory.name != null) {
+      //get user confirmation
+      let title = "Are you sure!\nYou wants to add following record? \n";
+      let message = "Sub-Category Name : " + newSubCategory.name;
+
+      showConfirm(title, message).then((userConfirm) => {
+        if (userConfirm) {
+          //response from backend ...
+          let serverResponse = ajaxRequestBody(
+            "/subcategory",
+            "POST",
+            newSubCategory
+          ); // url,method,object
+          //check back end response
+          if (serverResponse == "OK") {
+            showAlert("success", "Sub-Category Added successfully..!").then(
+              () => {
+                //refresh subcategory with new added subcategory
+                subCategories = ajaxGetRequest(
+                  "/subcategory/findbycategory?categoryid=" +
+                    product.categoryId.id
+                );
+                fillDataIntoSelect(
+                  selectSubCategory,
+                  "Select Sub-Category",
+                  subCategories,
+                  "name",
+                  newSubCategory.name
+                );
+
+                //bind value in to supplier object and set valid color
+                product.subCategoryId = JSON.parse(selectSubCategory.value);
+                selectSubCategory.style.border = "2px solid #00FF7F";
+
+                // Need to refresh form
+                refreshAddNewSubCategory();
+
+                // hide modal
+                $("#addNewSubCategoryModel").modal("hide");
+              }
+            );
+          } else {
+            showAlert(
+              "error",
+              "Sub-Category added not successfully..! have some errors \n" +
+                serverResponse
+            );
+          }
+        }
+      });
+    } else {
+      showAlert("warning", "Please Enter Valid Sub-Category Name");
+    }
+  } else {
+    showAlert("warning", "Please Select Category First");
+  }
+};
+
+//function for manage add new elements visibility
+const manageAddNewElementsVisibility = () => {
+  elements = $(".add-new-option");
+  for (let i = 0; i < elements.length; i++) {
+    if (userRole == "Admin" || userRole == "Manager") {
+      elements[i].style.visibility = "visible";
+    } else {
+      elements[i].style.visibility = "hidden";
+    }
+  }
 };

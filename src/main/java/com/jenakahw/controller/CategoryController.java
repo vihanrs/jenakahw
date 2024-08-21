@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jenakahw.domain.Brand;
 import com.jenakahw.domain.Category;
 import com.jenakahw.repository.CategoryRepository;
 
@@ -24,5 +27,22 @@ public class CategoryController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Category> findAll() {
 		return categoryRepository.findAll();
+	}
+	
+	// post mapping for save new category
+	@PostMapping
+	public String saveBrand(@RequestBody Category category) {
+		// check duplicates
+		Category extCategory = categoryRepository.findByName(category.getName());
+		if(extCategory != null) {
+			return extCategory.getName()+" already exist";
+		}
+		
+		try {
+			categoryRepository.save(category);
+			return "OK";
+		} catch (Exception e) {
+			return e.getMessage();
+		}
 	}
 }
