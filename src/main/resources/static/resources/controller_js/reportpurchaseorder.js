@@ -258,39 +258,3 @@ const printChart = () => {
       "<script>viewChart.style.removeProperty('display');<//script>"
   );
 };
-// // ********* PRINT OPERATIONS *********
-
-// //print function
-// const printViewRecord = () => {
-//   newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>User Details</title>" +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>User Details</h2>" +
-//       printTable.outerHTML
-//   );
-
-//   //triger print() after 1000 milsec time out
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };
-
-// //print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
-// const printFullTable = () => {
-//   const newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>Print Employee</title>" +
-//       '<script src="resources/js/jquery.js"></script>' +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>Employee Details</h2>" +
-//       tableId.outerHTML +
-//       '<script>$(".modify-button").css("display","none")</script>'
-//   );
-
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };

@@ -24,6 +24,10 @@ const addEventListeners = () => {
   printSummary.addEventListener("click", () => {
     printChart();
   });
+
+  printAllData.addEventListener("click", () => {
+    printFullTable();
+  });
 };
 
 // ********* RESET *********
@@ -224,9 +228,9 @@ const getPOID = (rowObject) => {
 //function for get Supplier
 const getSupplier = (rowObject) => {
   return (
-    rowObject.supplierId.firstName +
-    (rowObject.supplierId.company != null
-      ? " - " + rowObject.supplierId.company
+    rowObject.purchaseOrderId.supplierId.firstName +
+    (rowObject.purchaseOrderId.supplierId.company != null
+      ? " - " + rowObject.purchaseOrderId.supplierId.company
       : "")
   );
 };
@@ -250,11 +254,17 @@ const getTotalamount = (grns) => {
 const getStatus = (rowObject) => {
   if (rowObject.grnStatusId.name == "Received") {
     return (
-      '<p class = "status status-active">' + rowObject.grnStatusId.name + "</p>"
+      '<p class = "status status-warning">' +
+      rowObject.grnStatusId.name +
+      "</p>"
     );
   } else if (rowObject.grnStatusId.name == "Deleted") {
     return (
       '<p class = "status status-error">' + rowObject.grnStatusId.name + "</p>"
+    );
+  } else if (rowObject.grnStatusId.name == "Completed") {
+    return (
+      '<p class = "status status-active">' + rowObject.grnStatusId.name + "</p>"
     );
   }
 };
@@ -268,40 +278,27 @@ const printChart = () => {
     viewChart.outerHTML +
       "<script>viewChart.style.removeProperty('display');<//script>"
   );
+
+  // triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newWindow.print();
+  }, 1000);
 };
 // // ********* PRINT OPERATIONS *********
 
-// //print function
-// const printViewRecord = () => {
-//   newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>User Details</title>" +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>User Details</h2>" +
-//       printTable.outerHTML
-//   );
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print GRN</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2>GRN Details</h2>" +
+      grnTable.outerHTML
+  );
 
-//   //triger print() after 1000 milsec time out
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };
-
-// //print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
-// const printFullTable = () => {
-//   const newTab = window.open();
-//   newTab.document.write(
-//     //  link bootstrap css
-//     "<head><title>Print Employee</title>" +
-//       '<script src="resources/js/jquery.js"></script>' +
-//       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
-//       "<h2>Employee Details</h2>" +
-//       tableId.outerHTML +
-//       '<script>$(".modify-button").css("display","none")</script>'
-//   );
-
-//   setTimeout(function () {
-//     newTab.print();
-//   }, 1000);
-// };
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
+};

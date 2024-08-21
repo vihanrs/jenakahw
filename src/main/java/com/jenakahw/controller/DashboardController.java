@@ -61,7 +61,7 @@ public class DashboardController {
 
 	// get mapping for get completed invoice grand total since last month
 	@GetMapping(value = "/invoicetotalsincelastmonth")
-	public BigDecimal getInvoicesGrandTotal() {
+	public String getInvoicesGrandTotal() {
 
 //		List<Invoice> invoices = reportRepository.getInvoicesSinceLastMonth();
 		BigDecimal totalSell = BigDecimal.ZERO;
@@ -69,7 +69,7 @@ public class DashboardController {
 //			totalSell = totalSell.add(inv.getGrandTotal());
 //		}
 
-		return totalSell;
+		return reportRepository.getInvoicesSinceLastMonth();
 	}
 
 	// get mappinng for get low stocks

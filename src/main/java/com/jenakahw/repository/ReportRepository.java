@@ -36,8 +36,8 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	public int getPendingInvoicesToday();
 	
 	// query for get invoices total since last month
-	@Query(value = "select * from jenakahw.invoice as inv where year(inv.added_datetime) = year(current_date()) and month(inv.added_datetime) = month(current_date()) and inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where invs.name = 'Completed')",nativeQuery = true)
-	public List<Invoice> getInvoicesSinceLastMonth();
+	@Query(value = "select sum(inv.grand_total) from jenakahw.invoice as inv where year(inv.added_datetime) = year(current_date()) and month(inv.added_datetime) = month(current_date()) and inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where invs.name = 'Completed') or inv.invoice_status_id = (select invs.id from jenakahw.invoice_status as invs where  invs.name = 'Incompelte')",nativeQuery = true)
+	public String getInvoicesSinceLastMonth();
 	
 	// query for get top five selling products in last 3 months
 	@Query(value = "SELECT p.name,b.name as brand,c.name as category, sc.name as subcategory,ihp.product_id,sum(ihp.qty) as sellqty,sum(ihp.line_amount) as total_amount "
