@@ -56,6 +56,9 @@ public class GrnController {
 
 	@Autowired
 	private StockRepository stockRepository;
+	
+	@Autowired
+	private StockController stockController;
 
 	@Autowired
 	private StockStatusRepository stockStatusRepository;
@@ -165,6 +168,7 @@ public class GrnController {
 					extStock.setTotalQty(extStock.getTotalQty().add(grnHasProduct.getQty()));
 					extStock.setStockStatus(stockStatusRepository.getReferenceById(1));
 					stockRepository.save(extStock);
+					stockController.updateStockStatus(extStock.getId());
 
 				} else {
 					Stock newStock = new Stock();
@@ -174,7 +178,8 @@ public class GrnController {
 					newStock.setAvailableQty(grnHasProduct.getQty());
 					newStock.setTotalQty(grnHasProduct.getQty());
 					newStock.setStockStatus(stockStatusRepository.getReferenceById(1));
-					stockRepository.save(newStock);
+					Stock savedStock = stockRepository.save(newStock);
+					stockController.updateStockStatus(savedStock.getId());
 				}
 			}
 			return "OK";

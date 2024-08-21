@@ -386,7 +386,7 @@ const checkUpdate = () => {
   }
 
   if (oldSupplier.products.length != supplier.products.length) {
-    updates += "Products are changed ";
+    updates += "Products are changed \n";
   } else {
     for (let i = 0; i < oldSupplier.products.length; i++) {
       const oldProduct = oldSupplier.products[i];
@@ -394,11 +394,28 @@ const checkUpdate = () => {
         (newProduct) => newProduct.id === oldProduct.id
       );
 
-      if (
-        !productExists ||
-        supplier.products.length > oldSupplier.products.length
-      ) {
-        updates += "Products are changed ";
+      if (!productExists) {
+        updates += "Products are changed \n";
+        break;
+      }
+    }
+  }
+
+  if (oldSupplier.bankDetails.length != supplier.bankDetails.length) {
+    updates += "Bank details are changed \n";
+  } else {
+    for (let i = 0; i < oldSupplier.bankDetails.length; i++) {
+      const oldBankDetail = oldSupplier.bankDetails[i];
+      const bankExists = supplier.bankDetails.some(
+        (bank) =>
+          bank.id === oldBankDetail.id &&
+          bank.bankName === oldBankDetail.bankName &&
+          bank.branchName === oldBankDetail.branchName &&
+          bank.accNo === oldBankDetail.accNo &&
+          bank.accHolderName === oldBankDetail.accHolderName
+      );
+      if (!bankExists) {
+        updates += "Bank details are changed \n";
         break;
       }
     }

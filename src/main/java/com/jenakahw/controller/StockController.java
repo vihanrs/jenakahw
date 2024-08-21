@@ -1,5 +1,6 @@
 package com.jenakahw.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.jenakahw.domain.Stock;
 import com.jenakahw.domain.User;
 import com.jenakahw.repository.StockRepository;
+import com.jenakahw.repository.StockStatusRepository;
 
 @RestController
 @RequestMapping(value = "/stock") // class level mapping
@@ -26,7 +30,10 @@ public class StockController {
 	 */
 	@Autowired
 	private StockRepository stockRepository;
-	
+
+	@Autowired
+	private StockStatusRepository stockStatusRepository;
+
 	@Autowired
 	private UserController userController;
 
@@ -37,7 +44,7 @@ public class StockController {
 
 	// Stock UI service [/stock -- return Stock UI]
 	@GetMapping
-	public ModelAndView grnUI() {
+	public ModelAndView stockUI() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -71,6 +78,58 @@ public class StockController {
 			return stockRepository.getStockProductListByNameBarcode(nameBarcode);
 		} else {
 			return null;
+		}
+	}
+	
+	// method to update all stock status
+	@GetMapping(value = "/updatestockstatus")
+	public String updateStatus() {
+		List<Stock> stockList = stockRepository.findAll(Sort.by(Direction.DESC, "id"));
+		
+		for(Stock stk : stockList) {
+			updateStockStatus(stk.getId());
+		}
+		
+		return "All Stock Status Updated";
+	}
+
+	// method to manage stock status
+	public String updateStockStatus(int stockId) {
+		
+		try {
+			// get stock
+			Stock stock = stockRepository.getReferenceById(stockId);
+			if (stock.getAvailableQty().compareTo(BigDecimal.ZERO) == 0) {
+				System.err.println(stock.getProductId().getName());
+				// update status to 'Out of Stock'
+				stock.setStockStatus(stockStatusRepository.getReferenceById(2));
+				stockRepository.save(stock);
+				return "Out of Stock";
+			} else {
+				// get rol
+				BigDecimal rol = BigDecimal.ZERO;
+
+				if (stock.getProductId().getRol() != null) {
+					rol = new BigDecimal(stock.getProductId().getRol());
+				}
+
+				// compare available stock with rol
+				int compareStockQty = stock.getAvailableQty().compareTo(rol);
+				if (compareStockQty <= 0) {
+					// update status to 'Low Stock'
+					stock.setStockStatus(stockStatusRepository.getReferenceById(3));
+					stockRepository.save(stock);
+					return "Low Stock";
+				} else {
+					// update status to 'In Stock'
+					stock.setStockStatus(stockStatusRepository.getReferenceById(1));
+					stockRepository.save(stock);
+					return "In Stock";
+				}
+			}
+
+		} catch (Exception e) {
+			return e.getMessage();
 		}
 	}
 }

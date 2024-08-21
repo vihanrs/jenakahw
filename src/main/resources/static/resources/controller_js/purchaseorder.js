@@ -506,9 +506,28 @@ const checkUpdates = () => {
       (purchaseOrder.note ?? "-") +
       " \n";
   }
+
+  if (
+    oldPurchaseOrder.poHasProducts.length != purchaseOrder.poHasProducts.length
+  ) {
+    updates += "Products are Updated\n";
+  } else {
+    for (let i = 0; i < oldPurchaseOrder.poHasProducts.length; i++) {
+      const oldProduct = oldPurchaseOrder.poHasProducts[i];
+      const productExists = purchaseOrder.poHasProducts.some(
+        //test at least one element in the array pass the condition
+        (product) => product.id === oldProduct.id
+      );
+
+      if (!productExists) {
+        updates += "Products are Updated\n";
+        break;
+      }
+    }
+  }
+
   if (oldPurchaseOrder.totalAmount != purchaseOrder.totalAmount) {
     updates +=
-      "Products Updated\n" +
       "Total Amount has changed Rs." +
       oldPurchaseOrder.totalAmount +
       " into Rs." +

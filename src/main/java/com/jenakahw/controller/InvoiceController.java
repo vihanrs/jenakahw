@@ -30,6 +30,8 @@ import com.jenakahw.repository.InvoiceRepository;
 import com.jenakahw.repository.InvoiceStatusRepository;
 import com.jenakahw.repository.StockRepository;
 
+import jakarta.transaction.Transactional;
+
 @RestController
 //add class level mapping /invoice
 @RequestMapping(value = "/invoice")
@@ -58,6 +60,9 @@ public class InvoiceController {
 
 	@Autowired
 	private StockRepository stockRepository;
+	
+	@Autowired
+	private StockController stockController;
 
 	private static final String MODULE = "Invoice";
 
@@ -138,6 +143,7 @@ public class InvoiceController {
 		}
 	}
 
+	@Transactional
 	@PostMapping
 	public String saveInvoice(@RequestBody Invoice invoice) {
 		// check privileges
@@ -208,8 +214,9 @@ public class InvoiceController {
 				// substract the stock
 				Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
 				extStock.setAvailableQty(extStock.getAvailableQty().subtract(invoiceHasProduct.getQty()));
-
+				
 				stockRepository.save(extStock); // update stock
+				stockController.updateStockStatus(extStock.getId()); // update stock status
 			}
 
 			invoiceRepository.save(invoice);

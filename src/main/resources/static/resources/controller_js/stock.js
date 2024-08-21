@@ -51,7 +51,6 @@ const refreshTable = () => {
     { property: getBrand, datatype: "function" },
     { property: "totalQty", datatype: "String" },
     { property: "availableQty", datatype: "String" },
-    { property: "costPrice", datatype: "currency" },
     { property: "sellPrice", datatype: "currency" },
     { property: getStatus, datatype: "function" },
   ];
@@ -116,13 +115,12 @@ const printFullTable = () => {
   const newTab = window.open();
   newTab.document.write(
     //  link bootstrap css
-    "<head><title>Print Products</title>" +
+    "<head><title>Print Stock</title>" +
       '<script src="resources/js/jquery.js"></script>' +
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
       '<link rel="stylesheet" href="resources/css/common.css" /></head>' +
-      "<h2 style = 'font-weight:bold'>Product Details</h2>" +
-      stockTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      "<h2 style = 'font-weight:bold'>Stock Details</h2>" +
+      stockTable.outerHTML
   );
 
   setTimeout(function () {
