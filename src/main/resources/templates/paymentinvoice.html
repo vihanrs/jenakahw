@@ -304,6 +304,63 @@
         <!-- content area end -->
       </div>
     </div>
+
+    <!-- table for print invoice -->
+    <table id="printTable" class="table table-striped d-none">
+      <tr>
+        <th>Invoice ID</th>
+        <td colspan="3" id="tdInvoiceId"></td>
+      </tr>
+      <tr>
+        <th>Customer</th>
+        <td colspan="3" id="tdCustomer"></td>
+      </tr>
+      <tr>
+        <th>Item Count</th>
+        <td colspan="3" id="tdItemCount"></td>
+      </tr>
+      <tr>
+        <th>Invoiced Date</th>
+        <td colspan="3" id="tdInvoicedDate"></td>
+      </tr>
+      <tr>
+        <th>Invoice Type</th>
+        <td colspan="3" id="tdInvoiceType"></td>
+      </tr>
+      <tr>
+        <th>Total</th>
+        <td colspan="3" id="tdTotal"></td>
+      </tr>
+      <tr>
+        <th>Discount</th>
+        <td colspan="3" id="tdDiscount"></td>
+      </tr>
+      <tr>
+        <th>Grand Total</th>
+        <td colspan="3" id="tdGrandTotal"></td>
+      </tr>
+      <tr>
+        <th>Paid Amount</th>
+        <td colspan="3" id="tdPaid"></td>
+      </tr>
+      <tr>
+        <th>Due Amount</th>
+        <td colspan="3" id="tdBalance"></td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td colspan="3" id="tdStatus"></td>
+      </tr>
+      <tr>
+        <th colspan="4"><i>Product List</i></th>
+      </tr>
+      <tr>
+        <th>Product</th>
+        <th>Sell Price</th>
+        <th>Qty</th>
+        <th>Line Amount</th>
+      </tr>
+    </table>
     <!-- Alert Box -->
     <div th:replace="~{alertbox :: alertFragment}"></div>
   </body>

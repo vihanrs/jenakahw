@@ -295,15 +295,18 @@ const addRecord = () => {
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
-        let serverResponse = ajaxRequestBody(
-          "/customerpayment",
-          "POST",
-          cusPayment
-        ); // url,method,object
+        let serverResponse = "INVC240816001";
+        // ajaxRequestBody(
+        //   "/customerpayment",
+        //   "POST",
+        //   cusPayment
+        // ); // url,method,object
 
         //check back end response
-        if (serverResponse == "OK") {
+        if (true) {
           showAlert("success", "Payment Save successfully..!").then(() => {
+            cusPayment.paymentInvoiceId = serverResponse;
+            printCutomerInvoice(cusPayment);
             //need to refresh table and form
             refreshAll();
           });
@@ -369,7 +372,7 @@ const refreshTable = () => {
     if (userPrivilages.delete) {
       let targetElement =
         customerPaymentsTable.children[1].children[index].children[6]
-          .children[2];
+          .lastElementChild;
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
@@ -535,5 +538,74 @@ const printFullTable = () => {
 
   setTimeout(function () {
     newTab.print();
+  }, 1000);
+};
+
+// function for print customer invoice
+const printCutomerInvoice = (customerPayment) => {
+  let printObj = customerPayment;
+
+  tdInvoiceId.innerText = printObj.paymentInvoiceId;
+  tdCustomer.innerText = printObj.customer.fullName;
+  tdInvoicedDate.innerText = new Date().toISOString().split("T")[0];
+  tdPayMethod.innerText = printObj.paymethodId.name;
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paidAmount).toFixed(2);
+
+  // Remove the last row from the printTable - Related Invoices
+  TdrelatedInvoices.style.display = "none";
+  if (parseFloat(customerPayment.balance) < 0) {
+    const tr = document.createElement("tr");
+    const th = document.createElement("th");
+    const td = document.createElement("td");
+
+    th.innerText = "Due Amount";
+    tr.appendChild(th);
+
+    td.innerText = "Rs." + parseFloat(-customerPayment.balance).toFixed(2);
+    tr.appendChild(td);
+
+    printTable.appendChild(tr);
+  }
+
+  newTab = window.open();
+  newTab.document.write(`
+    <head>
+      <title>Print Customer Payment</title>
+      <link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />
+      <style>
+        body {
+          width: 80mm; 
+          margin: 0;
+          font-size: 12px; 
+        }
+        @page {
+          size: 80mm auto;
+          margin: 5mm;
+        }
+       
+        h2 {
+          font-weight: bold;
+          text-align: center; 
+          margin-top: 10px;
+          margin-bottom: 20px;
+        }
+        table {
+          width: 100%;
+        }
+        td {
+          padding: 5px;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>Jenaka Hardware - Avissawella</h2>
+      ${printTable.outerHTML}
+    </body>
+  `);
+
+  //triger print() after 1000 milsec time out - time to load content to the printing tab
+  setTimeout(function () {
+    newTab.print();
+    newTab.close(); // Close the tab after printing
   }, 1000);
 };

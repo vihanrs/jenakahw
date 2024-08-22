@@ -110,7 +110,7 @@ public class InvoicePaymentController {
 			}
 			
 			// update invoice 
-			invoiceRepository.save(invoice);
+			Invoice paidInvoice = invoiceRepository.save(invoice);
 			
 			if(!invoicePayment.getPaidAmount().equals(BigDecimal.ZERO)) {
 			
@@ -121,7 +121,8 @@ public class InvoicePaymentController {
 			invoicePaymentRepository.save(invoicePayment);
 			
 			}
-			return "OK";
+			
+			return paidInvoice.getInvoiceId();
 		} catch (Exception e) {
 			return e.getMessage();
 		}

@@ -367,9 +367,10 @@ const addRecord = () => {
         ); // url,method,object
 
         //check back end response
-        if (serverResponse == "OK") {
+        if (new RegExp("^[A-Z]{3}[0-9]{9}$").test(serverResponse)) {
           showAlert("success", "Payment Save successfully..!").then(() => {
             //need to refresh table and form
+            printInvoice(serverResponse);
             refreshAll();
           });
         } else {
@@ -387,3 +388,68 @@ const addRecord = () => {
 
 //function for update record
 const updateRecord = () => {};
+
+// function for print invoice
+const printInvoice = (invoiceId) => {
+  invoice = ajaxGetRequest("/invoice/findbyid/" + invoiceId);
+
+  let printObj = invoice;
+
+  tdInvoiceId.innerText = printObj.invoiceId;
+  tdCustomer.innerText =
+    printObj.customerId != null ? printObj.customerId.fullName : "";
+  tdItemCount.innerText = printObj.itemCount;
+  tdInvoicedDate.innerText = printObj.addedDateTime.split("T")[0];
+  tdInvoiceType.innerText =
+    printObj.isCredit != true ? "Normal Invoice" : "Credit Invoice";
+  tdTotal.innerText = "Rs." + parseFloat(printObj.total).toFixed(2);
+  tdDiscount.innerText =
+    "Rs." + parseFloat(printObj.discount ?? "0").toFixed(2);
+  tdGrandTotal.innerText = "Rs." + parseFloat(printObj.grandTotal).toFixed(2);
+  tdPaid.innerText = "Rs." + parseFloat(printObj.paidAmount).toFixed(2);
+  tdBalance.innerText = "Rs." + parseFloat(printObj.balanceAmount).toFixed(2);
+  tdStatus.innerText = printObj.invoiceStatusId.name;
+  getINVProductsForPrint(printObj);
+
+  newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Invoice</title>" +
+      "<h2 style = 'font-weight:bold'>Jenaka Hardware Avissawella</h2>" +
+      printTable.outerHTML
+  );
+
+  //triger print() after 1000 milsec time out - time to load content to the printing tab
+  setTimeout(function () {
+    newTab.print();
+    newTab.close(); // Close the tab after printing
+  }, 1000);
+};
+
+// funtion for get invoice product list for print
+const getINVProductsForPrint = (printObj) => {
+  // remove the previously added dynamic rows
+  document.querySelectorAll(".dynamic-row").forEach((row) => row.remove());
+
+  printObj.invoiceHasProducts.forEach((ele) => {
+    const tr = document.createElement("tr");
+    tr.classList.add("dynamic-row");
+    const tdProduct = document.createElement("td");
+    const tdSellPrice = document.createElement("td");
+    const tdQty = document.createElement("td");
+    const tdLineAmount = document.createElement("td");
+
+    tdProduct.innerText =
+      ele.stockId.productId.barcode + " - " + ele.stockId.productId.name;
+    tdSellPrice.innerText = "Rs." + parseFloat(ele.sellPrice).toFixed(2);
+    tdQty.innerText =
+      ele.qty + " (" + ele.stockId.productId.unitTypeId.name + ")";
+    tdLineAmount.innerText = "Rs." + parseFloat(ele.lineAmount).toFixed(2);
+
+    tr.appendChild(tdProduct);
+    tr.appendChild(tdSellPrice);
+    tr.appendChild(tdQty);
+    tr.appendChild(tdLineAmount);
+    printTable.appendChild(tr);
+  });
+};

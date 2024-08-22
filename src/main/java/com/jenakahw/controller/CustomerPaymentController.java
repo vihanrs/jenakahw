@@ -199,7 +199,7 @@ public class CustomerPaymentController {
 				}
 			}
 
-			return "OK";
+			return newCustomerPayment.getPaymentInvoiceId();
 		} catch (Exception e) {
 			return e.getMessage();
 		}

@@ -30,7 +30,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
 	public List<Invoice> findByCustomerAndIncomplete(int customerId);
 	
 	// query for get all invoices in current date
-	@Query(value = "Select inv from Invoice inv where DATE(inv.addedDateTime) between DATE(:fromDate) and DATE(:toDate)")
+	@Query(value = "Select inv from Invoice inv where DATE(inv.addedDateTime) between DATE(:fromDate) and DATE(:toDate) order by inv.id desc")
 	public List<Invoice> findAllInDateRange(@Param("fromDate") String fromDate,@Param("toDate") String toDate);
 }
 

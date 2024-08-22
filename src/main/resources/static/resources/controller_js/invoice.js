@@ -289,8 +289,12 @@ const addRecord = () => {
         let serverResponse = ajaxRequestBody("/invoice", "POST", invoice); // url,method,object
 
         //check back end response
-        if (serverResponse == "OK") {
-          showAlert("success", "Invoice Created successfully..!").then(() => {
+        if (new RegExp("^[A-Z]{3}[0-9]{9}$").test(serverResponse)) {
+          showAlert(
+            "success",
+            "Invoice Created successfully..!\n Invoice ID " + serverResponse
+          ).then(() => {
+            printInvoiceId(serverResponse);
             //need to refresh table and form
             refreshAll();
           });
@@ -873,5 +877,35 @@ const printFullTable = () => {
 
   setTimeout(function () {
     newTab.print();
+  }, 1000);
+};
+
+const printInvoiceId = (invoiceId) => {
+  newTab = window.open();
+
+  newTab.document.write(
+    "<html><head><title>Print Invoice ID</title>" +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" />' +
+      "<style>" +
+      "body { margin: 0; padding: 0; font-size: 12px; text-align: center; }" +
+      ".container { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }" +
+      "h4 { margin: 0; font-size: 14px; font-weight: bold; }" +
+      "p { margin: 0; font-size: 16px; }" +
+      "@page { size: 2in 1in; margin: 0; }" + // Set paper size to 2x1 inches
+      "</style>" +
+      "</head><body>" +
+      "<div class='container'>" +
+      "<h4>Invoice</h4>" +
+      "<p>" +
+      invoiceId +
+      "</p>" +
+      "</div>" +
+      "</body></html>"
+  );
+
+  //triger print() after 1000 milsec time out - time to load content to the printing tab
+  setTimeout(function () {
+    newTab.print();
+    newTab.close(); // Close the tab after printing
   }, 1000);
 };
