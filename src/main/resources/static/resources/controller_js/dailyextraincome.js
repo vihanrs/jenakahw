@@ -274,26 +274,32 @@ const refreshTable = () => {
     viewRecord,
     refillRecord,
     deleteRecord,
-    true,
+    false,
     userPrivilages
   );
 
   //hide delete button when status is 'deleted'
-  dailyextraincomes.forEach((dailyExtraIncome, index) => {
-    if (
-      userPrivilages.delete &&
-      dailyExtraIncome.dailyIncomeExpensesStatusId.name == "Deleted"
-    ) {
-      //catch the button
-      let targetElement =
-        dailyExtraIncomeTable.children[1].children[index].children[5].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
-      //add changes
-      targetElement.style.pointerEvents = "none";
-      targetElement.style.visibility = "hidden";
-    }
-  });
+  // dailyextraincomes.forEach((dailyExtraIncome, index) => {
+  //   if (userPrivilages.update) {
+  //     let targetElement =
+  //       dailyExtraIncomeTable.children[1].children[index].children[5]
+  //         .children[1];
+  //     //add changes
+  //     targetElement.style.pointerEvents = "none";
+  //     targetElement.style.visibility = "hidden";
+  //     targetElement.style.display = "none";
+  //   }
+
+  //   if (userPrivilages.delete) {
+  //     let targetElement =
+  //       dailyExtraIncomeTable.children[1].children[index].children[5]
+  //         .children[2];
+  //     //add changes
+  //     targetElement.style.pointerEvents = "none";
+  //     targetElement.style.visibility = "hidden";
+  //     targetElement.style.display = "none";
+  //   }
+  // });
 
   $("#dailyExtraIncomeTable").dataTable();
 };
@@ -351,7 +357,7 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     dailyexincome.dailyIncomeExpensesStatusId.name
   );
-  statusDiv.classList.remove("d-none");
+  // statusDiv.classList.remove("d-none");
   setBorderStyle([selectStatus, textAmount, textReason]);
 
   //manage buttons
@@ -421,7 +427,7 @@ const printFullTable = () => {
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Daily Extra Incomes Details</h2>" +
       dailyExtraIncomeTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

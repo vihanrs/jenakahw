@@ -268,26 +268,30 @@ const refreshTable = () => {
     viewRecord,
     refillRecord,
     deleteRecord,
-    true,
+    false,
     userPrivilages
   );
 
   //hide delete button when status is 'deleted'
-  dailyexpenses.forEach((dailyExpense, index) => {
-    if (
-      userPrivilages.delete &&
-      dailyExpense.dailyIncomeExpensesStatusId.name == "Deleted"
-    ) {
-      //catch the button
-      let targetElement =
-        dailyexpensesTable.children[1].children[index].children[5].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
-      //add changes
-      targetElement.style.pointerEvents = "none";
-      targetElement.style.visibility = "hidden";
-    }
-  });
+  // dailyexpenses.forEach((dailyexpense, index) => {
+  //   if (userPrivilages.update) {
+  //     let targetElement =
+  //       dailyexpensesTable.children[1].children[index].children[5].children[1];
+  //     //add changes
+  //     targetElement.style.pointerEvents = "none";
+  //     targetElement.style.visibility = "hidden";
+  //     targetElement.style.display = "none";
+  //   }
+
+  //   if (userPrivilages.delete) {
+  //     let targetElement =
+  //       dailyexpensesTable.children[1].children[index].children[5].children[2];
+  //     //add changes
+  //     targetElement.style.pointerEvents = "none";
+  //     targetElement.style.visibility = "hidden";
+  //     targetElement.style.display = "none";
+  //   }
+  // });
 
   $("#dailyexpensesTable").dataTable();
 };
@@ -345,7 +349,7 @@ const refillRecord = (rowObject, rowId) => {
     "name",
     dailyexpense.dailyIncomeExpensesStatusId.name
   );
-  statusDiv.classList.remove("d-none");
+  // statusDiv.classList.remove("d-none");
   setBorderStyle([selectStatus, textAmount, textReason]);
 
   //manage buttons

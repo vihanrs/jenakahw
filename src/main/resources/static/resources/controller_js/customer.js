@@ -96,7 +96,14 @@ const refreshForm = () => {
 
   // get status
   statuses = ajaxGetRequest("/customerstatus/findall");
-  fillDataIntoSelect(selectStatus, "Select Status", statuses, "name");
+  statuseswithoutdelete = statuses.filter((status) => status.name != "Deleted");
+
+  fillDataIntoSelect(
+    selectStatus,
+    "Select Status",
+    statuseswithoutdelete,
+    "name"
+  );
 
   //empty all elements
   textCustomerName.value = "";
@@ -279,6 +286,9 @@ const refreshTable = () => {
     { property: getStatus, datatype: "function" },
   ];
 
+  // let table = new DataTable("#customerTable");
+  // table.destroy();
+
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
     customerTable,
@@ -441,7 +451,7 @@ const printFullTable = () => {
       '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
       "<h2 style = 'font-weight:bold'>Customers Details</h2>" +
       customerTable.outerHTML +
-      '<script>$(".modify-button").css("display","none")</script>'
+      '<script>$("#modifyButtons").css("display","none");$(".table-buttons").hide();</script>'
   );
 
   setTimeout(function () {

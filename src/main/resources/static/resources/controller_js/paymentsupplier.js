@@ -324,6 +324,9 @@ const refreshTable = () => {
     { property: "paidAmount", datatype: "currency" },
   ];
 
+  let table = new DataTable("#supplierPaymentsTable");
+  table.destroy();
+
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
     supplierPaymentsTable,
@@ -342,6 +345,16 @@ const refreshTable = () => {
       let targetElement =
         supplierPaymentsTable.children[1].children[index].children[6]
           .children[1];
+      //add changes
+      targetElement.style.pointerEvents = "none";
+      targetElement.style.visibility = "hidden";
+      targetElement.style.display = "none";
+    }
+
+    if (userPrivilages.delete) {
+      let targetElement =
+        supplierPaymentsTable.children[1].children[index].children[6]
+          .children[2];
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";

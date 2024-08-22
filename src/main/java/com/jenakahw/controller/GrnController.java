@@ -221,39 +221,4 @@ public class GrnController {
 		}
 	}
 
-	// delete mapping for delete a GRN
-	@Transactional
-	@DeleteMapping
-	public String deleteGrn(@RequestBody Grn grn) {
-		// check privileges
-		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
-			return "Access Denied !!!";
-		}
-
-		// check for existens
-		Grn extGrn = grnRepository.getReferenceById(grn.getId());
-		if (extGrn == null) {
-			return "GRN Not Exist...!";
-		}
-
-		try {
-			// set deleted user
-			grn.setDeletedUserId(userController.getLoggedUser().getId());
-			// set deleted date and time
-			grn.setDeletedDateTime(LocalDateTime.now());
-
-			// set GRN status to 'Deleted'
-			grn.setGrnStatusId(grnStatusRepository.getReferenceById(2));
-
-			for (GrnHasProduct grnHasProduct : grn.getGrnHasProducts()) {
-				grnHasProduct.setGrnId(grn);
-			}
-
-			grnRepository.save(grn);
-
-			return "OK";
-		} catch (Exception e) {
-			return e.getMessage();
-		}
-	}
 }
