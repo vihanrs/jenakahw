@@ -642,6 +642,8 @@ const refreshTable = () => {
     { property: getStatus, datatype: "function" },
   ];
 
+  let table = new DataTable("#invoiceTable");
+  table.destroy();
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
     invoiceTable,

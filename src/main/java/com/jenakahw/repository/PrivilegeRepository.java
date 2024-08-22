@@ -2,9 +2,11 @@ package com.jenakahw.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import com.jenakahw.domain.Privilege;
 
+@Repository
 public interface PrivilegeRepository extends JpaRepository<Privilege, Integer> {
 
 	// create query for get privilege by username and module name

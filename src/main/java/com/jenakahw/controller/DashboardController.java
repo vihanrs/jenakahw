@@ -64,7 +64,7 @@ public class DashboardController {
 	public String getInvoicesGrandTotal() {
 
 //		List<Invoice> invoices = reportRepository.getInvoicesSinceLastMonth();
-		BigDecimal totalSell = BigDecimal.ZERO;
+//		BigDecimal totalSell = BigDecimal.ZERO;
 //		for (Invoice inv : invoices) {
 //			totalSell = totalSell.add(inv.getGrandTotal());
 //		}

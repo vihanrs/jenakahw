@@ -43,9 +43,14 @@ public class UserDetailService implements UserDetailsService {
 		
 		// get role list from user
 		ArrayList<GrantedAuthority> grantedAuthorities = new ArrayList<GrantedAuthority>(userRoles);
+		
+		boolean isActiveUser = false;
+		if(user.getUserStatusId().getName().equals("Working")) {
+			isActiveUser = true;
+		}
 
 		UserDetails userDetails = new org.springframework.security.core.userdetails.User(user.getUsername(),
-				user.getPassword(),true, true, true, true, grantedAuthorities);
+				user.getPassword(),isActiveUser, true, true, true, grantedAuthorities);
 
 		return userDetails;
 

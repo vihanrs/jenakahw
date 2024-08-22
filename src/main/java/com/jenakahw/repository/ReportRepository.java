@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.jenakahw.domain.Grn;
-import com.jenakahw.domain.Invoice;
 import com.jenakahw.domain.PurchaseOrder;
 
 @Repository
@@ -59,6 +58,17 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 			+ "SELECT DAYNAME(DATE(dexp.added_datetime)) as day_of_week, DATE(dexp.added_datetime) as date, SUM(dexp.total) as amount, 'Expense' as type FROM daily_expenses dexp "
 			+ "WHERE DATE(dexp.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() AND dexp.daily_income_expenses_status_id = 1 GROUP BY DAYNAME(DATE(dexp.added_datetime)), DATE(dexp.added_datetime)",nativeQuery = true)
 	public String[][] getDailyFinancialSummary();
+	
+	// query for get daily income expenses report
+		@Query(value = "SELECT DAYNAME(DATE(invp.added_datetime)) as day_of_week, DATE(invp.added_datetime) as date, SUM(invp.paid_amount) as amount, 'Invoice' as type FROM jenakahw.invoice_has_payment invp WHERE DATE(invp.added_datetime) "
+				+ "BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() GROUP BY DAYNAME(DATE(invp.added_datetime)), DATE(invp.added_datetime) UNION ALL "
+				+ "SELECT DAYNAME(DATE(dein.added_datetime)) as day_of_week, DATE(dein.added_datetime) as date, SUM(dein.total) as amount, 'Extra Income' as type FROM daily_extra_income dein "
+				+ "WHERE DATE(dein.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() AND dein.daily_income_expenses_status_id = 1 GROUP BY DAYNAME(DATE(dein.added_datetime)), DATE(dein.added_datetime) UNION ALL "
+				+ "SELECT DAYNAME(DATE(sp.added_datetime)) as day_of_week, DATE(sp.added_datetime) as date, SUM(sp.paid_amount) as amount, 'Supplier Payment' as type FROM supplier_payment sp "
+				+ "WHERE DATE(sp.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() GROUP BY DAYNAME(DATE(sp.added_datetime)), DATE(sp.added_datetime) UNION ALL "
+				+ "SELECT DAYNAME(DATE(dexp.added_datetime)) as day_of_week, DATE(dexp.added_datetime) as date, SUM(dexp.total) as amount, 'Expense' as type FROM daily_expenses dexp "
+				+ "WHERE DATE(dexp.added_datetime) BETWEEN DATE_SUB(CURDATE(), INTERVAL WEEKDAY(CURDATE()) DAY) AND CURDATE() AND dexp.daily_income_expenses_status_id = 1 GROUP BY DAYNAME(DATE(dexp.added_datetime)), DATE(dexp.added_datetime)",nativeQuery = true)
+		public String[][] getMonthlyFinancialSummary();
 	
 	// purchase order reports queries
 

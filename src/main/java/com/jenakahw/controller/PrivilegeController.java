@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Privilege;
+import com.jenakahw.domain.Role;
 import com.jenakahw.domain.User;
 import com.jenakahw.repository.PrivilegeRepository;
+import com.jenakahw.repository.UserRepository;
 
 @RestController
 // add class level mapping /privilage
@@ -33,8 +35,8 @@ public class PrivilegeController {
 	@Autowired
 	private PrivilegeRepository privilegeRepository;
 	
-//	@Autowired
-//	private UserController userController;
+	@Autowired
+	private UserRepository userRepository;
 	
 	private static final String MODULE = "Privilege";
 
@@ -43,16 +45,27 @@ public class PrivilegeController {
 	public ModelAndView getPrivilegeUI() {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		User loggedUser = userRepository.getUserByUsername(auth.getName());
 
-//		User loggedUser = userController.getLoggedUser();
-//		String userRole = userController.getLoggedUserRole();
+		String userRole = "";
 
+		for (Role role : loggedUser.getRoles()) {
+			if (role.getName().equals("Admin")) {
+				userRole = "Admin";
+				break;
+			} else if (role.getName().equals("Manager")) {
+				userRole = "Manager";
+				break;
+			} else {
+				userRole = role.getName();
+			}
+		}
 
 		ModelAndView privilegeView = new ModelAndView();
 		privilegeView.addObject("title", "Privilege  | Jenaka Hardware");
 		privilegeView.addObject("logusername", auth.getName());
-//		privilegeView.addObject("loguserrole", userRole);
-//		privilegeView.addObject("loguserphoto", loggedUser.getUserPhoto());
+		privilegeView.addObject("loguserrole", userRole);
+		privilegeView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		privilegeView.setViewName("privilege.html");
 		return privilegeView;
 	}

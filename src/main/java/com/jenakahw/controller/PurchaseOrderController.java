@@ -54,8 +54,8 @@ public class PurchaseOrderController {
 	@Autowired
 	private POHasProductRepository poHasProductRepository;
 	
-//	@Autowired
-//	private EmailService emailService;
+	@Autowired
+	private EmailService emailService;
 
 	private static final String MODULE = "Purchase Order";
 
@@ -155,17 +155,16 @@ public class PurchaseOrderController {
 
 			PurchaseOrder newPO = purchaseOrderRepository.save(purchaseOrder);
 			
-
-//			if (newPO.getSupplierId().getEmail() != null) {
-//				// send email
-//				EmailDetails emailDetails = new EmailDetails();
-//				emailDetails.setSendTo(newPO.getSupplierId().getEmail());	
-//				emailDetails.setSubject("Jenaka Hardware | Purchase Order "+newPO.getPoCode());
-//				emailDetails.setMsgBody("Test");
-//				
-//				emailService.sendSimpleMail(emailDetails);;
-//				
-//			}
+			if (newPO.getSupplierId().getEmail() != null) {
+				// send email
+				EmailDetails emailDetails = new EmailDetails();
+				emailDetails.setSendTo(newPO.getSupplierId().getEmail());	
+				emailDetails.setSubject("Jenaka Hardware | Purchase Order "+newPO.getPoCode());
+				emailDetails.setMsgBody("Test");
+				
+				emailService.sendSimpleMail(emailDetails);;
+				
+			}
 
 			return "OK";
 		} catch (Exception e) {

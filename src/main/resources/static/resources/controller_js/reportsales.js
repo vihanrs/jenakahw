@@ -150,4 +150,9 @@ const printChart = () => {
     viewChart.outerHTML +
       "<script>viewChart.style.removeProperty('display');<//script>"
   );
+
+  // triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newWindow.print();
+  }, 1000);
 };

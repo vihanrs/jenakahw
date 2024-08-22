@@ -19,6 +19,14 @@ const addEventListeners = () => {
   btnReset.addEventListener("click", () => {
     resetFilters();
   });
+
+  printSummary.addEventListener("click", () => {
+    printChart();
+  });
+
+  printAllData.addEventListener("click", () => {
+    printFullTable();
+  });
 };
 
 // ********* RESET *********
@@ -187,6 +195,7 @@ const getStatus = (rowObject) => {
   }
 };
 
+// function for refresh summary table
 const refreshSummaryTable = () => {
   const displayProperties = [
     { property: getSummarySupplier, datatype: "function" },
@@ -209,6 +218,7 @@ const refreshSummaryTable = () => {
   refreshChart(poSummaryBySupplier);
 };
 
+// function for get supplier
 const getSummarySupplier = (rowObject) => {
   return (
     rowObject.supplierFirstName +
@@ -216,6 +226,7 @@ const getSummarySupplier = (rowObject) => {
   );
 };
 
+// function for refresh chart
 const refreshChart = (po) => {
   labelArray = new Array();
   dataArray = new Array();
@@ -248,6 +259,8 @@ const refreshChart = (po) => {
     },
   });
 };
+
+// function for prinnt chart
 const printChart = () => {
   viewChart.src = myChartView.toBase64Image();
 
@@ -257,4 +270,26 @@ const printChart = () => {
     viewChart.outerHTML +
       "<script>viewChart.style.removeProperty('display');<//script>"
   );
+
+  // triger print() after 1000 milsec time out
+  setTimeout(function () {
+    newWindow.print();
+  }, 1000);
+};
+
+//print all data table after 1000 milsec of new tab opening () - to refresh the new tab elements
+const printFullTable = () => {
+  const newTab = window.open();
+  newTab.document.write(
+    //  link bootstrap css
+    "<head><title>Print Purchase Order</title>" +
+      '<script src="resources/js/jquery.js"></script>' +
+      '<link rel="stylesheet" href="resources/bootstrap/css/bootstrap.min.css" /></head>' +
+      "<h2>Purchase Order Details</h2>" +
+      purchaseOrdersReportTable.outerHTML
+  );
+
+  setTimeout(function () {
+    newTab.print();
+  }, 1000);
 };

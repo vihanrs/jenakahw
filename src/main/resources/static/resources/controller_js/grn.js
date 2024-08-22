@@ -210,6 +210,8 @@ const refreshForm = () => {
   textPaid.value = "";
   dicountPrecentageView.innerText = "";
   discountPrecentageCheck.checked = false;
+  discountPrecentageCheck.disabled = false;
+  textDiscount.disabled = false;
 
   // //set default border color
   let elements = [
@@ -877,6 +879,15 @@ const refillRecord = (rowObject, rowId) => {
       ? calDiscountPrecentage(grn.total, grn.discount) + "%"
       : "";
   textPaid.value = grn.paid;
+
+  // if some payment already done then cannot change the discount
+  if (grn.paid != 0) {
+    discountPrecentageCheck.disabled = true;
+    textDiscount.disabled = true;
+  } else {
+    discountPrecentageCheck.disabled = false;
+    textDiscount.disabled = false;
+  }
   textSupplier.value =
     grn.purchaseOrderId.supplierId.firstName +
     (grn.purchaseOrderId.supplierId.company != null
