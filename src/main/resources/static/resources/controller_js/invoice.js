@@ -656,17 +656,24 @@ const refreshTable = () => {
     userPrivilages
   );
 
+  let modifyElement = invoiceTable.children[0].children[0].children[8];
+  modifyElement.id = "modifyButtons";
+  modifyButtons.style.width = "75px";
   //hide delete button when status is 'deleted'
   invoices.forEach((invoice, index) => {
-    if (userPrivilages.delete && invoice.invoiceStatusId.name == "Deleted") {
-      //catch the button
+    if (userPrivilages.update) {
       let targetElement =
-        customerTable.children[1].children[index].children[8].children[
-          userPrivilages.update && userPrivilages.insert ? 2 : 1
-        ];
-      //add changes
+        invoiceTable.children[1].children[index].children[8].children[1];
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
+    }
+    if (invoice.invoiceStatusId.name != "Pending" && userPrivilages.delete) {
+      //catch the button
+      let targetElement1 =
+        invoiceTable.children[1].children[index].children[8].lastElementChild;
+      //add changes
+      targetElement1.style.pointerEvents = "none";
+      targetElement1.style.visibility = "hidden";
     }
   });
 
@@ -765,37 +772,30 @@ const getINVProductsForPrint = (printObj) => {
 
 //function for refill record
 const refillRecord = (rowObject, rowId) => {
-  refreshForm();
-  $("#addNewButton").click();
-
-  invoice = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
-  oldinvoice = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
-
-  customer = invoice.customerId;
-
-  textCustomerName.value =
-    invoice.customerId != null ? invoice.customerId.fullName : "";
-  textCustomerContact.value =
-    invoice.customerId != null ? invoice.customerId.contact : "";
-  dateInvoiceDate.value = invoice.addedDateTime.split("T")[0];
-
-  // set status
-  fillDataIntoSelect(
-    selectStatus,
-    "Select Status",
-    statuses,
-    "name",
-    invoice.invoiceStatusId.name
-  );
-  statusDiv.classList.remove("d-none");
-
-  //refresh inner form and table to get saved products from invoice.invoiceHasProducts
-  refreshInnerFormAndTable();
-
-  setBorderStyle([textCustomerName, textCustomerContact]);
-
-  //manage buttons
-  manageFormButtons("refill", userPrivilages);
+  // refreshForm();
+  // $("#addNewButton").click();
+  // invoice = JSON.parse(JSON.stringify(rowObject)); //convert rowobject to json string and covert back it to js object
+  // oldinvoice = JSON.parse(JSON.stringify(rowObject)); // deep copy - create compeletely indipended two objects
+  // customer = invoice.customerId;
+  // textCustomerName.value =
+  //   invoice.customerId != null ? invoice.customerId.fullName : "";
+  // textCustomerContact.value =
+  //   invoice.customerId != null ? invoice.customerId.contact : "";
+  // dateInvoiceDate.value = invoice.addedDateTime.split("T")[0];
+  // // set status
+  // fillDataIntoSelect(
+  //   selectStatus,
+  //   "Select Status",
+  //   statuses,
+  //   "name",
+  //   invoice.invoiceStatusId.name
+  // );
+  // statusDiv.classList.remove("d-none");
+  // //refresh inner form and table to get saved products from invoice.invoiceHasProducts
+  // refreshInnerFormAndTable();
+  // setBorderStyle([textCustomerName, textCustomerContact]);
+  // //manage buttons
+  // manageFormButtons("refill", userPrivilages);
 };
 
 // //function for delete record
@@ -805,8 +805,6 @@ const deleteRecord = (rowObject, rowId) => {
   let message =
     "Invoice ID : " +
     rowObject.invoiceId +
-    "\nCustomer :" +
-    rowObject.customerId.fullName +
     "\nItem Count :" +
     rowObject.itemCount +
     "\nGrand Total :" +

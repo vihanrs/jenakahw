@@ -33,12 +33,22 @@ const refreshAll = () => {
 
 const refreshSummaryTable = () => {
   financeSummary = [];
+  columnone = "";
   if (selectType.value == "daily") {
+    title.innerHTML = "Daily Finance Summary";
+    reportTypeTitle.innerHTML = "Day";
+    columnone = "day";
     financeSummary = ajaxGetRequest("/report/reportsales/dailysummery");
+  } else if (selectType.value == "monthly") {
+    title.innerHTML = "Montly Finance Summary";
+    reportTypeTitle.innerHTML = "Month";
+    columnone = "month";
+
+    financeSummary = ajaxGetRequest("/report/reportsales/monthlysummery");
   }
 
   const displayProperties = [
-    { property: "day", datatype: "String" },
+    { property: columnone, datatype: "String" },
     { property: "income", datatype: "currency" },
     { property: "expense", datatype: "currency" },
     { property: getProfit, datatype: "function" },
@@ -90,55 +100,108 @@ const getProfit = (rowObject) => {
   }
 };
 
+let myChartView = null; //declare variable globally
 const refreshChart = (financeSummary) => {
   const ctx = document.getElementById("myChart");
 
-  myChartView = new Chart(ctx, {
-    type: "line",
-    data: {
-      datasets: [
-        {
-          label: "Income",
-          data: financeSummary,
-          backgroundColor: "rgba(75, 192, 192, 0.2)",
-          borderColor: "rgba(75, 192, 192, 1)",
-          tension: 0.4,
-          parsing: {
-            xAxisKey: "day",
-            yAxisKey: "income",
+  if (myChartView != null) {
+    myChartView.destroy();
+  }
+  if (selectType.value == "daily") {
+    myChartView = new Chart(ctx, {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            label: "Income",
+            data: financeSummary,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            tension: 0.4,
+            parsing: {
+              xAxisKey: "day",
+              yAxisKey: "income",
+            },
           },
-        },
-        {
-          label: "Expense",
-          data: financeSummary,
-          backgroundColor: "rgba(255, 99, 132, 0.2)",
-          borderColor: "rgba(255, 99, 132, 1)",
-          tension: 0.4,
-          parsing: {
-            xAxisKey: "day",
-            yAxisKey: "expense",
+          {
+            label: "Expense",
+            data: financeSummary,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            tension: 0.4,
+            parsing: {
+              xAxisKey: "day",
+              yAxisKey: "expense",
+            },
           },
-        },
-      ],
-    },
-    options: {
-      scales: {
-        x: {
-          title: {
-            display: true,
-            text: "Day of Week",
+        ],
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Day of Week",
+            },
           },
-        },
-        y: {
-          beginAtZero: true,
-          title: {
-            display: true,
-            text: "Amount",
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Amount",
+            },
           },
         },
       },
-    },
-  });
+    });
+  } else if (selectType.value == "monthly") {
+    myChartView = new Chart(ctx, {
+      type: "line",
+      data: {
+        datasets: [
+          {
+            label: "Income",
+            data: financeSummary,
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            tension: 0.4,
+            parsing: {
+              xAxisKey: "month",
+              yAxisKey: "income",
+            },
+          },
+          {
+            label: "Expense",
+            data: financeSummary,
+            backgroundColor: "rgba(255, 99, 132, 0.2)",
+            borderColor: "rgba(255, 99, 132, 1)",
+            tension: 0.4,
+            parsing: {
+              xAxisKey: "month",
+              yAxisKey: "expense",
+            },
+          },
+        ],
+      },
+      options: {
+        scales: {
+          x: {
+            title: {
+              display: true,
+              text: "Months of Year",
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: "Amount",
+            },
+          },
+        },
+      },
+    });
+  }
 };
 
 const printChart = () => {
@@ -146,10 +209,12 @@ const printChart = () => {
 
   let newWindow = window.open();
 
-  newWindow.document.write(
-    viewChart.outerHTML +
-      "<script>viewChart.style.removeProperty('display');<//script>"
-  );
+  newWindow.document.write(viewChart.outerHTML);
+
+  // newWindow.document.write(
+  //   viewChart.outerHTML +
+  //     "<script>viewChart.style.removeProperty('display');<//script>"
+  // );
 
   // triger print() after 1000 milsec time out
   setTimeout(function () {

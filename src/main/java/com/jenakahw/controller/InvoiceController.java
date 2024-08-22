@@ -11,9 +11,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +62,7 @@ public class InvoiceController {
 
 	@Autowired
 	private StockRepository stockRepository;
-	
+
 	@Autowired
 	private StockController stockController;
 
@@ -74,7 +76,6 @@ public class InvoiceController {
 
 		User loggedUser = userController.getLoggedUser();
 		String userRole = userController.getLoggedUserRole();
-
 
 		ModelAndView invoiceView = new ModelAndView();
 		invoiceView.addObject("title", "Invoice  | Jenaka Hardware");
@@ -214,14 +215,14 @@ public class InvoiceController {
 				// substract the stock
 				Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
 				extStock.setAvailableQty(extStock.getAvailableQty().subtract(invoiceHasProduct.getQty()));
-				
+
 				stockRepository.save(extStock); // update stock
 				stockController.updateStockStatus(extStock.getId()); // update stock status
 			}
 
 			invoiceRepository.save(invoice);
 
-			// balance the stocks
+			
 
 			return "OK";
 		} catch (Exception e) {
@@ -230,4 +231,35 @@ public class InvoiceController {
 
 	}
 
+	@DeleteMapping
+	public String deleteInvoice(@RequestBody Invoice invoice) {
+		// check privileges
+		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
+			return "Access Denied !!!";
+		}
+		
+		try {
+			//set delete user and datetime
+			invoice.setDeletedUserId(userController.getLoggedUser().getId());
+			invoice.setDeletedDateTime(LocalDateTime.now());
+			
+			//set status to 'Deleted'
+			invoice.setInvoiceStatusId(invoiceStatusRepository.getReferenceById(3));
+			
+			for (InvoiceHasProduct invoiceHasProduct : invoice.getInvoiceHasProducts()) {
+				invoiceHasProduct.setInvoiceId(invoice);
+				
+				// add stock back
+				Stock extStock = stockRepository.getReferenceById(invoiceHasProduct.getStockId().getId());
+				extStock.setAvailableQty(extStock.getAvailableQty().add(invoiceHasProduct.getQty()));
+				stockRepository.save(extStock); // update stock
+				stockController.updateStockStatus(extStock.getId()); // update stock status
+			}
+			
+			invoiceRepository.save(invoice);
+			return "OK";
+		} catch (Exception e) {
+			return e.getMessage();
+		}
+	}
 }

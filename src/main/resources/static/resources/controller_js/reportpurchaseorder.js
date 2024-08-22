@@ -71,6 +71,7 @@ const resetFilters = () => {
 
 // function for get table data from backend
 const search = () => {
+  //set values to variables
   let selectedSupplier =
     selectSupplier.value != "" ? JSON.parse(selectSupplier.value) : "";
   let selectedStatus =
@@ -118,6 +119,9 @@ const refreshTable = () => {
     { property: getStatus, datatype: "function" },
   ];
 
+  let table = new DataTable("#purchaseOrdersReportTable");
+  table.destroy();
+
   //call the function (tableID,dataList,display property list, view function name, refill function name, delete function name, button visibilitys, user privileges)
   fillDataIntoTable(
     purchaseOrdersReportTable,
@@ -131,6 +135,7 @@ const refreshTable = () => {
   );
 
   getTotalamount(purchaseOrders);
+  $("#purchaseOrdersReportTable").dataTable();
 };
 
 const viewRecord = () => {};
@@ -260,16 +265,15 @@ const refreshChart = (po) => {
   });
 };
 
-// function for prinnt chart
+// ********* PRINT OPERATIONS *********
+
+// function for print chart
 const printChart = () => {
   viewChart.src = myChartView.toBase64Image();
 
   let newWindow = window.open();
 
-  newWindow.document.write(
-    viewChart.outerHTML +
-      "<script>viewChart.style.removeProperty('display');<//script>"
-  );
+  newWindow.document.write(viewChart.outerHTML);
 
   // triger print() after 1000 milsec time out
   setTimeout(function () {

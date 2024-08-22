@@ -16,6 +16,7 @@ import com.jenakahw.domain.Grn;
 import com.jenakahw.domain.PurchaseOrder;
 import com.jenakahw.domain.ReportDailyFinancialSummary;
 import com.jenakahw.domain.ReportGrn;
+import com.jenakahw.domain.ReportMonthlyFinancialSummary;
 import com.jenakahw.domain.ReportPurchaseOrder;
 import com.jenakahw.repository.ReportRepository;
 
@@ -120,17 +121,20 @@ public class ReportDataController {
 
 		// update LinkedHashMaps with incomes and expenses
 		for (String[] queryData : queryDataList) {
+
 			BigDecimal amount = new BigDecimal(queryData[2]);
 			if (queryData[3].equals("Invoice") || queryData[3].equals("Extra Income")) {
+				// get current total for the day
 				BigDecimal total = income.get(queryData[0]);
-				income.put(queryData[0], total.add(amount));
+				income.put(queryData[0], total.add(amount)); // update total
 			} else {
+				// get current total for the day
 				BigDecimal total = expense.get(queryData[0]);
-				expense.put(queryData[0], total.add(amount));
+				expense.put(queryData[0], total.add(amount)); // update total
 			}
 		}
 
-		// loops the days of week and update income expense values
+		// loops the days of week and update income/expense values
 		for (String day : daysOfWeek) {
 			BigDecimal incomeValue = income.get(day);
 			BigDecimal expenseValue = expense.get(day);
@@ -138,6 +142,49 @@ public class ReportDataController {
 			summary.add(dailySummary);
 		}
 
+		return summary;
+	}
+
+	// [/report/reportsales/monthlysummery]
+	@GetMapping(value = "/reportsales/monthlysummery", produces = "application/json")
+	public List<ReportMonthlyFinancialSummary> getSalesSummarybyMonthly() {
+		String[][] queryDataList = reportRepository.getMonthlyFinancialSummary();
+		List<ReportMonthlyFinancialSummary> summary = new ArrayList<>();
+
+		String[] monthsOfYear = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
+				"October", "November", "December" };
+
+		LinkedHashMap<String, BigDecimal> income = new LinkedHashMap<>();
+		LinkedHashMap<String, BigDecimal> expense = new LinkedHashMap<>();
+
+		// update LinkedHashMaps with months of the year and BigDecimal.ZERO
+		for (String month : monthsOfYear) {
+			income.put(month, BigDecimal.ZERO);
+			expense.put(month, BigDecimal.ZERO);
+		}
+
+		// update LinkedHashMaps with incomes and expenses
+		for (String[] queryData : queryDataList) {
+			BigDecimal amount = new BigDecimal(queryData[1]);
+			if (queryData[2].equals("Invoice") || queryData[2].equals("Extra Income")) {
+				// get current total for the month
+				BigDecimal total = income.get(queryData[0]);
+				income.put(queryData[0], total.add(amount)); // update total
+			} else {
+				// get current total for the day
+				BigDecimal total = expense.get(queryData[0]);
+				expense.put(queryData[0], total.add(amount)); // update total
+			}
+		}
+
+		// loops the months of year and update income/expense values
+		for (String month : monthsOfYear) {
+			BigDecimal incomeValue = income.get(month);
+			BigDecimal expenseValue = expense.get(month);
+			ReportMonthlyFinancialSummary monthlySummary = new ReportMonthlyFinancialSummary(month, incomeValue,
+					expenseValue);
+			summary.add(monthlySummary);
+		}
 		return summary;
 	}
 }
