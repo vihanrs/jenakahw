@@ -35,47 +35,47 @@ const addEventListeners = () => {
 const refreshAll = () => {
   //array for store data list
   grns = ajaxGetRequest("/grn/findall");
-  // grnSummaryByMonthly = ajaxGetRequest(
-  //   "/report/reportgrn/findgrnsummarybymonthly"
-  // );
+  grnSummaryByMonthly = ajaxGetRequest(
+    "/report/reportgrn/findgrnsummarybymonthly"
+  );
 
-  grnSummaryByMonthly = [
-    {
-      grnGrandTotal: "7250.00",
-      grnCount: null,
-      addedMonth: "1",
-    },
-    {
-      grnGrandTotal: "8000.00",
-      grnCount: null,
-      addedMonth: "2",
-    },
-    {
-      grnGrandTotal: "9000.00",
-      grnCount: null,
-      addedMonth: "3",
-    },
-    {
-      grnGrandTotal: "8500.00",
-      grnCount: null,
-      addedMonth: "4",
-    },
-    {
-      grnGrandTotal: "9200.00",
-      grnCount: null,
-      addedMonth: "5",
-    },
-    {
-      grnGrandTotal: "9250.00",
-      grnCount: null,
-      addedMonth: "6",
-    },
-    {
-      grnGrandTotal: "7250.00",
-      grnCount: null,
-      addedMonth: "7",
-    },
-  ];
+  // grnSummaryByMonthly = [
+  //   {
+  //     grnGrandTotal: "7250.00",
+  //     grnCount: null,
+  //     addedMonth: "1",
+  //   },
+  //   {
+  //     grnGrandTotal: "8000.00",
+  //     grnCount: null,
+  //     addedMonth: "2",
+  //   },
+  //   {
+  //     grnGrandTotal: "9000.00",
+  //     grnCount: null,
+  //     addedMonth: "3",
+  //   },
+  //   {
+  //     grnGrandTotal: "8500.00",
+  //     grnCount: null,
+  //     addedMonth: "4",
+  //   },
+  //   {
+  //     grnGrandTotal: "9200.00",
+  //     grnCount: null,
+  //     addedMonth: "5",
+  //   },
+  //   {
+  //     grnGrandTotal: "9250.00",
+  //     grnCount: null,
+  //     addedMonth: "6",
+  //   },
+  //   {
+  //     grnGrandTotal: "7250.00",
+  //     grnCount: null,
+  //     addedMonth: "7",
+  //   },
+  // ];
 
   // call refresh filters function
   refreshFilters();

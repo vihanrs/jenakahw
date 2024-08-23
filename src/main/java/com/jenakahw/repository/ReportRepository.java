@@ -100,7 +100,7 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 	public List<Grn> grnBySupplierId(int supplierId);
 
 	// query for get grn summary monthly
-	@Query(value = "Select month(g.added_datetime),sum(g.grand_total) from Grn as g where g.grn_status_id=1 and year(g.added_datetime) = year(CURRENT_DATE()) group by month(g.added_datetime)", nativeQuery = true)
+	@Query(value = "Select month(g.added_datetime),sum(g.grand_total),count(g.id) from Grn as g where g.grn_status_id=1 and year(g.added_datetime) = year(CURRENT_DATE()) group by month(g.added_datetime)", nativeQuery = true)
 	public String[][] grnSummaryByMonthly();
 
 }

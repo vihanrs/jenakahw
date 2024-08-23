@@ -659,8 +659,9 @@ const refreshTable = () => {
   //hide delete button when status is 'deleted'
   purchaseOrders.forEach((po, index) => {
     if (
-      (userPrivilages.delete && po.purchaseOrderStatusId.name == "Deleted") ||
-      po.purchaseOrderStatusId.name == "Received"
+      userPrivilages.delete &&
+      (po.purchaseOrderStatusId.name == "Deleted" ||
+        po.purchaseOrderStatusId.name == "Received")
     ) {
       //catch the delete button
       let targetElement =
@@ -668,11 +669,20 @@ const refreshTable = () => {
           userPrivilages.update && userPrivilages.insert ? 2 : 1
         ];
       //catch the refill button
-      let targetElement1 =
-        purchaseOrdersTable.children[1].children[index].children[6].children[1];
+
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
+    }
+
+    if (
+      userPrivilages.update &&
+      (po.purchaseOrderStatusId.name == "Deleted" ||
+        po.purchaseOrderStatusId.name == "Received")
+    ) {
+      let targetElement1 =
+        purchaseOrdersTable.children[1].children[index].children[6].children[1];
+
       targetElement1.style.pointerEvents = "none";
       targetElement1.style.visibility = "hidden";
     }

@@ -671,6 +671,7 @@ const refreshTable = () => {
         invoiceTable.children[1].children[index].children[8].children[1];
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";
+      targetElement.style.display = "none";
     }
     if (invoice.invoiceStatusId.name != "Pending" && userPrivilages.delete) {
       //catch the button

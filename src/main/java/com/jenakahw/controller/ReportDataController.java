@@ -94,6 +94,7 @@ public class ReportDataController {
 			ReportGrn reportGrn = new ReportGrn();
 			reportGrn.setAddedMonth(queryData[0]);
 			reportGrn.setGrnGrandTotal(queryData[1]);
+			reportGrn.setGrnCount(queryData[2]);
 
 			reportGrns.add(reportGrn);
 		}
