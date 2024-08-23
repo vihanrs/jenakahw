@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Privilege");
 
   console.log(userPrivilages);
-
+  manageNavBar();
   //refresh all
   refreshAll();
 

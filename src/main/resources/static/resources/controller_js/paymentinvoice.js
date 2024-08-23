@@ -5,6 +5,7 @@ window.addEventListener("load", () => {
     "/privilege/byloggeduserandmodule/Invoice Payment"
   );
 
+  manageNavBar();
   //refresh all
   refreshAll();
 

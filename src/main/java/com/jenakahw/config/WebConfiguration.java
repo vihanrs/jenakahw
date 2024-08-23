@@ -23,6 +23,7 @@ public class WebConfiguration {
 			.requestMatchers("/error").permitAll()
 			.requestMatchers("/dashboard/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
 			.requestMatchers("/user/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
+			.requestMatchers("/module/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
 			.requestMatchers("/privileges/**").hasAnyAuthority("Admin","Manager")
 			.requestMatchers("/privilege/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")
 			.requestMatchers("/product/**").hasAnyAuthority("Admin","Manager","Store-Keeper","Cashier","Helper")

@@ -2,7 +2,7 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/GRN");
-
+  manageNavBar();
   //refresh all
   refreshAll();
 

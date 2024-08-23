@@ -388,3 +388,39 @@ const getGenderDOBByNIC = (filedId) => {
     console.log(dob);
   }
 };
+
+const manageNavBar = () => {
+  loggedUserModules = ajaxGetRequest("/module/listbyloggeduser");
+
+  console.log(loggedUserModules);
+
+  for (let module of loggedUserModules) {
+    let element = document.getElementById(module);
+    element.classList.remove("d-none");
+  }
+
+  // manage payments in side bar
+  let hasPayments = false;
+  paymentModules = [
+    "Supplier Payment",
+    "Invoice Payment",
+    "Customer Payment",
+    "Daily Extra Income",
+    "Daily Expenses",
+  ];
+  paymentModules.forEach((module) => {
+    if (loggedUserModules.includes(module)) {
+      hasPayments = true;
+      return;
+    }
+  });
+
+  if (hasPayments) {
+    document.getElementById("Payment").classList.remove("d-none");
+  }
+
+  //special cases
+  if (userRole == "Admin" || userRole == "Manager") {
+    document.getElementById("Customer").classList.remove("d-none");
+  }
+};

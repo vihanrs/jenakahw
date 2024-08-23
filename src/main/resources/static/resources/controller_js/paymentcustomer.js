@@ -4,6 +4,8 @@ window.addEventListener("load", () => {
   userPrivilages = ajaxGetRequest(
     "/privilege/byloggeduserandmodule/Customer Payment"
   );
+
+  manageNavBar();
   //refresh all
   refreshAll();
 
@@ -295,15 +297,14 @@ const addRecord = () => {
     showConfirm(title, message).then((userConfirm) => {
       if (userConfirm) {
         //pass data into back end
-        let serverResponse = "INVC240816001";
-        // ajaxRequestBody(
-        //   "/customerpayment",
-        //   "POST",
-        //   cusPayment
-        // ); // url,method,object
+        let serverResponse = ajaxRequestBody(
+          "/customerpayment",
+          "POST",
+          cusPayment
+        ); // url,method,object
 
         //check back end response
-        if (true) {
+        if (new RegExp("^[I][N][V][C][0-9]{9}$").test(serverResponse)) {
           showAlert("success", "Payment Save successfully..!").then(() => {
             cusPayment.paymentInvoiceId = serverResponse;
             printCutomerInvoice(cusPayment);

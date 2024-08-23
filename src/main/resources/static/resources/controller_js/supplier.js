@@ -2,7 +2,9 @@
 window.addEventListener("load", () => {
   //get logged user privileges
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Supplier");
-
+  manageNavBar();
+  //refresh all
+  refreshAll();
   //set default selected section
   if (userPrivilages.insert) {
     showDefaultSection("addNewButton", "addNewSection");
@@ -10,8 +12,6 @@ window.addEventListener("load", () => {
     showDefaultSection("viewAllButton", "viewAllSection");
     addAccordion.style.display = "none";
   }
-  //refresh all
-  refreshAll();
 
   //call all event listners
   addEventListeners();

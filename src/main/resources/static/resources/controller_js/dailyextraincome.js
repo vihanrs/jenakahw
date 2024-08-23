@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
   userPrivilages = ajaxGetRequest(
     "/privilege/byloggeduserandmodule/Daily Extra Income"
   );
-
+  manageNavBar();
   //refresh all
   refreshAll();
 

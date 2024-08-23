@@ -5,6 +5,7 @@ window.addEventListener("load", () => {
     "/privilege/byloggeduserandmodule/Daily Expenses"
   );
 
+  manageNavBar();
   //refresh all
   refreshAll();
 

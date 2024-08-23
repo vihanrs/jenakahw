@@ -4,6 +4,7 @@ window.addEventListener("load", () => {
   userPrivilages = ajaxGetRequest("/privilege/byloggeduserandmodule/Dashboard");
 
   //refresh all
+  manageNavBar();
   refreshAll();
   getAge();
   getGenderDOBByNIC();
@@ -38,6 +39,27 @@ const refreshCards = () => {
 };
 
 const refreshNotifications = () => {
+  if (userRole == "Admin" || userRole == "Manager") {
+    divTopSellingProducts.classList.remove("d-none");
+    cardCustomer.classList.remove("d-none");
+    cardSales.classList.remove("d-none");
+    cardCompleteInvoices.classList.remove("d-none");
+    cardPendingInvoices.classList.remove("d-none");
+  }
+
+  if (
+    userRole == "Admin" ||
+    userRole == "Manager" ||
+    userRole == "Store-Keeper"
+  ) {
+    divNotification.classList.remove("d-none");
+    cardSupPO.classList.remove("d-none");
+    divTitle.classList.remove("d-none");
+  }
+
+  if (userRole == "Cashier" || userRole == "Helper") {
+    divWelcomeContent.classList.remove("d-none");
+  }
   notifications.innerHTML = "";
   lowStockProducts = ajaxGetRequest("/dashboard/findlowstockproducts");
 

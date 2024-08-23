@@ -45,7 +45,7 @@
         </li>
 
         <!-- Invoice -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Invoice">
           <a href="/invoice" class="nav-link">
             <i class="nav-icon fas"
               ><img
@@ -57,7 +57,7 @@
           </a>
         </li>
         <!-- customer -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Customer">
           <a href="/customer" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -69,7 +69,7 @@
           </a>
         </li>
         <!-- Product -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Product">
           <a href="/product" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -81,7 +81,7 @@
           </a>
         </li>
         <!-- Supplier -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Supplier">
           <a href="/supplier" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -93,7 +93,7 @@
           </a>
         </li>
         <!-- Purchase Order -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Purchase Order">
           <a href="/purchaseorder" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -105,7 +105,7 @@
           </a>
         </li>
         <!-- GRN -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="GRN">
           <a href="/grn" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -117,7 +117,7 @@
           </a>
         </li>
         <!-- stock -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Stock">
           <a href="/stock" class="nav-link">
             <i class="nav-icon"
               ><img
@@ -130,7 +130,7 @@
         </li>
 
         <!-- payments -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Payment">
           <a href="#" class="nav-link"
             ><i class="nav-icon fas"
               ><img
@@ -142,23 +142,38 @@
           ></a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="/invoicepayment" class="nav-link"
+              <a
+                href="/invoicepayment"
+                id="Invoice Payment"
+                class="nav-link d-none"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Invoice Payment</p></a
               >
-              <a href="/customerpayment" class="nav-link"
+              <a
+                href="/customerpayment"
+                id="Customer Payment"
+                class="nav-link d-none"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Customer Payment</p></a
               >
-              <a href="/supplierpayment" class="nav-link"
+              <a
+                href="/supplierpayment"
+                id="Supplier Payment"
+                class="nav-link d-none"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Supplier Payments</p></a
               >
-              <a href="/dailyexpenses" class="nav-link"
+              <a
+                href="/dailyexpenses"
+                id="Daily Expenses"
+                class="nav-link d-none"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Daily Expenses</p></a
               >
-              <a href="/dailyextraincome" class="nav-link"
+              <a
+                href="/dailyextraincome"
+                id="Daily Extra Income"
+                class="nav-link d-none"
                 ><i class="far fa-circle nav-icon"></i>
                 <p>Daily Extra Income</p></a
               >
@@ -166,7 +181,7 @@
           </ul>
         </li>
         <!-- Reports -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Reports">
           <a href="#" class="nav-link"
             ><i class="nav-icon fas"
               ><img
@@ -194,14 +209,14 @@
           </ul>
         </li>
         <!-- User -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="User">
           <a href="/user" class="nav-link">
             <i class="nav-icon fas fa-user"></i>
             <p>User</p>
           </a>
         </li>
         <!-- Privilege -->
-        <li class="nav-item user-panel">
+        <li class="nav-item user-panel d-none" id="Privilege">
           <a href="/privileges" class="nav-link">
             <i class="nav-icon fas fa-lock"></i>
             <p>Privilege</p>

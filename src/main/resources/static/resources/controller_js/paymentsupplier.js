@@ -4,7 +4,7 @@ window.addEventListener("load", () => {
   userPrivilages = ajaxGetRequest(
     "/privilege/byloggeduserandmodule/Supplier Payment"
   );
-
+  manageNavBar();
   //refresh all
   refreshAll();
 

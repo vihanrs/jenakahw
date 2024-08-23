@@ -23,7 +23,7 @@
 
       <div class="content-wrapper ps-2 pe-2">
         <!-- title area start  -->
-        <div class="row p-3">
+        <div class="row p-3 d-none" id="divTitle">
           <div class="col-12 heading-area">
             <h2>
               <img
@@ -41,7 +41,7 @@
           <div class="col-md-9">
             <div class="row">
               <!-- customers -->
-              <dvi class="col-md-3">
+              <dvi class="col-md-3 d-none" id="cardCustomer">
                 <a class="dashoard-tab" href="/user">
                   <div class="card dashboard-card">
                     <div class="card-body">
@@ -54,7 +54,7 @@
                 </a>
               </dvi>
               <!-- sales -->
-              <dvi class="col-md-3">
+              <dvi class="col-md-3 d-none" id="cardSales">
                 <div class="card dashboard-card">
                   <div class="card-body">
                     <h5 class="card-title">Sales</h5>
@@ -65,7 +65,7 @@
                 </div>
               </dvi>
               <!-- Total invoices -->
-              <dvi class="col-md-3">
+              <dvi class="col-md-3 d-none" id="cardCompleteInvoices">
                 <div class="card dashboard-card">
                   <div class="card-body">
                     <h5 class="card-title">Complete Invoices</h5>
@@ -76,7 +76,7 @@
                 </div>
               </dvi>
               <!-- pending invoices -->
-              <dvi class="col-md-3">
+              <dvi class="col-md-3 d-none" id="cardPendingInvoices">
                 <div class="card dashboard-card">
                   <div class="card-body">
                     <h5 class="card-title">Pending Invoices</h5>
@@ -88,7 +88,7 @@
               </dvi>
             </div>
             <!-- supplier/purchase orders -->
-            <div class="row">
+            <div class="row d-none" id="cardSupPO">
               <!-- active suppliers -->
               <dvi class="col-md-3">
                 <a class="dashoard-tab" href="/user">
@@ -116,7 +116,11 @@
             </div>
 
             <!-- top selling products -->
-            <div class="row mt-4" style="padding: 0 7px">
+            <div
+              class="row mt-4 d-none"
+              style="padding: 0 7px"
+              id="divTopSellingProducts"
+            >
               <h4
                 style="
                   font-weight: bold;
@@ -159,7 +163,7 @@
             </div>
           </div>
           <!-- notifications -->
-          <div class="col-md-3">
+          <div class="col-md-3 d-none" id="divNotification">
             <div class="card notifications-card">
               <h5 class="card-title mt-4 ms-3">
                 Notifications
@@ -182,8 +186,12 @@
         </div>
 
         <!-- content area start -->
-        <div class="accordion" id="accordionSection"></div>
+        <!-- <div class="accordion" id="accordionSection"></div> -->
         <!-- content area end -->
+        <div class="text-center mt-5 pt-5 d-none" id="divWelcomeContent">
+          <h1>Welcome Back!</h1>
+          <h2>Jenaka Hardware - Avissawella</h2>
+        </div>
       </div>
     </div>
     <!-- Alert Box -->
