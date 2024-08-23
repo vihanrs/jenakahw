@@ -81,7 +81,7 @@ public class DashboardController {
 	// get mapping for get top 5 selling products in last 3 months
 	@GetMapping(value = "/topsellingproducts")
 	public List<TopSellingProduct> getTopSellingProducts() {
-		List<TopSellingProduct> sellingProducts = new  ArrayList<>();
+		List<TopSellingProduct> sellingProducts = new ArrayList<>();
 		String[][] productList = reportRepository.getTopSellingProducts();
 
 		for (String[] product : productList) {
@@ -92,10 +92,36 @@ public class DashboardController {
 			topSellingProduct.setSubCategory(product[3]);
 			topSellingProduct.setSellQty(new BigDecimal(product[5]));
 			topSellingProduct.setTotalAmount(new BigDecimal(product[6]));
-			
+
 			sellingProducts.add(topSellingProduct);
 		}
-		
+
+		return sellingProducts;
+	}
+
+	// get mapping for get top 5 selling products in last 3 months
+	@GetMapping(value = "/allsellingproductswithnrol")
+	public List<TopSellingProduct> getAllSellingProducts() {
+		List<TopSellingProduct> sellingProducts = new ArrayList<>();
+		String[][] productList = reportRepository.getAllSellingProducts();
+
+		for (String[] product : productList) {
+			TopSellingProduct topSellingProduct = new TopSellingProduct();
+			topSellingProduct.setName(product[0]);
+			topSellingProduct.setBrand(product[1]);
+			topSellingProduct.setCategory(product[2]);
+			topSellingProduct.setSubCategory(product[3]);
+			topSellingProduct.setSellQty(new BigDecimal(product[5]));
+			topSellingProduct.setTotalAmount(new BigDecimal(product[6]));
+			topSellingProduct.setProductId(Integer.parseInt(product[7]));
+			if (product[8] != null) {
+				topSellingProduct.setRol(Integer.parseInt(product[8]));
+			} else {
+				topSellingProduct.setRol(0);
+			}
+			sellingProducts.add(topSellingProduct);
+		}
+
 		return sellingProducts;
 	}
 

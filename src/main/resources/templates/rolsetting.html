@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- common heading file -->
+    <head th:replace="~{head :: headFragment}"> </head>
+
+    <script src="resources/controller_js/rolsetting.js"></script>
+  </head>
+  <body class="sidebar-mini layout-fixed">
+    <div class="container-fluid wrapper ps-2">
+      <!-- Navbar -->
+      <nav th:replace="~{navbar :: navbarFragment}"></nav>
+      <!-- /.navbar -->
+
+      <!-- user profile edit -->
+      <nav th:replace="~{navbar :: settingmodel}"></nav>
+      <!-- /.user profile edit -->
+
+      <!-- Main Sidebar Container -->
+      <aside th:replace="~{sidebar :: sidebarFragment}"></aside>
+      <!-- /.Main Sidebar Container -->
+
+      <div class="content-wrapper ps-2 pe-2">
+        <!-- title area start  -->
+        <div class="row p-3">
+          <div class="col-12 heading-area">
+            <h2>
+              <i class="fa-solid"
+                ><img
+                  src="resources/icons/product-icon2.png"
+                  alt="invoice-icon"
+                  style="
+                    height: 40px;
+                    width: 40px;
+                    padding-bottom: 4px;
+                    margin-right: 10px;
+                  " /></i
+              >Re-Order Level Management
+            </h2>
+          </div>
+        </div>
+        <!-- title area end  -->
+
+        <!-- content area start -->
+        <div class="accordion" id="accordionSection">
+          <!-- view all table area start -->
+          <div class="accordion-item" id="viewAccordion">
+            <h2 class="accordion-header">
+              <button
+                class="accordion-button collapsed fw-bold"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#viewAllSection"
+                aria-expanded="false"
+                aria-controls="viewAllSection"
+                id="viewAllButton"
+              >
+                View All Products with ROL - (Suggested New ROL from Past 03
+                Month Data)
+              </button>
+            </h2>
+            <div
+              id="viewAllSection"
+              class="accordion-collapse collapse"
+              data-bs-parent="#accordionSection"
+            >
+              <div class="accordion-body">
+                <div class="card card-body p-2">
+                  <table
+                    class="table table-hover pt-3 mb-3"
+                    id="productwithrolTable"
+                  >
+                    <thead class="table-dark">
+                      <tr>
+                        <th>#</th>
+                        <th>Product Name</th>
+                        <th>Brand</th>
+                        <th>Category</th>
+                        <th>Sub-Category</th>
+                        <th>Current ROL</th>
+                        <th>New ROL</th>
+                        <th
+                          style="width: 75px !important; text-align: right"
+                          id="modifyElement"
+                        >
+                          Modify
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="table-group-divider"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- view all table area end -->
+        </div>
+        <!-- content area end -->
+      </div>
+      <!-- view record model start -->
+      <div class="modal" id="modelDetailedView">
+        <div class="modal-dialog">
+          <div class="modal-content" style="margin: 5px">
+            <div class="modal-header">
+              <h2 class="fw-bold">ROL Update</h2>
+              <button class="btn btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <table id="printTable" class="table table-striped">
+                <tr>
+                  <th>Product Name</th>
+                  <td id="tdProductName"></td>
+                </tr>
+                <tr>
+                  <th>Brand</th>
+                  <td id="tdBrand"></td>
+                </tr>
+                <tr>
+                  <th>Current ROL</th>
+                  <td id="tdCurrentROL"></td>
+                </tr>
+                <tr>
+                  <th>New ROL</th>
+                  <td id="tdNewROL"></td>
+                </tr>
+              </table>
+            </div>
+            <dv class="modal-footer">
+              <button
+                id="btnUpdateRol"
+                class="btn btn-info"
+                onclick="updateRol()"
+              >
+                Update ROL
+              </button>
+            </dv>
+          </div>
+        </div>
+      </div>
+      <!-- view record model end -->
+    </div>
+    <!-- Alert Box -->
+    <div th:replace="~{alertbox :: alertFragment}"></div>
+  </body>
+</html>

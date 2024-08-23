@@ -16,4 +16,6 @@ public class TopSellingProduct {
 	private String subCategory;
 	private BigDecimal sellQty;
 	private BigDecimal totalAmount;
+	private int productId;
+	private int rol;
 }

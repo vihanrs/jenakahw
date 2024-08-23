@@ -46,6 +46,14 @@ public interface ReportRepository extends JpaRepository<PurchaseOrder, Integer> 
 			+ "group by ihp.product_id order by sellqty desc limit 5;", nativeQuery = true)
 	public String[][] getTopSellingProducts();
 
+	// query for get all selling products in last 3 months
+	@Query(value = "SELECT p.name,b.name as brand,c.name as category, sc.name as subcategory,ihp.product_id,sum(ihp.qty) as sellqty,sum(ihp.line_amount) as total_amount,p.id,p.rol "
+			+ "FROM jenakahw.invoice_has_product as ihp JOIN jenakahw.invoice as i ON ihp.invoice_id = i.id JOIN jenakahw.product as p ON ihp.product_id = p.id "
+			+ "JOIN jenakahw.brand as b ON p.brand_id = b.id JOIN jenakahw.subcategory as sc ON p.subcategory_id = sc.id "
+			+ "JOIN jenakahw.category as c ON sc.category_id=c.id WHERE i.added_datetime >= DATE_SUB(CURDATE(), INTERVAL 3 MONTH) "
+			+ "group by ihp.product_id order by sellqty desc", nativeQuery = true)
+	public String[][] getAllSellingProducts();
+
 	// sales report queries
 
 	// query for get daily income expenses report for current week
