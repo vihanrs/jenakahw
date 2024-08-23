@@ -50,8 +50,8 @@ const addEventListeners = () => {
     radioFieldValidator(radioGenderFemale, "user", "gender");
   });
 
-  textEmail.addEventListener("keyup", () => {
-    textFieldValidator(textEmail, emailPattern, "user", "email");
+  textEmails.addEventListener("keyup", () => {
+    textFieldValidator(textEmails, emailPattern, "user", "email");
   });
 
   fileUserPhoto.addEventListener("change", () => {
@@ -60,8 +60,8 @@ const addEventListeners = () => {
       "user",
       "photoName",
       "userPhoto",
-      imgUserPhoto,
-      textUserPhoto
+      imgUserPhotos,
+      textUserPhotos
     );
   });
 
@@ -73,16 +73,16 @@ const addEventListeners = () => {
     clearUserPhoto();
   });
 
-  textUsername.addEventListener("keyup", () => {
-    textFieldValidator(textUsername, unameandpwPattern, "user", "username");
+  textUsernames.addEventListener("keyup", () => {
+    textFieldValidator(textUsernames, unameandpwPattern, "user", "username");
   });
 
-  textPassword.addEventListener("keyup", () => {
-    textFieldValidator(textPassword, unameandpwPattern, "user", "password"),
+  textPasswords.addEventListener("keyup", () => {
+    textFieldValidator(textPasswords, unameandpwPattern, "user", "password"),
       passwordRTValidator();
   });
 
-  textRPassword.addEventListener("keyup", () => {
+  textRPasswords.addEventListener("keyup", () => {
     passwordRTValidator();
   });
 
@@ -118,22 +118,22 @@ const addEventListeners = () => {
 
 //function for check the password
 const passwordRTValidator = () => {
-  if (textPassword.value != "") {
-    if (textPassword.value == textRPassword.value) {
-      textPassword.style.border = "2px solid #00FF7F";
-      textRPassword.style.border = "2px solid #00FF7F";
-      user.password = textPassword.value;
+  if (textPasswords.value != "") {
+    if (textPasswords.value == textRPasswords.value) {
+      textPasswords.style.border = "2px solid #00FF7F";
+      textRPasswords.style.border = "2px solid #00FF7F";
+      user.password = textPasswords.value;
     } else {
-      textPassword.style.border = "1px solid red";
-      textRPassword.style.border = "1px solid red";
+      textPasswords.style.border = "1px solid red";
+      textRPasswords.style.border = "1px solid red";
       user.password = null;
     }
   } else {
     // showAlert("warning", "Please fill the password field first...!");
-    textPassword.style.border = "1px solid red";
-    textRPassword.style.border = "1px solid red";
-    // textRPassword.value = "";
-    // textPassword.focus();
+    textPasswords.style.border = "1px solid red";
+    textRPasswords.style.border = "1px solid red";
+    // textRPasswords.value = "";
+    // textPasswords.focus();
   }
 };
 
@@ -174,17 +174,17 @@ const refreshForm = () => {
   textNIC.value = "";
   radioGenderMale.checked = false;
   radioGenderFemale.checked = false;
-  textEmail.value = "";
-  textUsername.value = "";
-  textPassword.value = "";
-  textRPassword.value = "";
+  textEmails.value = "";
+  textUsernames.value = "";
+  textPasswords.value = "";
+  textRPasswords.value = "";
 
   //clear image
   clearUserPhoto();
 
   //enable pw field
-  textPassword.disabled = false;
-  textRPassword.disabled = false;
+  textPasswords.disabled = false;
+  textRPasswords.disabled = false;
 
   //bind default selected status in to supplier object and set valid color
   user.userStatusId = JSON.parse(selectStatus.value);
@@ -196,12 +196,13 @@ const refreshForm = () => {
     textLastName,
     textContact,
     textNIC,
-    textEmail,
-    textUsername,
-    textPassword,
-    textRPassword,
+    textEmails,
+    textUsernames,
+    textPasswords,
+    textRPasswords,
   ];
 
+  isUpdate = false;
   setBorderStyle(elements);
 
   //manage form buttons
@@ -317,14 +318,16 @@ const refillRecord = (rowObject, rowId) => {
   textFirstName.value = user.firstName;
   textContact.value = user.contact;
   textNIC.value = user.nic;
-  textEmail.value = user.email;
-  textUsername.value = user.username;
-  textPassword.value = "";
-  textRPassword.value = "";
+  let emails = document.getElementById("textEmails");
+  emails.value = user.email;
 
-  //disable pw field
-  textPassword.disabled = true;
-  textRPassword.disabled = true;
+  let usernames = document.getElementById("textUsernames");
+  usernames.value = user.username;
+
+  let tpw = document.getElementById("textPasswords");
+  let tepw = document.getElementById("textRPasswords");
+  tpw.value = "";
+  tepw.value = "";
 
   radioGenderMale.checked = false;
   radioGenderFemale.checked = false;
@@ -337,11 +340,11 @@ const refillRecord = (rowObject, rowId) => {
 
   // set user image
   if (user.userPhoto == null) {
-    imgUserPhoto.src = "resources/images/default-user-img.jpg";
-    textUserPhoto.value = "";
+    imgUserPhotos.src = "resources/images/default-user-img.jpg";
+    textUserPhotos.value = "";
   } else {
-    imgUserPhoto.src = atob(user.userPhoto);
-    textUserPhoto.value = user.photoName;
+    imgUserPhotos.src = atob(user.userPhoto);
+    textUserPhotos.value = user.photoName;
   }
 
   //set optional fields
@@ -364,18 +367,18 @@ const refillRecord = (rowObject, rowId) => {
     selectStatus,
     textFirstName,
     textContact,
-    textUsername,
-    textPassword,
-    textRPassword,
+    textUsernames,
+    textPasswords,
+    textRPasswords,
     textLastName,
-    textEmail,
+    textEmails,
     textNIC,
   ]);
 
   //define roles
   createViewRolesUI();
   setSelectedRoles();
-
+  isUpdate = true;
   //manage buttons
   manageFormButtons("refill", userPrivilages);
 };
@@ -439,16 +442,16 @@ const checkErrors = () => {
   }
   if (user.email == null) {
     error = error + "Please Enter Valid Email...!\n";
-    textEmail.style.border = "1px solid red";
+    textEmails.style.border = "1px solid red";
   }
   if (user.username == null) {
     error = error + "Please Enter Valid Username...!\n";
-    textUsername.style.border = "1px solid red";
+    textUsernames.style.border = "1px solid red";
   }
-  if (user.password == null) {
+  if (user.password == null && !isUpdate) {
     error = error + "Please Enter Valid Password...!\n";
-    textPassword.style.border = "1px solid red";
-    textRPassword.style.border = "1px solid red";
+    textPasswords.style.border = "1px solid red";
+    textRPasswords.style.border = "1px solid red";
   }
   if (user.userStatusId == null) {
     error = error + "Please Select Status...!\n";
@@ -521,6 +524,10 @@ const checkUpdates = () => {
       " into " +
       user.userStatusId.name +
       " \n";
+  }
+
+  if (user.password != null) {
+    updates += "Password Changed\n";
   }
 
   if (isRolesChanged(oldUserObj, user)) {
@@ -685,8 +692,8 @@ const setSelectedRoles = () => {
 const clearUserPhoto = () => {
   user.userPhoto = null;
   user.photoName = null;
-  imgUserPhoto.src = "resources/images/default-user-img.jpg";
-  textUserPhoto.value = "";
+  imgUserPhotos.src = "resources/images/default-user-img.jpg";
+  textUserPhotos.value = "";
   fileUserPhoto.files = null;
 };
 

@@ -393,34 +393,38 @@ const manageNavBar = () => {
   loggedUserModules = ajaxGetRequest("/module/listbyloggeduser");
 
   console.log(loggedUserModules);
-
-  for (let module of loggedUserModules) {
-    let element = document.getElementById(module);
-    element.classList.remove("d-none");
-  }
-
-  // manage payments in side bar
-  let hasPayments = false;
-  paymentModules = [
-    "Supplier Payment",
-    "Invoice Payment",
-    "Customer Payment",
-    "Daily Extra Income",
-    "Daily Expenses",
-  ];
-  paymentModules.forEach((module) => {
-    if (loggedUserModules.includes(module)) {
-      hasPayments = true;
-      return;
+  if (userRole != "Admin") {
+    for (let module of loggedUserModules) {
+      let element = document.getElementById(module);
+      element.classList.remove("d-none");
     }
-  });
 
-  if (hasPayments) {
-    document.getElementById("Payment").classList.remove("d-none");
-  }
+    // manage payments in side bar
+    let hasPayments = false;
+    paymentModules = [
+      "Supplier Payment",
+      "Invoice Payment",
+      "Customer Payment",
+      "Daily Extra Income",
+      "Daily Expenses",
+    ];
+    paymentModules.forEach((module) => {
+      if (loggedUserModules.includes(module)) {
+        hasPayments = true;
+        return;
+      }
+    });
 
-  //special cases
-  if (userRole == "Admin" || userRole == "Manager") {
-    document.getElementById("Customer").classList.remove("d-none");
+    if (hasPayments) {
+      document.getElementById("Payment").classList.remove("d-none");
+    }
+
+    //special cases
+    if (userRole == "Manager") {
+      document.getElementById("Customer").classList.remove("d-none");
+    } else {
+      document.getElementById("Customer").classList.add("d-none");
+    }
+  } else {
   }
 };

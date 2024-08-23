@@ -66,7 +66,11 @@ public class UserController {
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<User> findAll() {
 		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return userRepository.findAll();
+			List<User> users = userRepository.findAll();
+			for (User user : users) {
+				user.setPassword(null);
+			}
+			return users;
 		} else {
 			return null;
 		}
@@ -176,8 +180,13 @@ public class UserController {
 		}
 
 		try {
-			// set password to new user object
-			user.setPassword(extUser.getPassword());
+			if (user.getPassword() != null || !user.getPassword().equals("")) {
+				// encrypt password
+				user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+			} else {
+				// set password to new user object
+				user.setPassword(extUser.getPassword());
+			}
 			userRepository.save(user);
 			return "OK";
 		} catch (Exception e) {
@@ -211,9 +220,9 @@ public class UserController {
 	// method for update user settings
 	@PutMapping(value = "/updateprofile")
 	public String updateUserSettings(@RequestBody User user) {
-		
+
 		// check duplicates...
-		
+
 		// check username
 		User extUserByUsername = userRepository.getUserByUsername(user.getUsername());
 		if (extUserByUsername != null && user.getId() != extUserByUsername.getId()) {

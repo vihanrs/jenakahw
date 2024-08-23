@@ -10,19 +10,19 @@ import com.jenakahw.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-	
+
 	// query for get all users except admin
 	@Query(value = "Select u from User u where u.username != 'admin' order by u.id desc")
 	public List<User> findAll();
-	
+
 	// query for get all users names and ids except admin
 	@Query(value = "Select new User(u.id,u.username,u.userStatusId) from User u where u.username != 'admin' order by u.id desc")
 	public List<User> findAllUsers();
 
 	// query for generate employee id
-	@Query(value= "Select concat('EMP', lpad (substring(max(u.emp_id),4 )+1, 3, '0')) FROM user as u", nativeQuery = true)
-    public String generateNextEmpId();
-	
+	@Query(value = "Select concat('EMP', lpad (substring(max(u.emp_id),4 )+1, 3, '0')) FROM user as u", nativeQuery = true)
+	public String generateNextEmpId();
+
 	// query for get user by given user name
 	@Query(value = "Select u from User u where u.username = ?1")
 	public User getUserByUsername(String username);
@@ -38,6 +38,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 	// query for get user by given email
 	@Query(value = "Select u from User u where u.email = ?1")
 	public User getUserByEmail(String email);
-	
-	
+
+	// query for get user by given user name and email
+	@Query(value = "Select u from User u where u.username = ?1 and u.email=?2")
+	public User getUserByUsernameEmail(String username,String email);
+
 }

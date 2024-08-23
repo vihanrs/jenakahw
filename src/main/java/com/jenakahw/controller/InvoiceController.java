@@ -163,7 +163,7 @@ public class InvoiceController {
 
 		try {
 			// check customer
-			if (invoice.getCustomerId().getId() != null) {
+			if (invoice.getCustomerId().getFullName() != null) {
 				// check customer exsiting
 				Customer extCustomer = customerRepository.findByContact(invoice.getCustomerId().getContact());
 				if (extCustomer != null) {

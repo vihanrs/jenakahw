@@ -53,7 +53,7 @@ public class PurchaseOrderController {
 
 	@Autowired
 	private POHasProductRepository poHasProductRepository;
-	
+
 	@Autowired
 	private EmailService emailService;
 
@@ -122,7 +122,7 @@ public class PurchaseOrderController {
 	}
 
 	// post mapping for save new purchase order
-//	@Transactional
+	@Transactional
 	@PostMapping
 	public String savePurchaseOrder(@RequestBody PurchaseOrder purchaseOrder) {
 		// check privileges
@@ -154,16 +154,28 @@ public class PurchaseOrderController {
 			}
 
 			PurchaseOrder newPO = purchaseOrderRepository.save(purchaseOrder);
-			
+
 			if (newPO.getSupplierId().getEmail() != null) {
 				// send email
 				EmailDetails emailDetails = new EmailDetails();
-				emailDetails.setSendTo(newPO.getSupplierId().getEmail());	
-				emailDetails.setSubject("Jenaka Hardware | Purchase Order "+newPO.getPoCode());
-				emailDetails.setMsgBody("Test");
+				emailDetails.setSendTo(newPO.getSupplierId().getEmail());
+				emailDetails.setSubject("Jenaka Hardware | New Purchase Order " + newPO.getPoCode());
 				
-				emailService.sendSimpleMail(emailDetails);;
+
+				String msgHeading = "New purchase order | Jenaka Hardware \n. Please check the order details below. \n\n";
+				String msgBody = "Items: \n";
+				for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
+					msgBody += poHasProduct.getProductId().getName() + " - " + poHasProduct.getQty() + " x "
+							+ poHasProduct.getPurchasePrice() + " = " + poHasProduct.getLineAmount() + "\n";
+				}
+				String msgTotalAmount = "Total Amount: " + purchaseOrder.getTotalAmount() + "\n";
+				String msgFooter = "Thank you.";
+				String fullMsg = msgHeading + msgBody + msgTotalAmount + msgFooter;
+
+				emailDetails.setMsgBody(fullMsg);
 				
+				emailService.sendSimpleMail(emailDetails);
+
 			}
 
 			return "OK";
@@ -197,8 +209,30 @@ public class PurchaseOrderController {
 				poHasProduct.setPurchaseOrderId(purchaseOrder);
 			}
 
-			purchaseOrderRepository.save(purchaseOrder);
+			PurchaseOrder updPO = purchaseOrderRepository.save(purchaseOrder);
 
+			if (updPO.getSupplierId().getEmail() != null) {
+				// send email
+				EmailDetails emailDetails = new EmailDetails();
+				emailDetails.setSendTo(updPO.getSupplierId().getEmail());
+				emailDetails.setSubject("Jenaka Hardware | Update Purchase Order " + updPO.getPoCode());
+				
+
+				String msgHeading = "Updated purchase order | Jenaka Hardware \n. Please ignore the previous order request with this Purchase Order ID : "+updPO.getPoCode()+" \n Please check the order details below. \n\n";
+				String msgBody = "Items: \n";
+				for (POHasProduct poHasProduct : purchaseOrder.getPoHasProducts()) {
+					msgBody += poHasProduct.getProductId().getName() + " - " + poHasProduct.getQty() + " x "
+							+ poHasProduct.getPurchasePrice() + " = " + poHasProduct.getLineAmount() + "\n";
+				}
+				String msgTotalAmount = "Total Amount: " + purchaseOrder.getTotalAmount() + "\n";
+				String msgFooter = "Thank you.";
+				String fullMsg = msgHeading + msgBody + msgTotalAmount + msgFooter;
+
+				emailDetails.setMsgBody(fullMsg);
+				
+				emailService.sendSimpleMail(emailDetails);
+
+			}
 			return "OK";
 		} catch (Exception e) {
 			return e.getMessage();
@@ -234,7 +268,25 @@ public class PurchaseOrderController {
 				poHasProduct.setPurchaseOrderId(purchaseOrder);
 			}
 
-			purchaseOrderRepository.save(purchaseOrder);
+			PurchaseOrder delPO = purchaseOrderRepository.save(purchaseOrder);
+			
+			if (delPO.getSupplierId().getEmail() != null) {
+				// send email
+				EmailDetails emailDetails = new EmailDetails();
+				emailDetails.setSendTo(delPO.getSupplierId().getEmail());
+				emailDetails.setSubject("Jenaka Hardware | Cancel Purchase Order " + delPO.getPoCode());
+				
+
+				String msgHeading = "Cancel purchase order | Jenaka Hardware \n. Please NOTE the previous order request with this Purchase Order ID : "+delPO.getPoCode()+" \n we decied to cancel this order. \n\n";
+				
+				String msgFooter = "Thank you.";
+				String fullMsg = msgHeading +  msgFooter;
+
+				emailDetails.setMsgBody(fullMsg);
+				
+				emailService.sendSimpleMail(emailDetails);
+
+			}
 
 			return "OK";
 		} catch (Exception e) {

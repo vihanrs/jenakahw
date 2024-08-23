@@ -304,7 +304,10 @@ const refreshTable = () => {
 
   //hide delete button when status is 'deleted'
   customers.forEach((customer, index) => {
-    if (userPrivilages.delete && customer.customerStatusId.name == "Deleted") {
+    if (
+      (userPrivilages.delete && customer.customerStatusId.name == "Deleted") ||
+      customer.customerStatusId.name == "Normal"
+    ) {
       //catch the button
       let targetElement =
         customerTable.children[1].children[index].children[6].children[
