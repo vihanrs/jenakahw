@@ -64,32 +64,34 @@ const refreshNotifications = () => {
   lowStockProducts = ajaxGetRequest("/dashboard/findlowstockproducts");
 
   lowStockProducts.forEach((stock) => {
-    const p = document.createElement("p");
-    p.className = "card-text";
+    if (stock.stockStatus.name != "Out of Stock") {
+      const p = document.createElement("p");
+      p.className = "card-text";
 
-    const span = document.createElement("span");
-    span.style.color = "red";
-    span.style.fontWeight = "bold";
+      const span = document.createElement("span");
+      span.style.color = "red";
+      span.style.fontWeight = "bold";
 
-    if (stock.stockStatus.name == "Out of Stock") {
-      span.textContent = "out of Stock : ";
-    } else {
-      span.textContent = "low stock : ";
+      if (stock.stockStatus.name == "Out of Stock") {
+        span.textContent = "out of Stock : ";
+      } else {
+        span.textContent = "low stock : ";
+      }
+
+      p.appendChild(span);
+
+      p.innerHTML +=
+        stock.productId.barcode +
+        " " +
+        stock.productId.brandId.name +
+        " - " +
+        stock.productId.name +
+        " (Rs." +
+        parseFloat(stock.sellPrice).toFixed(2) +
+        ")";
+
+      notifications.appendChild(p);
     }
-
-    p.appendChild(span);
-
-    p.innerHTML +=
-      stock.productId.barcode +
-      " " +
-      stock.productId.brandId.name +
-      " - " +
-      stock.productId.name +
-      " (Rs." +
-      parseFloat(stock.sellPrice).toFixed(2) +
-      ")";
-
-    notifications.appendChild(p);
   });
 };
 

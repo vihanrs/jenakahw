@@ -36,8 +36,8 @@ const addEventListeners = () => {
     textFieldValidator(textContact, contactPattern, "supplier", "contact");
   });
 
-  textEmail.addEventListener("keyup", () => {
-    textFieldValidator(textEmail, emailPattern, "supplier", "email");
+  textEmails.addEventListener("keyup", () => {
+    textFieldValidator(textEmails, emailPattern, "supplier", "email");
   });
 
   textCompany.addEventListener("keyup", () => {
@@ -199,7 +199,7 @@ const refreshForm = () => {
   textFirstName.value = "";
   textLastName.value = "";
   textContact.value = "";
-  textEmail.value = "";
+  textEmails.value = "";
   textCompany.value = "";
   textAddress.value = "";
 
@@ -208,7 +208,7 @@ const refreshForm = () => {
     textFirstName,
     textLastName,
     textContact,
-    textEmail,
+    textEmails,
     textCompany,
     textAddress,
   ];
@@ -868,8 +868,8 @@ const refillRecord = (rowObject, rowId) => {
   if (supplier.lastName != null) textLastName.value = supplier.lastName;
   else textLastName.value = "";
 
-  if (supplier.email != null) textEmail.value = supplier.email;
-  else textEmail.value = "";
+  if (supplier.email != null) textEmails.value = supplier.email;
+  else textEmails.value = "";
 
   if (supplier.company != null) textCompany.value = supplier.company;
   else textCompany.value = "";
@@ -903,7 +903,7 @@ const refillRecord = (rowObject, rowId) => {
     textFirstName,
     textLastName,
     textContact,
-    textEmail,
+    textEmails,
     textCompany,
     textAddress,
     selectStatus,
