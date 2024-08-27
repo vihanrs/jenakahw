@@ -23,4 +23,7 @@ public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, In
 	public List<PurchaseOrder> findPurchaseOrdersByStatus(int poStatusId);
 	
 	
+	@Query(value = "Select new PurchaseOrder(po.id,po.poCode,po.supplierId) from PurchaseOrder po where po.purchaseOrderStatusId.id = 1 and supplierId.id=?1")
+	public List<PurchaseOrder> findPurchaseOrdersBySupplier(int supplierId);
+	
 }

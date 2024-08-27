@@ -354,7 +354,7 @@ const refreshTable = () => {
     if (userPrivilages.delete) {
       let targetElement =
         supplierPaymentsTable.children[1].children[index].children[6]
-          .children[2];
+          .lastElementChild;
       //add changes
       targetElement.style.pointerEvents = "none";
       targetElement.style.visibility = "hidden";

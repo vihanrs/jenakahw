@@ -120,6 +120,15 @@ public class PurchaseOrderController {
 			return null;
 		}
 	}
+	
+	@GetMapping(value = "/getpobysupplier/{supplierId}", produces = "application/json")
+	public List<PurchaseOrder> findPurchaseOrdersBySupplier(@PathVariable("supplierId") Integer supplierId) {
+		if (privilegeController.hasPrivilege(MODULE, "select")) {
+			return purchaseOrderRepository.findPurchaseOrdersBySupplier(supplierId);
+		} else {
+			return null;
+		}
+	}
 
 	// post mapping for save new purchase order
 	@Transactional

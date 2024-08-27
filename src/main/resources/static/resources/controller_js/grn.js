@@ -42,6 +42,11 @@ const addEventListeners = () => {
     selectDFieldValidator(selectGRNStatus, "grn", "grnStatusId");
   });
 
+  selectSupplier.addEventListener("change", () => {
+    selectDFieldValidator(selectSupplier, "grn", "supplierId");
+    getPOBySupplier(grn.supplierId);
+  });
+
   selectProduct.addEventListener("change", () => {
     selectDFieldValidator(selectProduct, "grnProduct", "productId"),
       setUnitType(grnProduct.productId),
@@ -177,8 +182,17 @@ const refreshForm = () => {
   grn.grnHasProducts = [];
 
   //get data list of 'Requested' purchase orders
-  purchaseOrders = ajaxGetRequest("/purchaseorder/getpobystatus/1");
-  fillDataIntoSelect(selectPOID, "Select PO ID", purchaseOrders, "poCode");
+  // purchaseOrders = ajaxGetRequest("/purchaseorder/getpobystatus/1");
+  // fillDataIntoSelect(selectPOID, "Select PO ID", purchaseOrders, "poCode");
+
+  suppliers = ajaxGetRequest("/supplier/findactivesuppliers");
+  fillMoreDataIntoSelect(
+    selectSupplier,
+    "Select Supplier",
+    suppliers,
+    "firstName",
+    "company"
+  );
 
   // get grn status
   grnStatuses = ajaxGetRequest("/grnstatus/findall");
@@ -269,6 +283,12 @@ const getSupplierByPO = (supplier) => {
 
   grn.supplierId = supplier.id;
   textSupplier.style.border = "2px solid #00FF7F";
+};
+
+const getPOBySupplier = (supplier) => {
+  pos = ajaxGetRequest("/purchaseorder/getpobysupplier/" + supplier.id);
+
+  fillDataIntoSelect(selectPOID, "Select PO ID", pos, "poCode");
 };
 
 //function for check errors

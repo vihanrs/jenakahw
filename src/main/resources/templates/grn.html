@@ -74,6 +74,20 @@
 
                     <!-- poid/supplier/required date/ po status -->
                     <div class="row mt-2">
+                      <div class="col-md-4">
+                        <label for="selectSupplier" class="form-label fw-bold">
+                          Supplier : <span class="text-danger"> * </span>
+                        </label>
+                        <select
+                          id="selectSupplier"
+                          class="form-select"
+                          required
+                        >
+                          <option value="" selected disabled>
+                            Select Supplier
+                          </option>
+                        </select>
+                      </div>
                       <!-- po id -->
                       <div class="col-md-3">
                         <label for="selectPOID" class="form-label fw-bold">
@@ -81,14 +95,14 @@
                         </label>
                         <select id="selectPOID" class="form-select" required>
                           <option value="" selected disabled>
-                            Select Purchase Order ID
+                            Select PO ID
                           </option>
                         </select>
                       </div>
                       <div class="col-md-1"></div>
 
                       <!-- supplier -->
-                      <div class="col-md-4">
+                      <div class="col-md-4 d-none">
                         <label for="textSupplier" class="form-label fw-bold">
                           Supplier:
                         </label>

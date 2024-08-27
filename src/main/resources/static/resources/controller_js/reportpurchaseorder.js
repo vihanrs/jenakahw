@@ -135,7 +135,31 @@ const refreshTable = () => {
   );
 
   getTotalamount(purchaseOrders);
+  getPOCount(purchaseOrders);
   $("#purchaseOrdersReportTable").dataTable();
+};
+
+const getPOCount = (polist) => {
+  textPOCount.value = polist.length;
+
+  let requestedCount = 0;
+  let recCount = 0;
+  let delCount = 0;
+
+  polist.forEach((po) => {
+    if (po.purchaseOrderStatusId.name == "Requested") {
+      requestedCount = requestedCount + 1;
+      console.log(po.purchaseOrderStatusId.name);
+    } else if (po.purchaseOrderStatusId.name == "Received") {
+      recCount = recCount + 1;
+    } else if (po.purchaseOrderStatusId.name == "Deleted") {
+      delCount = delCount + 1;
+    }
+  });
+
+  textRequestedPOCount.value = requestedCount;
+  textRecivedPOCount.value = recCount;
+  textDelPOCount.value = delCount;
 };
 
 const viewRecord = () => {};
