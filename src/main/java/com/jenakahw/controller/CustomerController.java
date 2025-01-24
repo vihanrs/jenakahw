@@ -1,11 +1,8 @@
 package com.jenakahw.controller;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,30 +17,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.Customer;
 import com.jenakahw.domain.User;
-import com.jenakahw.repository.CustomerRepository;
-import com.jenakahw.repository.CustomerStatusRepository;
+import com.jenakahw.service.interfaces.AuthService;
+import com.jenakahw.service.interfaces.CustomerService;
 
 @RestController
 //add class level mapping /customer
 @RequestMapping(value = "/customer")
 public class CustomerController {
-	/*
-	 * Create Repository object -> Dependency injection:Repository is an interface
-	 * so it cannot create instance then use dependency injection
-	 */
 	@Autowired
-	private CustomerRepository customerRepository;
-
+	private CustomerService customerService;
+	
 	@Autowired
-	private CustomerStatusRepository customerStatusRepository;
-
-	@Autowired
-	private PrivilegeController privilegeController;
-
-	@Autowired
-	private UserController userController;
-
-	private static final String MODULE = "Customer";
+	private AuthService authService;
 
 	// get mapping for generate customer UI
 	@GetMapping
@@ -51,11 +36,11 @@ public class CustomerController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		User loggedUser = userController.getLoggedUser();
-		String userRole = userController.getLoggedUserRole();
-		
+		User loggedUser = authService.getLoggedUser();
+		String userRole = authService.getLoggedUserRole();
+
 		ModelAndView customerView = new ModelAndView();
-		
+
 		customerView.addObject("logusername", auth.getName());
 		customerView.addObject("loguserrole", userRole);
 		customerView.addObject("loguserphoto", loggedUser.getUserPhoto());
@@ -67,124 +52,36 @@ public class CustomerController {
 	// get service mapping for get all customers
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Customer> findAll() {
-		// check privileges
-		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return customerRepository.findAll(Sort.by(Direction.DESC, "id"));
-		} else {
-			return null;
-		}
-
+		return customerService.findAll();
 	}
 
 	// get mapping for get customer by contact number
 	@GetMapping(value = "/getByContact/{contact}", produces = "application/json")
 	public Customer getByContact(@PathVariable("contact") String contact) {
-		// check privileges
-		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			Customer customer =  customerRepository.findByContact(contact);
-			if(customer != null) {
-				return customer;
-			}else {
-				return null;
-			}
-		} else {
-			return null;
-		}
+		return customerService.getByContact(contact);
 	}
-	
+
 	// get mapping for get customer by status
 	@GetMapping(value = "/findbystatus/{status}", produces = "application/json")
 	public List<Customer> getByStatus(@PathVariable("status") String status) {
-		// check privileges
-		if (privilegeController.hasPrivilege(MODULE, "select")) {
-			return customerRepository.findByStatus(status);
-		} else {
-			return null;
-		}
+		return customerService.getByStatus(status);
 	}
 
 	// post mapping for save new customer
 	@PostMapping
 	public String saveCustomer(@RequestBody Customer customer) {
-		// check privileges
-		if (!privilegeController.hasPrivilege(MODULE, "insert")) {
-			return "Access Denied !!!";
-		}
-
-		// check duplicates...
-		Customer extCustomerByContact = customerRepository.findByContact(customer.getContact());
-		if (extCustomerByContact != null) {
-			return "Contact No Already Exist...!";
-		}
-
-		try {
-			// set added date time
-			customer.setAddedDateTime(LocalDateTime.now());
-			// set added user
-			customer.setAddedUserId(userController.getLoggedUser().getId());
-
-			customerRepository.save(customer);
-			return "OK";
-		} catch (Exception e) {
-			return e.getMessage();
-		}
+		return customerService.saveCustomer(customer);
 	}
 
 	// post mapping for update customer
 	@PutMapping
 	public String updateCustomer(@RequestBody Customer customer) {
-		// check privileges
-		if (!privilegeController.hasPrivilege(MODULE, "update")) {
-			return "Access Denied !!!";
-		}
-
-		// check duplicates...
-		Customer extCustomerByContact = customerRepository.findByContact(customer.getContact());
-		if (extCustomerByContact != null && customer.getId() != extCustomerByContact.getId()) {
-			return "Contact No Already Exist...!";
-		}
-
-		try {
-			// set added date time
-			customer.setLastUpdatedDateTime(LocalDateTime.now());
-			// set added user
-			customer.setUpdatedUserId(userController.getLoggedUser().getId());
-
-			customerRepository.save(customer);
-			return "OK";
-		} catch (Exception e) {
-			return e.getMessage();
-		}
+		return customerService.updateCustomer(customer);
 	}
 
 	// delete mapping for delete customer
 	@DeleteMapping
 	public String deleteProduct(@RequestBody Customer customer) {
-		// check privileges
-		if (!privilegeController.hasPrivilege(MODULE, "delete")) {
-			return "Access Denied !!!";
-		}
-
-		// check given product exist or not
-		Customer extCustomer = customerRepository.getReferenceById(customer.getId());
-		if (extCustomer == null) {
-			return "Customer Not Exist..!";
-		}
-
-		try {
-			// set deleted data and time
-			customer.setDeletedDateTime(LocalDateTime.now());
-
-			// set deleted user id
-			customer.setDeletedUserId(userController.getLoggedUser().getId());
-
-			// set customer statuts to 'Deleted'
-			customer.setCustomerStatusId(customerStatusRepository.getReferenceById(3));
-
-			customerRepository.save(customer);
-			return "OK";
-		} catch (Exception e) {
-			return e.getMessage();
-		}
+		return customerService.deleteCustomer(customer);
 	}
 }

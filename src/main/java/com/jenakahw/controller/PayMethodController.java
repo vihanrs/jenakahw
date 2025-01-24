@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.PayMethod;
-import com.jenakahw.repository.PayMethodRepository;
+import com.jenakahw.service.interfaces.PayMethodService;
 
 @RestController
 @RequestMapping(value = "/paymethod") // class level mapping
@@ -18,11 +18,11 @@ public class PayMethodController {
 	 * so it cannot create instance then use dependency injection
 	 */
 	@Autowired
-	PayMethodRepository payMethodRepository;
+	PayMethodService payMethodService;
 
-	// get mapping for get all categories -- [/category/findall]
+	// get mapping for get all paymethods -- [/paymethod/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<PayMethod> findAll() {
-		return payMethodRepository.findAll();
+		return payMethodService.findAll();
 	}
 }

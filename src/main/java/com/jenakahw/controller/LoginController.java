@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.User;
+import com.jenakahw.service.interfaces.AuthService;
 
 @RestController
 public class LoginController {
@@ -16,7 +17,7 @@ public class LoginController {
 	 * interface so it cannot create instance then use dependency injection
 	 */
 	@Autowired
-	private UserController userController;
+    private AuthService authService;
 	
 	@GetMapping("/login")
 	public ModelAndView loginUI() {
@@ -37,12 +38,12 @@ public class LoginController {
 		// get logged user authentication object
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		User loggedUser = userController.getLoggedUser();
-		String userRole = userController.getLoggedUserRole();
+		User loggedUser = authService.getLoggedUser();
+		String userRole = authService.getLoggedUserRole();
 
 		ModelAndView dashboardView = new ModelAndView();
 
-		dashboardView.addObject("logusername", auth.getName());
+		dashboardView.addObject("logusername", loggedUser.getUsername());
 		dashboardView.addObject("loguserrole", userRole);
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title", "Dashboard | Jenaka Hardware");

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.ProductStatus;
-import com.jenakahw.repository.ProductStatusRepository;
+import com.jenakahw.service.interfaces.ProductStatusService;
 
 @RestController
 @RequestMapping(value = "/productstatus") // class level mapping
@@ -18,11 +18,11 @@ public class ProductStatusController {
 	 * then use dependency injection
 	 */
 	@Autowired  
-	private ProductStatusRepository productStatusRepository;
+	private ProductStatusService productStatusService;
 	
 	//get mapping for get all product status -- [/productstatus/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<ProductStatus> findAll() {
-		return productStatusRepository.findAll();
+		return productStatusService.findAll();
 	}
 }

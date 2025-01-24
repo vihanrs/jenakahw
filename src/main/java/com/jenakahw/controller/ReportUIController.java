@@ -1,13 +1,12 @@
 package com.jenakahw.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.jenakahw.domain.User;
+import com.jenakahw.service.interfaces.AuthService;
 
 @RestController
 //@RequestMapping(value = "/reports") // add class level mapping
@@ -18,19 +17,16 @@ public class ReportUIController {
 	 */
 	
 	@Autowired
-	private UserController userController;
+	private AuthService authService;;
 	
 	@GetMapping("/reportpurchaseorderui")
 	public ModelAndView poReportUI() {
-		// get logged user authentication object
-    	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-    	
-    	User loggedUser = userController.getLoggedUser();
-		String userRole = userController.getLoggedUserRole();
+    	User loggedUser = authService.getLoggedUser();
+		String userRole = authService.getLoggedUserRole();
     	
 		ModelAndView dashboardView = new ModelAndView();
 		
-		dashboardView.addObject("logusername",auth.getName());
+		dashboardView.addObject("logusername",loggedUser.getUsername());
 		dashboardView.addObject("loguserrole", userRole);
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title","Report | Jenaka Hardware");
@@ -40,15 +36,12 @@ public class ReportUIController {
 	
 	@GetMapping("/reportgrnui")
 	public ModelAndView grnReportUI() {
-		// get logged user authentication object
-    	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-    	
-    	User loggedUser = userController.getLoggedUser();
-		String userRole = userController.getLoggedUserRole();
+    	User loggedUser = authService.getLoggedUser();
+		String userRole = authService.getLoggedUserRole();
     	
 		ModelAndView dashboardView = new ModelAndView();
 		
-		dashboardView.addObject("logusername",auth.getName());
+		dashboardView.addObject("logusername",loggedUser.getUsername());
 		dashboardView.addObject("loguserrole", userRole);
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title","Report | Jenaka Hardware");
@@ -58,15 +51,12 @@ public class ReportUIController {
 	
 	@GetMapping("/reportsalesui")
 	public ModelAndView salesReportUI() {
-		// get logged user authentication object
-    	Authentication auth =  SecurityContextHolder.getContext().getAuthentication();
-    	
-    	User loggedUser = userController.getLoggedUser();
-		String userRole = userController.getLoggedUserRole();
+    	User loggedUser = authService.getLoggedUser();
+		String userRole = authService.getLoggedUserRole();
     	
 		ModelAndView dashboardView = new ModelAndView();
 		
-		dashboardView.addObject("logusername",auth.getName());
+		dashboardView.addObject("logusername",loggedUser.getUsername());
 		dashboardView.addObject("loguserrole", userRole);
 		dashboardView.addObject("loguserphoto", loggedUser.getUserPhoto());
 		dashboardView.addObject("title","Report | Jenaka Hardware");

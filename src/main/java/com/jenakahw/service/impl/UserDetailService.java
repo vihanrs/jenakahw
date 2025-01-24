@@ -1,4 +1,4 @@
-package com.jenakahw.service;
+package com.jenakahw.service.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;

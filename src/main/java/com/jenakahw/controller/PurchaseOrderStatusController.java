@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.PurchaseOrderStatus;
-import com.jenakahw.repository.PurchaseOrderStatusRepository;
+import com.jenakahw.service.interfaces.PurchaseOrderStatusService;
 
 @RestController
 @RequestMapping(value = "/purchaseorderstatus") // class level mapping
@@ -18,11 +18,11 @@ public class PurchaseOrderStatusController {
 	 * then use dependency injection
 	 */
 	@Autowired 
-	private PurchaseOrderStatusRepository purchaseOrderStatusRepository ;
+	private PurchaseOrderStatusService purchaseOrderStatusService ;
 
 	// get mapping for get all user data -- [/purchaseorderstatus/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<PurchaseOrderStatus> findAll() {
-		return purchaseOrderStatusRepository.findAll();
+		return purchaseOrderStatusService.findAll();
 	}
 }

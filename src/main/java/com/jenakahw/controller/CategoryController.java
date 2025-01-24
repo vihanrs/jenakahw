@@ -9,9 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jenakahw.domain.Brand;
 import com.jenakahw.domain.Category;
-import com.jenakahw.repository.CategoryRepository;
+import com.jenakahw.service.interfaces.CategoryService;
 
 @RestController
 @RequestMapping(value = "/category") // class level mapping
@@ -21,28 +20,17 @@ public class CategoryController {
 	 * so it cannot create instance then use dependency injection
 	 */
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryService categoryService;
 
 	// get mapping for get all categories -- [/category/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Category> findAll() {
-		return categoryRepository.findAll();
+		return categoryService.findAll();
 	}
 	
 	// post mapping for save new category
 	@PostMapping
-	public String saveBrand(@RequestBody Category category) {
-		// check duplicates
-		Category extCategory = categoryRepository.findByName(category.getName());
-		if(extCategory != null) {
-			return extCategory.getName()+" already exist";
-		}
-		
-		try {
-			categoryRepository.save(category);
-			return "OK";
-		} catch (Exception e) {
-			return e.getMessage();
-		}
+	public String saveCategory(@RequestBody Category category) {
+		return categoryService.saveCategory(category);
 	}
 }

@@ -1,9 +1,5 @@
 package com.jenakahw.controller;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +14,7 @@ import com.jenakahw.domain.ReportDailyFinancialSummary;
 import com.jenakahw.domain.ReportGrn;
 import com.jenakahw.domain.ReportMonthlyFinancialSummary;
 import com.jenakahw.domain.ReportPurchaseOrder;
-import com.jenakahw.repository.ReportRepository;
+import com.jenakahw.service.interfaces.ReportService;
 
 @RestController
 @RequestMapping(value = "report")
@@ -30,21 +26,21 @@ public class ReportDataController {
 	 */
 
 	@Autowired
-	private ReportRepository reportRepository;
+	private ReportService reportService ;
 	// Purchase Order Reports
 
 	// [/report/reportpurchaseorder/findbystatus/2]
 	// get mapping for get purchase order report by status
 	@GetMapping(value = "/reportpurchaseorder/findbystatus/{statusId}", produces = "application/json")
 	public List<PurchaseOrder> getPurchaseOrderByStatus(@PathVariable("statusId") int statusId) {
-		return reportRepository.purchaseOrderByStatus(statusId);
+		return reportService.getPurchaseOrderByStatus(statusId);
 	}
 
 	// [/report/reportpurchaseorder/findbysupplier/8]
 	// get mapping for get purchase order report by supplier
 	@GetMapping(value = "/reportpurchaseorder/findbysupplier/{supplierId}", produces = "application/json")
 	public List<PurchaseOrder> getPurchaseOrderBySupplier(@PathVariable("supplierId") int supplierId) {
-		return reportRepository.purchaseOrderBySupplier(supplierId);
+		return reportService.getPurchaseOrderBySupplier(supplierId);
 	}
 
 	// [/report/reportpurchaseorder/findbystatusandsupplier/2/8]
@@ -52,26 +48,14 @@ public class ReportDataController {
 	@GetMapping(value = "/reportpurchaseorder/findbystatusandsupplier/{statusId}/{supplierId}", produces = "application/json")
 	public List<PurchaseOrder> getPurchaseOrderByStatusAndSupplier(@PathVariable("statusId") int statusId,
 			@PathVariable("supplierId") int supplierId) {
-		return reportRepository.purchaseOrderByStatusAndSupplier(statusId, supplierId);
+		return reportService.getPurchaseOrderByStatusAndSupplier(statusId, supplierId);
 	}
 
 	// [/report/reportpurchaseorder/findposummarybysupplier/8]
 	// get mapping for get purchase order summary report by supplier
 	@GetMapping(value = "/reportpurchaseorder/findposupplierwisesummary", produces = "application/json")
 	public List<ReportPurchaseOrder> getPurchaseOrderSummaryBySupplier() {
-		String[][] queryDataList = reportRepository.purchaseOrderSummaryBysupplier();
-		List<ReportPurchaseOrder> reportPOs = new ArrayList<>();
-
-		for (String[] queryData : queryDataList) {
-			ReportPurchaseOrder reportPurchaseOrder = new ReportPurchaseOrder();
-			reportPurchaseOrder.setSupplierFirstName(queryData[0]);
-			reportPurchaseOrder.setCompany(queryData[1]);
-			reportPurchaseOrder.setCount(queryData[2]);
-			reportPurchaseOrder.setTotal(queryData[3]);
-
-			reportPOs.add(reportPurchaseOrder);
-		}
-		return reportPOs;
+		return reportService.getPurchaseOrderSummaryBySupplier();
 	}
 
 	// GRN Reports
@@ -80,112 +64,26 @@ public class ReportDataController {
 	// get mapping for get grn by supplier
 	@GetMapping(value = "/reportgrn/findbysupplier/{supplierId}", produces = "application/json")
 	public List<Grn> getGrnBySupplier(@PathVariable("supplierId") int supplierId) {
-		return reportRepository.grnBySupplierId(supplierId);
+		return reportService.getGrnBySupplier(supplierId);
 	}
 
 	// [/report/reportgrn/findgrnsummerybymonthly]
 	// get mapping for get grn summery report by monthly
 	@GetMapping(value = "/reportgrn/findgrnsummarybymonthly", produces = "application/json")
 	public List<ReportGrn> getGrnSummarybyMonthly() {
-		String[][] queryDataList = reportRepository.grnSummaryByMonthly();
-		List<ReportGrn> reportGrns = new ArrayList<>();
-
-		for (String[] queryData : queryDataList) {
-			ReportGrn reportGrn = new ReportGrn();
-			reportGrn.setAddedMonth(queryData[0]);
-			reportGrn.setGrnGrandTotal(queryData[1]);
-			reportGrn.setGrnCount(queryData[2]);
-
-			reportGrns.add(reportGrn);
-		}
-
-		return reportGrns;
+		return reportService.getGrnSummaryByMonthly();
 	}
 
 	// Sales Reports
 	// [/report/reportsales/dailysummery]
 	@GetMapping(value = "/reportsales/dailysummery", produces = "application/json")
 	public List<ReportDailyFinancialSummary> getSalesSummarybyDaily() {
-		String[][] queryDataList = reportRepository.getDailyFinancialSummary();
-		List<ReportDailyFinancialSummary> summary = new ArrayList<>();
-
-		String[] daysOfWeek = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
-
-		LinkedHashMap<String, BigDecimal> income = new LinkedHashMap<>();
-		LinkedHashMap<String, BigDecimal> expense = new LinkedHashMap<>();
-
-		// update LinkedHashMaps with days of the week and BigDecimal.ZERO
-		for (String day : daysOfWeek) {
-			income.put(day, BigDecimal.ZERO);
-			expense.put(day, BigDecimal.ZERO);
-		}
-
-		// update LinkedHashMaps with incomes and expenses
-		for (String[] queryData : queryDataList) {
-
-			BigDecimal amount = new BigDecimal(queryData[2]);
-			if (queryData[3].equals("Invoice") || queryData[3].equals("Extra Income")) {
-				// get current total for the day
-				BigDecimal total = income.get(queryData[0]);
-				income.put(queryData[0], total.add(amount)); // update total
-			} else {
-				// get current total for the day
-				BigDecimal total = expense.get(queryData[0]);
-				expense.put(queryData[0], total.add(amount)); // update total
-			}
-		}
-
-		// loops the days of week and update income/expense values
-		for (String day : daysOfWeek) {
-			BigDecimal incomeValue = income.get(day);
-			BigDecimal expenseValue = expense.get(day);
-			ReportDailyFinancialSummary dailySummary = new ReportDailyFinancialSummary(day, incomeValue, expenseValue);
-			summary.add(dailySummary);
-		}
-
-		return summary;
+		return reportService.getSalesSummaryByDaily();
 	}
 
 	// [/report/reportsales/monthlysummery]
 	@GetMapping(value = "/reportsales/monthlysummery", produces = "application/json")
 	public List<ReportMonthlyFinancialSummary> getSalesSummarybyMonthly() {
-		String[][] queryDataList = reportRepository.getMonthlyFinancialSummary();
-		List<ReportMonthlyFinancialSummary> summary = new ArrayList<>();
-
-		String[] monthsOfYear = { "January", "February", "March", "April", "May", "June", "July", "August", "September",
-				"October", "November", "December" };
-
-		LinkedHashMap<String, BigDecimal> income = new LinkedHashMap<>();
-		LinkedHashMap<String, BigDecimal> expense = new LinkedHashMap<>();
-
-		// update LinkedHashMaps with months of the year and BigDecimal.ZERO
-		for (String month : monthsOfYear) {
-			income.put(month, BigDecimal.ZERO);
-			expense.put(month, BigDecimal.ZERO);
-		}
-
-		// update LinkedHashMaps with incomes and expenses
-		for (String[] queryData : queryDataList) {
-			BigDecimal amount = new BigDecimal(queryData[1]);
-			if (queryData[2].equals("Invoice") || queryData[2].equals("Extra Income")) {
-				// get current total for the month
-				BigDecimal total = income.get(queryData[0]);
-				income.put(queryData[0], total.add(amount)); // update total
-			} else {
-				// get current total for the day
-				BigDecimal total = expense.get(queryData[0]);
-				expense.put(queryData[0], total.add(amount)); // update total
-			}
-		}
-
-		// loops the months of year and update income/expense values
-		for (String month : monthsOfYear) {
-			BigDecimal incomeValue = income.get(month);
-			BigDecimal expenseValue = expense.get(month);
-			ReportMonthlyFinancialSummary monthlySummary = new ReportMonthlyFinancialSummary(month, incomeValue,
-					expenseValue);
-			summary.add(monthlySummary);
-		}
-		return summary;
+		return reportService.getSalesSummaryByMonthly();
 	}
 }

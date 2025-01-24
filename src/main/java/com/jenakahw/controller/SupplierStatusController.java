@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.SupplierStatus;
-import com.jenakahw.repository.SupplierStatusRepository;
+import com.jenakahw.service.interfaces.SupplierStatusService;
 
 @RestController
 @RequestMapping(value = "/supplierstatus")
@@ -19,11 +19,11 @@ public class SupplierStatusController {
 	 * then use dependency injection
 	 */
 	@Autowired
-	private SupplierStatusRepository supplierStatusRepository;
+	private SupplierStatusService supplierStatusService ;
 	
 	//get mapping for get all supplierstatus -- [/supplierstatus/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<SupplierStatus> findAll(){
-		return supplierStatusRepository.findAll();
+		return supplierStatusService.findAll();
 	}
 }

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.CustomerStatus;
-import com.jenakahw.repository.CustomerStatusRepository;
+import com.jenakahw.service.interfaces.CustomerStatusService;
 
 @RestController
 @RequestMapping(value = "/customerstatus")
@@ -18,11 +18,11 @@ public class CustomerStatusController {
 	 * so it cannot create instance then use dependency injection
 	 */
 	@Autowired
-	private CustomerStatusRepository customerStatusRepository;
+	private CustomerStatusService customerStatusService;
 
 	// get mapping for get all customerstatus -- [/cusotmerstatus/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<CustomerStatus> findAll() {
-		return customerStatusRepository.findAll();
+		return customerStatusService.findAll();
 	}
 }

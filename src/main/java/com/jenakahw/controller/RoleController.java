@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.Role;
-import com.jenakahw.repository.RoleRepository;
+import com.jenakahw.service.interfaces.RoleService;
 
 @RestController
 @RequestMapping(value = "/role") // class level mapping
@@ -19,11 +19,11 @@ public class RoleController {
 	 * then use dependency injection
 	 */
 	@Autowired 
-	private RoleRepository roleRepository;
+	private RoleService roleService;
 
 	// get mapping for get all user data -- [/user/findall]
 	@GetMapping(value = "/findall", produces = "application/json")
 	public List<Role> findAll() {
-		return roleRepository.findAll();
+		return roleService.findAll();
 	}
 }
