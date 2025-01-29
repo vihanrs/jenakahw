@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jenakahw.domain.Brand;
-import com.jenakahw.repository.BrandRepository;
 import com.jenakahw.service.interfaces.BrandService;
 
 

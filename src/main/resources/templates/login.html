@@ -18,6 +18,15 @@
     <link rel="stylesheet" href="resources/css/login.css" />
 
     <title>Jenaka Hardware : Login</title>
+
+    <script>
+      // JavaScript function to populate username and password
+      function setDemoLogin(username, password) {
+        document.getElementById("textUserName").value = username;
+        document.getElementById("textPassword").value = password;
+        document.getElementById("loginForm").submit();
+      }
+    </script>
   </head>
   <body>
     <div class="container-fluid">
@@ -34,7 +43,7 @@
             <div class="col">
               <div class="card">
                 <h5 class="card-title text-center">Welcome!</h5>
-                <form action="/login" method="post">
+                <form id="loginForm" action="/login" method="post">
                   <div class="form-group pt-3">
                     <label for="textUserName" class="form-label">
                       Username :
@@ -74,71 +83,57 @@
                 <div th:if="${param.error}" style="color: red">
                   Invalid Username or Password
                 </div>
-
-                <!-- <div style="display: flex; justify-content: flex-end">
-                  <button
-                    style="
-                      margin-top: 20px;
-                      background-color: transparent;
-                      border: none;
-                      cursor: pointer;
-                      color: aliceblue;
-                    "
-                    onmouseover="this.style.color='red';"
-                    onmouseout="this.style.color='aliceblue';"
-                    data-bs-toggle="modal"
-                    data-bs-target="#openModel"
-                  >
-                    Forget Password
-                  </button>
-                </div> -->
               </div>
-              <!-- Add New Brand Modal -->
-              <!-- <div
-                class="modal fade"
-                id="openModel"
-                data-bs-backdrop="static"
-                data-bs-keyboard="false"
-                tabindex="-1"
-                aria-labelledby="staticBackdropLabel"
-                aria-hidden="true"
-              >
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title fw-bold">Reset Password</h5>
-                      <button
-                        type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close"
-                        id="btnCloseNewBrand"
-                      ></button>
-                    </div>
-
-                    <div class="modal-body">
-                      <label for="textuname" class="form-label fw-bold"
-                        >Enter Username :
-                      </label>
-                      <input type="text" class="form-control" id="textuname" />
-                      <label for="textEmail" class="form-label fw-bold"
-                        >Enter Email :
-                      </label>
-                      <input type="text" class="form-control" id="textEmail" />
-                    </div>
-                    <div class="modal-footer">
-                      <button
-                        type="button"
-                        class="btn btn-add"
-                        id="resetPassword"
-                        onclick="forgetPassword()"
-                      >
-                        Reset Password
-                      </button>
-                    </div>
+            </div>
+            <div class="col-2"></div>
+          </div>
+          <div class="row justify-content-center login_area">
+            <div class="col-2"></div>
+            <div class="card">
+              <h6 class="card-title text-center">Demo Logins</h6>
+              <div class="row p-3 justify-content-center">
+                  <div class="col-auto">
+                    <button
+                            class="btn btn-outline-primary me-2 d-flex flex-column align-items-center p-4"
+                            style="width: 130px; height: 130px;"
+                            onclick="setDemoLogin('vihan', '12345')"
+                    >
+                      <i class="fa fa-user fa-2x mb-2" aria-hidden="true"></i>
+                      Manager
+                    </button>
                   </div>
-                </div>
-              </div> -->
+                  <div class="col-auto">
+                    <button
+                            class="btn btn-outline-primary me-2 d-flex flex-column align-items-center p-4"
+                            style="width: 130px; height: 130px;"
+                            onclick="setDemoLogin('nuwan', 'nuwan@123')"
+                    >
+                      <i class="fa fa-user fa-2x mb-2" aria-hidden="true"></i>
+                      Store-Keeper
+                    </button>
+                  </div>
+                  <div class="col-auto">
+                    <button
+                            class="btn btn-outline-primary me-2 d-flex flex-column align-items-center p-4"
+                            style="width: 130px; height: 130px;"
+                            onclick="setDemoLogin('sanduni', 'sanduni@123')"
+                    >
+                      <i class="fa fa-user fa-2x mb-2" aria-hidden="true"></i>
+                      Cashier
+                    </button>
+                  </div>
+                  <div class="col-auto">
+                    <button
+                            class="btn btn-outline-primary d-flex flex-column align-items-center p-4"
+                            style="width: 130px; height: 130px;"
+                            onclick="setDemoLogin('chamara', 'chamara@123')"
+                    >
+                      <i class="fa fa-user fa-2x mb-2" aria-hidden="true"></i>
+                      Helper
+                    </button>
+                  </div>
+
+              </div>
             </div>
             <div class="col-2"></div>
           </div>
@@ -146,86 +141,5 @@
         <div class="col-md-3"></div>
       </div>
     </div>
-    <!-- <script>
-      const refresh = () => {
-        user = {};
-
-        textEmail.addEventListener("keyup", () => {
-          textFieldValidator(
-            textEmail,
-            "^[A-Za-z0-9]{4,20}[@][a-z]{3,10}[.][a-z]{2,3}$",
-            "user",
-            "email"
-          );
-        });
-
-        textuname.addEventListener("keyup", () => {
-          textFieldValidator(textuname, "", "user", "username");
-        });
-      };
-      //function for forget password
-      const forgetPassword = () => {
-        username = user.username;
-        email = user.email;
-
-        if (username != "" && email != null) {
-          userResponse = confirm(
-            "Are you sure to reset your password ?\n username: " +
-              username +
-              "\n email: " +
-              email
-          );
-
-          if (userResponse) {
-            //response from backend ...
-            let serverResponse = ajaxRequestBody(
-              "/forgetpassword",
-              "POST",
-              user
-            ); // url,method,object
-            //check back end response
-            console.log(serverResponse);
-
-            if (serverResponse == "OK") {
-              alert(
-                "Tempory Password Sended To " + user.email + " successfully..!"
-              );
-
-              refresh();
-            } else {
-              alert("Password reset not successfully..!\n" + serverResponse);
-            }
-          }
-        } else {
-          alert("Please enter correct username and email");
-        }
-      };
-
-      // define function for ajax request (POST,PUT,DELETE)
-      const ajaxRequestBody = (url, method, object) => {
-        let serverResponse;
-        $.ajax(url, {
-          async: false,
-          type: method,
-          data: JSON.stringify(object),
-          contentType: "application/json",
-          success: function (data, status, ahr) {
-            console.log(data);
-            console.log(url + "\n" + "success " + status + " " + ahr);
-            serverResponse = data;
-          },
-          error: function (errormsg, status, ahr) {
-            console.log(
-              url + "\n" + "failed  " + errormsg + " " + status + " " + ahr
-            );
-            serverResponse = errormsg;
-          },
-        });
-
-        return serverResponse;
-      };
-
-      refresh();
-    </script> -->
   </body>
 </html>
